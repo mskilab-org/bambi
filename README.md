@@ -36,27 +36,27 @@ Within python (e.g. a jupyter notebook) import the bxBAM table (the HDF5 file), 
 Step (4): Perform queries
 
 e.g. query non-local QNAMEs
+
     df = store.select("df_key", 
        where="QNAME='E00438:46:HMTV7CCXX:3:2202:4330:8956' or QNAME='E00438:46:HMTV7CCXX:8:1216:21917:20893'")
 
 Note the AND/OR keywords
 
-   df2 = store.select("df_key", 
+    df2 = store.select("df_key", 
       where=QNAME='E00438:46:HMTV7CCXX:8:1216:21917:20893' and "BX='yyyyyy'")
       
 Step (5)
 Decide what to do with these queries 
 
 You could save as .csv files
-   df.to_csv("query1.csv", index=False)
+
+    df.to_csv("query1.csv", index=False)
 
 You could concatenate these together
-  df1  # first query
-  
-  df2  # second query
-  
-  df_together = pd.concat([df1, d2])
-  
-  df_togther("all_queries.csv", index=False)
+
+    df1  # first query
+    df2  # second query
+    df_together = pd.concat([df1, d2])
+    df_togther("all_queries.csv", index=False)
 
 
