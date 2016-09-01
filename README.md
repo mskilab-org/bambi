@@ -3,17 +3,17 @@ indexed file format for barcoded BAMs with API for converting and accessing alig
 
 # Rough API: 
  
-# Data location for 10x:
+Data location for 10x:
 Files found here `/gpfs/commons/groups/imielinski_lab/data/10x/bam3/`
 
-# Step (1)
+Step (1)
 Please copy the `.bam` file into your local `~/Projects` directory. If we somehow change the original files, that's not good. 
 
 Gzip the `.bam` file
 `samtools view file.bam | gzip > out.gz`
 where `out.gz` is the output file. 
 
-# Step (2)
+Step (2)
 load python3.5.1 via the virtual environment:  
     (a)` cd /gpfs/commons/groups/imielinski_lab/lib/python-3/bin/`
     (b) `source activate`
@@ -27,13 +27,13 @@ There are two flags: filename and columns (There the default key is `df_key`---f
 This takes time!! I recommend you use the linux command `screen` or `nohup COMMAND &`.
 
 
-# Step (3):
+Step (3):
 Within python (e.g. a jupyter notebook) import the bxBAM table (the HDF5 file), e.g. 
 
     import pandas as pd
     store = pd.HDFStore("file1.h5") 
   
-# Step (4): Perform queries
+Step (4): Perform queries
 
 e.g. query non-local QNAMEs
     df = store.select("df_key", 
@@ -44,16 +44,19 @@ Note the AND/OR keywords
    df2 = store.select("df_key", 
       where=QNAME='E00438:46:HMTV7CCXX:8:1216:21917:20893' and "BX='yyyyyy'")
       
-# Step (5)
+Step (5)
 Decide what to do with these queries 
 
 You could save as .csv files
    df.to_csv("query1.csv", index=False)
 
-# You could concatenate these together
-   df1  # first query
-   df2  # second query
-   df_together = pd.concat([df1, d2])
-   df_togther("all_queries.csv", index=False)
+You could concatenate these together
+  df1  # first query
+  
+  df2  # second query
+  
+  df_together = pd.concat([df1, d2])
+  
+  df_togther("all_queries.csv", index=False)
 
 
