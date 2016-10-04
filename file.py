@@ -11,6 +11,7 @@ bxbam_path = "pathname"   # users set pathname here, , bxbam_path = input("path 
 columns_to_index = [col1, col2]   # list columns to index now, only
 col1 = "QNAME"
 col2 = "BX"
+hdf_key = "default_key"
 
 task = subprocess.Popen(("samtools view"+str(bam_path), shell=True,  stdout=subprocess.PIPE)
 while True:
