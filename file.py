@@ -45,7 +45,8 @@ while True:   # cols.xt is a flag
                         # place chunks into a dataframe or HDF
         store.append(hdf_key, chunk, data_columns=columns_to_index, index=False)   # not indexing now
                         
-# benchmarking idea:
+# benchmarking idea: uses internal logic of Pandas to deal with missing columns in a different order
+# this is possibly more efficient that awk!
 """
 #df=pd.DataFrame()
 #with open(bam_path) as file:
