@@ -55,8 +55,8 @@ while True:   # cols.xt is a flag
          #line_data=pd.DataFrame({k.strip():v.strip() 
              for k,_,v in (e.partition(':') 
                  for e in line.split('\t'))}, index=[i])
-#store.append(hdf_key, chunk, data_columns=bxbam_default_columns , index=False)
-store.create_table_index(hdf_key, columns=bxbam_default_columns , optlevel=9, kind='full')
+#store.append(hdf_key, chunk, data_columns=columns_to_index , index=False)
+store.create_table_index(hdf_key, columns=columns_to_index , optlevel=9, kind='full')
 store.close()
 """
                         
