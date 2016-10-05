@@ -1,4 +1,3 @@
-$ cat > columns.txt  # use three separate columns files for BX, MD&BX, all? Best option---how to use parameter?
 BEGIN {
     PROCINFO["sorted_in"]="@ind_str_asc" # traversal order for for(i in a)
     if(cols) {                           # set flag -v cols="bxbam_columns.txt"
