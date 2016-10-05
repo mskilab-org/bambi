@@ -1,35 +1,44 @@
 import subprocess
 import pandas as pd
-import tables    # users must go through downloading this and HDF5 software---put into documentation
+# import tables    # users must go through downloading this and HDF5 software---put into documentation
 import numpy as np
-import numexpr as ne
+#import numexpr as ne
 # also, *must* have Cython installed
 import os
 
-bam_path = "pathname"   # users set pathname here, bam_path = input("path name to bam =" )
-bxbam_path = "pathname"   # users set pathname here, , bxbam_path = input("path name to bxbam =" ) # use bam_path directory?
+bam_path = "/gpfs/commons/home/biederstedte-934/evan_projects/HUMAN_1000Genomes_hs37d5_genomic_RPE1-hTERT_X-33.dupmarked.bam"
+bxbam_path = "/gpfs/commons/home/biederstedte-934/evan_projects/HUMAN_1000Genomes_hs37d5_genomic_RPE1-hTERT_X-33.bxbam.h5"
+
+bxbame_name = "HUMAN_1000Genomes_hs37d5_genomic_RPE1-hTERT_X-33.bxbam.h5"
+
+store = pd.HDFStore(bxbame_name)
 columns_to_index = [col1, col2]   # list columns to index now, only
 col1 = "QNAME"
 col2 = "BX"
 hdf_key = "default_key"
 
-task = subprocess.Popen(("samtools view"+str(bam_path), shell=True,  stdout=subprocess.PIPE)
-while True:
-    line = task.stdout.readline().decode("latin-1")    # annoying---cannot process by byte, only by line
-    if len(line) == 0 and task.poll() != None: break
-rc = task.wait()
-                        
-                        
-                        
-# Set all headers first by running through bam, line by line ---- possibly too expensive; check performance again
-headers=set()
-with open(bam_path) as file:
-    for line in file:
-        for record in line.split('\t'):
-            head,_,datum=record.partition(":")
-            headers.add(head)
-            # sort
-            bam_columns=sorted(headers, key=lambda e: int(e.partition('_')[2]))
+
+task = subprocess.Popen("samtools view "+ bam_path, shell=True,  stdout=subprocess.PIPE)
+for i, line in enumerate(l.decode(errors='ignore') for l in task.stdout):  # decode binary
+    line_split = line.split()           # split line, make list
+    mandatory_field = line_split[:11]   # mandatory fields, "values"
+    rest_fields = line_split[11:]
+    mandatory_field_keys = ["QNAME", "FLAG", "RNAME", "POS", "MAPQ", "CIGAR", "RNEXT", "PNEXT", "TLEN", "SEQ", "QUAL"]
+    beginning = '  '.join('{}:{}'.format(k, v) for k, v in zip(mandatory_field_keys, mandatory_field))  # create tsv string
+    rest_data = '  '.join(rest_fields)
+    total_lines = beginning + rest_data
+    # now, parse with awk
+    #result = subprocess.check_output(["awk", "-v", "cols=columns.txt", "-f", "bxbam.awk", total_lines])
+    result = subprocess.check_output(["awk", "-v", "OFS='\t'", "-f", "bam5.awk", total_lines])
+    # result = subprocess.Popen("awk -v OFS='\t' -f bam5.awk "+ total_lines, shell=True,  stdout=subprocess.PIPE)
+    store.append(hdf_key, result, data_columns=columns_to_index, index=False)
+
+# index data columns in HDFStore
+store.create_table_index(hdf_key, columns=columns_to_index , optlevel=9, kind='full')
+store.close()
+
+# awk -v OFS='\t' -f bam5.awk stdout
+
 
 # It may be best to offer desired order
 bxbam_default_columns = ["QNAME", "FLAG", "RNAME", "POS", "MAPQ", "CIGAR", "RNEXT", "PNEXT", "TLEN", "SEQ", "QUAL", "BX"]
@@ -38,33 +47,6 @@ bxbam_default_columns = ["QNAME", "FLAG", "RNAME", "POS", "MAPQ", "CIGAR", "RNEX
 md_default_columns = ["QNAME", "FLAG", "RNAME", "POS", "MAPQ", "CIGAR", "RNEXT", "PNEXT", "TLEN", "SEQ", "QUAL", "BX", "MD"]
 
 
-task = subprocess.Popen(("bxbam.awk -F ", shell=True,  stdout=subprocess.PIPE)
-while True:   # cols.xt is a flag
-    line = task.stdout.readline().decode("latin-1")
-    if len(line) == 0 and task.poll() != None: break
-    for chunk in pd.read_table(bxbam_path, header=None, sep='\t', chunksize=10**6):
-                        # place chunks into a dataframe or HDF
-        store.append(hdf_key, chunk, data_columns=columns_to_index, index=False)   # not indexing now
-                        
-# benchmarking idea: uses internal logic of Pandas to deal with missing columns in a different order
-# this is possibly more efficient that awk!
-"""
-#df=pd.DataFrame()
-#with open(bam_path) as file:
-    #for i, line in enumerate(file):
-         #line_data=pd.DataFrame({k.strip():v.strip() 
-             for k,_,v in (e.partition(':') 
-                 for e in line.split('\t'))}, index=[i])
-#store.append(hdf_key, chunk, data_columns=columns_to_index , index=False)
-store.create_table_index(hdf_key, columns=columns_to_index , optlevel=9, kind='full')
-store.close()
-"""
-                        
-
-# index data columns in HDFStore
-store.create_table_index(hdf_key, columns=columns_to_index, optlevel=9, kind='full')
-store.close()
-                        
                         
 # functions
              
