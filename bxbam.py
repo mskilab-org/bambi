@@ -52,14 +52,14 @@ md_default_columns = ["QNAME", "FLAG", "RNAME", "POS", "MAPQ", "CIGAR", "RNEXT",
              
                         
 def get_qmates(param1):
-    pd.store(bxbam_path).select("QNAME"==param1)
+    store.select("QNAME"==param1)
 
 def get_bmates(param1):
-    pd.store(bxbam_path).select("BX"==param1)
+    store.select("BX"==param1)
                         
 def get_field(field, param1):
     field = str(field)
-    pd.store(bxbam_path).select(field==param1)
+    store.select(field==param1)
                         
 def create_bxbam(bam_path, bxbam_path, column1, columns2):
     columns_to_index = [column1, column2]
