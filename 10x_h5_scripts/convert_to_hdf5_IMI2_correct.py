@@ -66,8 +66,12 @@ for i, line in enumerate(l.decode(errors='ignore') for l in task.stdout):  # dec
     bxbam["SEG"]  = merged_dict["SEQ"] if merged_dict["SEQ"] != "" else "NaN"
     bxbam["QUAL"]  = merged_dict["QUAL"] if merged_dict["QUAL"] != "" else "NaN"
     bxbam["BX"]  = merged_dict["BX"] if merged_dict["BX"] != "" else "NaN"
+    # This injects the Record values
+    row.append()
+    # Flush the table buffers
     table.flush()
 
+# Finally, close the file (this also will flush all the remaining buffers!)
 h5file.close()
 
 
