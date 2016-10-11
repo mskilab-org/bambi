@@ -24,6 +24,8 @@ bxbam_columns = ["QNAME", "FLAG", "RNAME", "POS", "MAPQ", "CIGAR", "RNEXT", "PNE
 
 bxbam_columns_MD = ["QNAME", "FLAG", "RNAME", "POS", "MAPQ", "CIGAR", "RNEXT", "PNEXT", "TLEN", "SEQ", "QUAL", "BX", "MD"]
 
+# create bxbam description
+
 class Barcoded_bam_MD(IsDescription):
         QNAME = StringCol(64)
         FLAG  = Int16Col()
@@ -67,7 +69,7 @@ h5file = open_file(bxbam_name, mode = "w")
 # Create group
 group = h5file.create_group("/", "bam_table")
 
-table = h5file.create_table(group, hdf_key, bxbam_structure, "table of 10x bam field values")
+table = h5file.create_table(group, hdf_key, bxbam_description, "table of 10x bam field values")
 
 bxbam = table.row
 
