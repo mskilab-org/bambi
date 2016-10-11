@@ -56,10 +56,10 @@ class Barcoded_bam(IsDescription):
         BX    = StringCol(64)
 
 if args.MD:
-    bxbam_structure = Barcoded_bam_MD()
+    bxbam_description = Barcoded_bam_MD()
     bxbam_field_columns = bxbam_columns_MD
 else:
-    bxbam_structure = Barcoded_bam()
+    bxbam_description = Barcoded_bam()
     bxbam_field_columns = bxbam_columns
 
 
