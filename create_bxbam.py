@@ -20,39 +20,45 @@ columns_to_index = [col1, col2]   # list columns to index now, only
 
 hdf_key = "bam_fields"
 
+bxbam_columns = ["QNAME", "FLAG", "RNAME", "POS", "MAPQ", "CIGAR", "RNEXT", "PNEXT", "TLEN", "SEQ", "QUAL", "BX"]
+
+bxbam_columns_MD = ["QNAME", "FLAG", "RNAME", "POS", "MAPQ", "CIGAR", "RNEXT", "PNEXT", "TLEN", "SEQ", "QUAL", "BX", "MD"]
+
+class Barcoded_bam_MD(IsDescription):
+        QNAME = StringCol(64)
+        FLAG  = Int16Col()
+        RNAME = StringCol(64)
+        POS   = Int32Col()
+        MAPQ  = Int8Col()
+        CIGAR = StringCol(64)
+        RNEXT = StringCol(64)
+        PNEXT = Int32Col()
+        TLEN  = Int32Col()
+        SEG   =  StringCol(256)
+        QUAL  = StringCol(256)
+        BX    = StringCol(64)
+        MD    = StringCol(64)
+    
+class Barcoded_bam(IsDescription):
+        QNAME = StringCol(64)
+        FLAG  = Int16Col()
+        RNAME = StringCol(64)
+        POS   = Int32Col()
+        MAPQ  = Int8Col()
+        CIGAR = StringCol(64)
+        RNEXT = StringCol(64)
+        PNEXT = Int32Col()
+        TLEN  = Int32Col()
+        SEG   =  StringCol(256)
+        QUAL  = StringCol(256)
+        BX    = StringCol(64)
+
 if args.MD:
-    bxbam_columns = ["QNAME", "FLAG", "RNAME", "POS", "MAPQ", "CIGAR", "RNEXT", "PNEXT", "TLEN", "SEQ", "QUAL", "BX", "MD"]
-    class Barcoded_bam(IsDescription):
-        QNAME = StringCol(64)
-        FLAG  = Int16Col()
-        RNAME = StringCol(64)
-        POS   = Int32Col()
-        MAPQ  = Int8Col()
-        CIGAR = StringCol(64)
-        RNEXT = StringCol(64)
-        PNEXT = Int32Col()
-        TLEN  = Int32Col()
-        SEG   =  StringCol(256)
-        QUAL  = StringCol(256)
-        BX    = StringCol(64)
-        MD = StringCol(64)
-
+    bxbam_structure = Barcoded_bam_MD()
+    bxbam_field_columns = bxbam_columns_MD
 else:
-    bxbam_columns = ["QNAME", "FLAG", "RNAME", "POS", "MAPQ", "CIGAR", "RNEXT", "PNEXT", "TLEN", "SEQ", "QUAL", "BX"]
-    class Barcoded_bam(IsDescription):
-        QNAME = StringCol(64)
-        FLAG  = Int16Col()
-        RNAME = StringCol(64)
-        POS   = Int32Col()
-        MAPQ  = Int8Col()
-        CIGAR = StringCol(64)
-        RNEXT = StringCol(64)
-        PNEXT = Int32Col()
-        TLEN  = Int32Col()
-        SEG   =  StringCol(256)
-        QUAL  = StringCol(256)
-        BX    = StringCol(64)
-
+    bxbam_structure = Barcoded_bam()
+    bxbam_field_columns = bxbam_columns
 
 
 # Open a file in write mode
@@ -61,14 +67,14 @@ h5file = open_file(bxbam_name, mode = "w")
 # Create group
 group = h5file.create_group("/", "bam_table")
 
-table = h5file.create_table(group, hdf_key, Barcoded_bam, "table of 10x bam field values")
+table = h5file.create_table(group, hdf_key, bxbam_structure, "table of 10x bam field values")
 
 bxbam = table.row
 
 task = subprocess.Popen("samtools view "+ bam_path, shell=True,  stdout=subprocess.PIPE)
 for i, line in enumerate(l.decode(errors='ignore') for l in task.stdout):  # decode binary
     toks = line.split()   # split on all whitespace
-    newline = dict(zip(bxbam_columns, toks))  # dictionary of 11 mandatory fields
+    newline = dict(zip(bxbam_field_columns, toks))  # dictionary of 11 mandatory fields
     toks12 = toks[12:]  # rest of lines
     newline1 = dict(item.split(':', 1) for item in toks12) # 2nd dictionary for rest of field:value's
     merged_dict = newline.copy() # first dictionary...best method for Python pre-3.5
