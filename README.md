@@ -4,10 +4,15 @@ indexed file format for barcoded BAMs with API for converting and accessing alig
 # dependencies
 
 Python >= 2.7 or Python 3.x
+
 HDF5 >= 1.8.4 (recommend >=1.8.15 , HDF5 v1.10 not supported)
+
 PyTables (https://github.com/PyTables/PyTables)
+
 NumPy >= 1.8.1
+
 Numexpr >= 2.5.2
+
 Cython >= 0.21
 
 # Rough API: 
