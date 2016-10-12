@@ -7,41 +7,45 @@ import argparse
 
 parser = argparse.ArgumentParser()  # default is no MD
 parser.add_argument("--MD", help="store MD tag into bxBam file")
-args = parser.parse_args()
+storefield = parser.parse_args()
 
 # --parameters='parameter1','parameter2','parameter3'
 
 # at the moment, users are limited by five fields which they can index
+parser.add_argument("index_fields", nargs = "*", help = "input bam fields to index")
+fields = parser.parse_args()
+fields = fields.split(',')
+field1 = index_fields[0]
+field2 = index_fields[1]
+if len(fields) == 3:
+    field3 = index_fields[2]
+elif len(fields) == 4:
+    field4 = index_fields[3]
+elif len(fields) == 5:
+    field5 = index_fields[4]
 
-params = parser.parse_args()
-params=params.split(',')
-paramater1 = parameters[0]
-paramater2 = parameters[1]
-if len(params) == 3:
-    paramater3 = parameters[2]
-elif len(params) == 4:
-    paramater4 = parameters[3]
-elif len(params) == 5:
-    paramater5 = parameters[4]
+parser.add_argument("input", help = "input bam file path/filename")
+inputfile = parser.parse_args()
+bam_path = input[0]
 
+parser.add_argument("output", help = "output bxbam file path/filename")
+outputfile = parser.parse_args()
+bxbam_name = output[0]
 
-bam_path = ""   # add path to bam here
-
-bxbam_name = "" # name and add path to bxBam here
 
 # chose fields to index
 # col1 = "QNAME"
 # col2 = "BX"
 # columns_to_index = [col1, col2]   # list columns to index now, only
 
-if len(params) == 2:
-    columns_to_index = [parameter1, parameter2]
-if len(params) == 3:
-    columns_to_index = [parameter1, parameter2, parameter3]
-if len(params) == 4:
-    columns_to_index = [parameter1, parameter2, parameter3, parameter4]
-if len(params) == 5:
-    columns_to_index = [parameter1, parameter2, parameter3, parameter4, parameter5]
+if len(fields) == 2:
+    columns_to_index = [field1, field2]
+elif len(fields) == 3:
+    columns_to_index = [field1, field2, field3]
+elif len(fields) == 4:
+    columns_to_index = [field1, field2, field3, field4]
+elif len(fields) == 5:
+    columns_to_index = [field1, field2, field3, field4, field5]
 
 
 
@@ -82,7 +86,7 @@ class Barcoded_bam(IsDescription):
         QUAL  = StringCol(256)
         BX    = StringCol(64)
 
-if args.MD:
+if storefield.MD:  # if users set the first class, use that
     bxbam_description = Barcoded_bam_MD()
     bxbam_field_columns = bxbam_columns_MD
 else:
@@ -98,7 +102,7 @@ group = h5file.create_group("/", "bam_table")
 
 table = h5file.create_table(group, hdf_key, bxbam_description, "table of 10x bam field values")
 
-bxbam = table.row
+bxbamrow = table.row
 
 task = subprocess.Popen("samtools view "+ bam_path, shell=True,  stdout=subprocess.PIPE)
 for i, line in enumerate(l.decode(errors='ignore') for l in task.stdout):  # decode binary
@@ -121,7 +125,26 @@ for i, line in enumerate(l.decode(errors='ignore') for l in task.stdout):  # dec
     bxbam["QUAL"]  = merged_dict["QUAL"] if merged_dict["QUAL"] != "" else "NaN"
     bxbam["BX"]  = merged_dict["BX"] if merged_dict["BX"] != "" else "NaN"
     # This injects the Record values
-    bxbam.append()
+    bxbamrow.append()
+    # creates indices
+    if len(fields) == 2:
+        table.cols.field1.create_index()
+        table.cols.field2.create_index()
+    elif len(fields) == 3:
+        table.cols.field1.create_index()
+        table.cols.field2.create_index()
+        table.cols.field3.create_index()
+    elif len(fields) == 4:
+        table.cols.field1.create_index()
+        table.cols.field2.create_index()
+        table.cols.field3.create_index()
+        table.cols.field4.create_index()
+    elif len(fields) == 5:
+        table.cols.field1.create_index()
+        table.cols.field2.create_index()
+        table.cols.field3.create_index()
+        table.cols.field4.create_index()
+        table.cols.field5.create_index()
     # Flush the table buffers
     table.flush()
 
