@@ -27,6 +27,12 @@ elif len(fields) == 4:
 elif len(fields) == 5:
     field5 = index_fields[4]
 
+if not args.input:
+    paser.error("input bam not given, please provide via -input '<bamname>'")
+if not args.output:
+    paser.error("output bxbam not named, please provide via -output '<bxbamname.h5>'")
+
+
 print("input bam entered: "+ bam_path)
 print("bxbam file output: "+ bxbam_name)
 if len(fields) == 0:
