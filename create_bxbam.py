@@ -5,15 +5,29 @@ from tables import *
 import numpy as np
 import argparse
 
-parser = argparse.ArgumentParser()  # default is no MD
-parser.add_argument("--MD", help="store MD tag into bxBam file")
-storefield = parser.parse_args()
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument("input", help = "input filename")
+parser.add_argument("output", help = "output filename")
+parser.add_argument("param1", help = "yada yada")
+parser.add_argument("param2", help = "yada yada")
+parser.add_argument("final", help = "blah blah yada yada")
+args = parser.parse_args()
+input = args.input
+output = args.output
+param1 = args.input
+param2 = args.output
+final = args.final
 
-# --parameters='parameter1','parameter2','parameter3'
-
-# at the moment, users are limited by five fields which they can index
-parser.add_argument("index_fields", nargs = "*", help = "input bam fields to index")
-fields = parser.parse_args()
+parser = argparse.ArgumentParser()
+parser.add_argument("input", help = "input bam file path/filename")
+parser.add_argument("output", help = "output bxbam file path/filename")
+parser.add_argument("index_fields", nargs = "*", help = "bam fields to index")
+parser.add_argument("MD", help="store MD tag into bxBam file")
+args = parser.parse_args()
+bam_path = args.input
+bxbam_name = args.output
+fields = args.index_fields  # at the moment, users are limited by five fields which they can index
 fields = fields.split(',')
 field1 = index_fields[0]
 field2 = index_fields[1]
@@ -23,14 +37,6 @@ elif len(fields) == 4:
     field4 = index_fields[3]
 elif len(fields) == 5:
     field5 = index_fields[4]
-
-parser.add_argument("input", help = "input bam file path/filename")
-inputfile = parser.parse_args()
-bam_path = input[0]
-
-parser.add_argument("output", help = "output bxbam file path/filename")
-outputfile = parser.parse_args()
-bxbam_name = output[0]
 
 
 # chose fields to index
@@ -86,7 +92,7 @@ class Barcoded_bam(IsDescription):
         QUAL  = StringCol(256)
         BX    = StringCol(64)
 
-if storefield.MD:  # if users set the first class, use that
+if args.MD:  # if users set the first class, use that
     bxbam_description = Barcoded_bam_MD()
     bxbam_field_columns = bxbam_columns_MD
 else:
