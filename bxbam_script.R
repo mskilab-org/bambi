@@ -6,7 +6,7 @@ library(rPython)
                         
 
 # Load python script
-python.load("bxbam.py")  
+python.load("bxbam_functions.py")  
 
 bxbam_store <-h5file(bxbam)
 
