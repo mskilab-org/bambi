@@ -5,18 +5,45 @@ from tables import *
 import numpy as np
 import argparse
 
-parser = argparse.ArgumentParser()
+parser = argparse.ArgumentParser()  # default is no MD
 parser.add_argument("--MD", help="store MD tag into bxBam file")
 args = parser.parse_args()
+
+# --parameters='parameter1','parameter2','parameter3'
+
+# at the moment, users are limited by five fields which they can index
+
+params = parser.parse_args()
+params=params.split(',')
+paramater1 = parameters[0]
+paramater2 = parameters[1]
+if len(params) == 3:
+    paramater3 = parameters[2]
+elif len(params) == 4:
+    paramater4 = parameters[3]
+elif len(params) == 5:
+    paramater5 = parameters[4]
+
 
 bam_path = ""   # add path to bam here
 
 bxbam_name = "" # name and add path to bxBam here
 
 # chose fields to index
-col1 = "QNAME"
-col2 = "BX"
-columns_to_index = [col1, col2]   # list columns to index now, only
+# col1 = "QNAME"
+# col2 = "BX"
+# columns_to_index = [col1, col2]   # list columns to index now, only
+
+if len(params) == 2:
+    columns_to_index = [parameter1, parameter2]
+if len(params) == 3:
+    columns_to_index = [parameter1, parameter2, parameter3]
+if len(params) == 4:
+    columns_to_index = [parameter1, parameter2, parameter3, parameter4]
+if len(params) == 5:
+    columns_to_index = [parameter1, parameter2, parameter3, parameter4, parameter5]
+
+
 
 hdf_key = "bam_fields"
 
