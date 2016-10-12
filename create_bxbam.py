@@ -5,19 +5,6 @@ from tables import *
 import numpy as np
 import argparse
 
-import argparse
-parser = argparse.ArgumentParser()
-parser.add_argument("input", help = "input filename")
-parser.add_argument("output", help = "output filename")
-parser.add_argument("param1", help = "yada yada")
-parser.add_argument("param2", help = "yada yada")
-parser.add_argument("final", help = "blah blah yada yada")
-args = parser.parse_args()
-input = args.input
-output = args.output
-param1 = args.input
-param2 = args.output
-final = args.final
 
 parser = argparse.ArgumentParser()
 parser.add_argument("input", help = "input bam file path/filename")
