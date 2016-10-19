@@ -5,10 +5,14 @@ from tables import *
 import numpy as np
 import argparse
 
+def h5extension(astr):             # make sure users use 'h5' as bxbam extension
+    if not astr.endswith(".h5"):
+        astr += ".h5"
+    return astr
 
 parser = argparse.ArgumentParser()
 parser.add_argument("input", help = "input bam file path/filename")
-parser.add_argument("output", help = "output bxbam file path/filename")
+parser.add_argument("output", help = "output bxbam file path/filename", type=h5extension)
 parser.add_argument("index_fields", nargs = "*", help = "bam fields to index")
 parser.add_argument("MD", help="store MD tag into bxBam file")
 args = parser.parse_args()
