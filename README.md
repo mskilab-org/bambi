@@ -29,7 +29,7 @@ Optional column is --MD
 
 (2) Run
 
-install.packages("rPython")   This uses the Python version currently loaded---important for `library('rPython')`
+install.packages("rPython")   This uses the Python version currently loaded---important for `library(rPython)`
 
 
 
