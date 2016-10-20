@@ -1,6 +1,5 @@
-#############################################################################
-## Evan Biederstedt
-## New York Genome Center
+
+rk Genome Center
 ## ebiederstedt@nygenome.org
 ##
 ## This program is free software: you can redistribute it and/or modify it
@@ -89,7 +88,4 @@ get_qmates <- function(reads){
     df <- data.table(df)
     return(df)
 }
-
-
-
 
