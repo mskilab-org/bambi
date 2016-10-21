@@ -17,7 +17,6 @@
 
 #' @import rPython
 #' @import data.table
-
 #' @name load_bxbam
 #' @title load_bxbam
 #' @description
