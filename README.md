@@ -15,6 +15,8 @@ Numexpr >= 2.5.2
 
 Cython >= 0.21
 
+Samtools https://github.com/samtools/samtools
+
 Users install Python dependencies with `pip install -r requirements.txt`
 
 # Rough API: 
