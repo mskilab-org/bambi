@@ -1,5 +1,6 @@
-
-rk Genome Center
+#############################################################################
+## Evan Biederstedt
+## New York Genome Center
 ## ebiederstedt@nygenome.org
 ##
 ## This program is free software: you can redistribute it and/or modify it
@@ -17,9 +18,6 @@ rk Genome Center
 #' @import rPython
 #' @import data.table
 
-hdf_key = "bam_fields"
-python.assign("hdf_key", hdf_key)
-
 #' @name load_bxbam
 #' @title load_bxbam
 #' @description
@@ -34,7 +32,10 @@ python.assign("hdf_key", hdf_key)
 #' @examples
 #' load_bxbam("pathname/my_bxbam.h5")
 #' @export
-load_bxbam <- function(bxbam_file){     # e.g. bxbam_file is "file1.h5"
+load_bxbam <- function(bxbam_file, bxbam_key = "bam_fields"){     # e.g. bxbam_file is "file1.h5"
+    if(missing(bxbam_key)){
+        bx
+    }
     python.exec("import pandas as pd")
     python.exec("import numpy as np")
     python.exec("import tables")
@@ -52,16 +53,18 @@ load_bxbam <- function(bxbam_file){     # e.g. bxbam_file is "file1.h5"
 #' Reads R vector of BX strings, outputs GRanges or data.table
 #'
 #' Function used to output all corresponding bam fields and GRanges via data.table
-#' @param reads R vector of BX strings, e.g. bmates_vec <- c("bx1", "bx2", "bx3", "bx4")
+#' @param reads R vector of BX strings, e.g. bmates_vec <- c("BX1", "BX2", "BX3", "BX4")
+#' @param hdf_key key defined upon creation of bxBam via 'create_bxbam.py'; use same hdf_key as bxbam in load_bxbam()
+#' @param show_bam    Default TRUE
 #' @return Corresponding fields in a bam file in data.table, GRanges, or GRangesList
 #' @export
-get_bmates <- function(reads){
+get_bmates <- function(reads, bxbam_key = "bam_fields", show_bam = FALSE){
     python.exec("import pandas as pd")
     python.exec("import numpy as np")
     python.exec("import tables")
     python.exec("from tables import *")
     python.assign("reads", reads)
-    pand_func_bmate <- python.exec("df = store.select(hdf_key, where='BX in @reads'")
+    pand_func_bmate <- python.exec("df = store.select(bxbam_key, where='BX in @reads'")
     df <- python.get("df")
     df <- data.table(df)
     return(df)
@@ -74,16 +77,18 @@ get_bmates <- function(reads){
 #' Reads R vector of QNAME strings, outputs GRanges or data.table
 #'
 #' Function used to output all corresponding bam fields and GRanges via data.table
-#' @param reads R vector of BX strings, e.g. bmates_vec <- c("bx1", "bx2", "bx3", "bx4")
+#' @param reads R vector of QNAME strings, e.g. bmates_vec <- c("QNAME1", "QNAME2", "QNAME3", "QNAME4")
+#' @param hdf_key key defined upon creation of bxBam via 'create_bxbam.py'; use same hdf_key as bxbam in load_bxbam()
+#' @param show_bam    Default TRUE
 #' @return Corresponding fields in a bam file in data.table, GRanges, or GRangesList
 #' @export
-get_qmates <- function(reads){
+get_qmates <- function(reads, bxbam_key = "bam_fields", show_bam = FALSE){
     python.exec("import pandas as pd")
     python.exec("import numpy as np")
     python.exec("import tables")
     python.exec("from tables import *")
     python.assign("reads", reads)
-    pand_func_bmate <- python.exec("df = store.select(hdf_key, where='QNAME in @reads'")
+    pand_func_bmate <- python.exec("df = store.select(bxbam_key, where='QNAME in @reads'")
     df <- python.get("df")
     df <- data.table(df)
     return(df)
