@@ -55,8 +55,6 @@ load_bxbam <- function(bxbam_file, bam, bami = NULL, bxbam_key = "bam_fields"){ 
     python.exec("store = pd.HDFStore(bxbam_file)")
     python.get("print('Loaded bxBam file')")
     python.get("store")   # 'store' variable now saved within Python
-}
-{
     if (!inherits(bam, 'BamFile'))  # check for bam, bami
     {
         if (is.null(bami))
@@ -71,7 +69,7 @@ load_bxbam <- function(bxbam_file, bam, bami = NULL, bxbam_key = "bam_fields"){ 
         else
         bam = BamFile(bam, index = bami)
     }
-
+}
 #' @name get_bmates
 #' @title get_bmates
 #' @description
