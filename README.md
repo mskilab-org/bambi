@@ -34,4 +34,12 @@ Optional column is --MD
 install.packages("rPython")   This uses the Python version currently loaded---important for `library(rPython)`
 
 
+# R  data structures from genomic data
+
+GRanges
+Store ranges along with metadata, sequences and the coordaintes of the reference genome.
+GRangesList
+Store groups of ranges, with additional metadata belonging to the group.
+data.table
+Fast and efficient general-purpose container similar to data.frame, but with significant performance improvements.
 
