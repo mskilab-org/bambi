@@ -182,74 +182,75 @@ for i, line in enumerate(l.decode(errors='ignore') for l in task.stdout):  # dec
     bxbam["BX"]    = merged_dict["BX"]    if merged_dict["BX"] != ""    else "NaN"
     # This injects the Record values
     bxbamrow.append()
-    # creates indices
-    if  len(fields) == 1:
-        table.cols.field1.create_index()
-    elif len(fields) == 2:
-        table.cols.field1.create_index()
-        table.cols.field2.create_index()
-    elif len(fields) == 3:
-        table.cols.field1.create_index()
-        table.cols.field2.create_index()
-        table.cols.field3.create_index()
-    elif len(fields) == 4:
-        table.cols.field1.create_index()
-        table.cols.field2.create_index()
-        table.cols.field3.create_index()
-        table.cols.field4.create_index()
-    elif len(fields) == 5:
-        table.cols.field1.create_index()
-        table.cols.field2.create_index()
-        table.cols.field3.create_index()
-        table.cols.field4.create_index()
-        table.cols.field5.create_index()
-    elif len(fields) == 6:
-        table.cols.field1.create_index()
-        table.cols.field2.create_index()
-        table.cols.field3.create_index()
-        table.cols.field4.create_index()
-        table.cols.field5.create_index()
-        table.cols.field6.create_index()
-    elif len(fields) == 7:
-        table.cols.field1.create_index()
-        table.cols.field2.create_index()
-        table.cols.field3.create_index()
-        table.cols.field4.create_index()
-        table.cols.field5.create_index()
-        table.cols.field6.create_index()
-        table.cols.field7.create_index()
-    elif len(fields) == 8:
-        table.cols.field1.create_index()
-        table.cols.field2.create_index()
-        table.cols.field3.create_index()
-        table.cols.field4.create_index()
-        table.cols.field5.create_index()
-        table.cols.field6.create_index()
-        table.cols.field7.create_index()
-        table.cols.field8.create_index()
-    elif len(fields) == 9:
-        table.cols.field1.create_index()
-        table.cols.field2.create_index()
-        table.cols.field3.create_index()
-        table.cols.field4.create_index()
-        table.cols.field5.create_index()
-        table.cols.field6.create_index()
-        table.cols.field7.create_index()
-        table.cols.field8.create_index()
-        table.cols.field9.create_index()
-    elif len(fields) == 10:
-        table.cols.field1.create_index()
-        table.cols.field2.create_index()
-        table.cols.field3.create_index()
-        table.cols.field4.create_index()
-        table.cols.field5.create_index()
-        table.cols.field6.create_index()
-        table.cols.field7.create_index()
-        table.cols.field8.create_index()
-        table.cols.field9.create_index()
-        table.cols.field10.create_index()
     # Flush the table buffers
     table.flush()
+
+# creates indices
+if  len(fields) == 1:
+    table.cols.field1.create_index()
+elif len(fields) == 2:
+    table.cols.field1.create_index()
+    table.cols.field2.create_index()
+elif len(fields) == 3:
+    table.cols.field1.create_index()
+    table.cols.field2.create_index()
+    table.cols.field3.create_index()
+elif len(fields) == 4:
+    table.cols.field1.create_index()
+    table.cols.field2.create_index()
+    table.cols.field3.create_index()
+    table.cols.field4.create_index()
+elif len(fields) == 5:
+    table.cols.field1.create_index()
+    table.cols.field2.create_index()
+    table.cols.field3.create_index()
+    table.cols.field4.create_index()
+    table.cols.field5.create_index()
+elif len(fields) == 6:
+    table.cols.field1.create_index()
+    table.cols.field2.create_index()
+    table.cols.field3.create_index()
+    table.cols.field4.create_index()
+    table.cols.field5.create_index()
+    table.cols.field6.create_index()
+elif len(fields) == 7:
+    table.cols.field1.create_index()
+    table.cols.field2.create_index()
+    table.cols.field3.create_index()
+    table.cols.field4.create_index()
+    table.cols.field5.create_index()
+    table.cols.field6.create_index()
+    table.cols.field7.create_index()
+elif len(fields) == 8:
+    table.cols.field1.create_index()
+    table.cols.field2.create_index()
+    table.cols.field3.create_index()
+    table.cols.field4.create_index()
+    table.cols.field5.create_index()
+    table.cols.field6.create_index()
+    table.cols.field7.create_index()
+    table.cols.field8.create_index()
+elif len(fields) == 9:
+    table.cols.field1.create_index()
+    table.cols.field2.create_index()
+    table.cols.field3.create_index()
+    table.cols.field4.create_index()
+    table.cols.field5.create_index()
+    table.cols.field6.create_index()
+    table.cols.field7.create_index()
+    table.cols.field8.create_index()
+    table.cols.field9.create_index()
+elif len(fields) == 10:
+    table.cols.field1.create_index()
+    table.cols.field2.create_index()
+    table.cols.field3.create_index()
+    table.cols.field4.create_index()
+    table.cols.field5.create_index()
+    table.cols.field6.create_index()
+    table.cols.field7.create_index()
+    table.cols.field8.create_index()
+    table.cols.field9.create_index()
+    table.cols.field10.create_index()
 
 # Finally, close the file (this also will flush all the remaining buffers!)
 h5file.close()
