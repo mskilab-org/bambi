@@ -105,7 +105,7 @@ elif len(fields) == 10:
 
 
 
-hdf_key = "bam_fields"                                # this is the default
+hdf_key = "bxbam_default_key"
 
 bxbam_columns = ["QNAME", "FLAG", "RNAME", "POS", "MAPQ", "CIGAR", "RNEXT", "PNEXT", "TLEN", "SEQ", "QUAL", "BX"]
 
