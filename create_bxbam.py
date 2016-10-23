@@ -21,15 +21,27 @@ bxbam_name = args.output
 fields = args.index_fields  # at the moment, users are limited by five fields which they can index
 fields = fields[0].split(',')
 if  len(fields) == 1:
-    field3 = index_fields[0]
+    field1 = index_fields[0]
 elif len(fields) == 2:
-    field3 = index_fields[1]
+    field2 = index_fields[1]
 elif len(fields) == 3:
     field3 = index_fields[2]
 elif len(fields) == 4:
     field4 = index_fields[3]
 elif len(fields) == 5:
     field5 = index_fields[4]
+elif len(fields) == 6:
+    field6 = index_fields[5]
+elif len(fields) == 7:
+    field7 = index_fields[6]
+elif len(fields) == 8:
+    field8 = index_fields[7]
+elif len(fields) == 9:
+    field9 = index_fields[8]
+elif len(fields) == 10:        # we arbitrarily stop at 10 fields to index---you really shouldn't use more---one or two is optimal
+    field10 = index_fields[9]
+
+
 
 if not args.input:
     paser.error("input bam not given, please provide via -input '<bamname>'")
@@ -42,15 +54,25 @@ print("bxbam file output: "+ bxbam_name)
 if len(fields) == 0:
     print("no indexing")
 elif len(fields) == 1:
-    print("indexing on: "+ fields1)
+    print("indexing on: "+ field1)
 elif len(fields) == 2:
-    print("indexing on: "+ fields1 + ", " + fields2)
+    print("indexing on: "+ field1 + ", " + field2)
 elif len(fields) == 3:
-    print("indexing on: "+ fields1 + ", " + fields2 + ", " + fields3)
+    print("indexing on: "+ field1 + ", " + field2 + ", " + field3)
 elif len(fields) == 4:
-    print("indexing on: "+ fields1 + ", " + fields2 + ", " + fields3 + ", " + fields4)
+    print("indexing on: "+ field1 + ", " + field2 + ", " + field3 + ", " + field4)
 elif len(fields) == 5:
-    print("indexing on: "+ fields1 + ", " + fields2 + ", " + fields3 + ", " + fields4 + ", " + fields2)
+    print("indexing on: "+ field1 + ", " + field2 + ", " + field3 + ", " + field4 + ", " + field5)
+elif len(fields) == 6:
+    print("indexing on: "+ field1 + ", " + field2 + ", " + field3 + ", " + field4 + ", " + field5 + ", " + field5)
+elif len(fields) == 7:
+    print("indexing on: "+ field1 + ", " + field2 + ", " + field3 + ", " + field4 + ", " + field5 + ", " + field5 + ", " + field5)
+elif len(fields) == 8:
+    print("indexing on: "+ field1 + ", " + field2 + ", " + field3 + ", " + field4 + ", " + field5 + ", " + field5 + ", " + field5 + ", " + field5)
+elif len(fields) == 9:
+    print("indexing on: "+ field1 + ", " + field2 + ", " + field3 + ", " + field4 + ", " + field5 + ", " + field5 + ", " + field5 + ", " + field5 + ", " + field5)
+elif len(fields) == 10:
+    print("indexing on: "+ field1 + ", " + field2 + ", " + field3 + ", " + field4 + ", " + field5 + ", " + field5 + ", " + field5 + ", " + field5 + ", " + field5 + ", " + field5)
 
 
 # chose fields to index
@@ -68,10 +90,22 @@ elif len(fields) == 4:
     columns_to_index = [field1, field2, field3, field4]
 elif len(fields) == 5:
     columns_to_index = [field1, field2, field3, field4, field5]
+elif len(fields) == 6:
+    columns_to_index = [field1, field2, field3, field4, field5, field6]
+elif len(fields) == 7:
+    columns_to_index = [field1, field2, field3, field4, field5, field6, field7]
+elif len(fields) == 8:
+    columns_to_index = [field1, field2, field3, field4, field5, field6, field7, field8]
+elif len(fields) == 9:
+    columns_to_index = [field1, field2, field3, field4, field5, field6, field7, field8, field9]
+elif len(fields) == 10:
+    columns_to_index = [field1, field2, field3, field4, field5, field6, field7, field8, field9, field10]
 
 
 
-hdf_key = "bam_fields"
+
+
+hdf_key = "bam_fields"                                # this is the default
 
 bxbam_columns = ["QNAME", "FLAG", "RNAME", "POS", "MAPQ", "CIGAR", "RNEXT", "PNEXT", "TLEN", "SEQ", "QUAL", "BX"]
 
@@ -169,6 +203,51 @@ for i, line in enumerate(l.decode(errors='ignore') for l in task.stdout):  # dec
         table.cols.field3.create_index()
         table.cols.field4.create_index()
         table.cols.field5.create_index()
+    elif len(fields) == 6:
+        table.cols.field1.create_index()
+        table.cols.field2.create_index()
+        table.cols.field3.create_index()
+        table.cols.field4.create_index()
+        table.cols.field5.create_index()
+        table.cols.field6.create_index()
+    elif len(fields) == 7:
+        table.cols.field1.create_index()
+        table.cols.field2.create_index()
+        table.cols.field3.create_index()
+        table.cols.field4.create_index()
+        table.cols.field5.create_index()
+        table.cols.field6.create_index()
+        table.cols.field7.create_index()
+    elif len(fields) == 8:
+        table.cols.field1.create_index()
+        table.cols.field2.create_index()
+        table.cols.field3.create_index()
+        table.cols.field4.create_index()
+        table.cols.field5.create_index()
+        table.cols.field6.create_index()
+        table.cols.field7.create_index()
+        table.cols.field8.create_index()
+    elif len(fields) == 9:
+        table.cols.field1.create_index()
+        table.cols.field2.create_index()
+        table.cols.field3.create_index()
+        table.cols.field4.create_index()
+        table.cols.field5.create_index()
+        table.cols.field6.create_index()
+        table.cols.field7.create_index()
+        table.cols.field8.create_index()
+        table.cols.field9.create_index()
+    elif len(fields) == 10:
+        table.cols.field1.create_index()
+        table.cols.field2.create_index()
+        table.cols.field3.create_index()
+        table.cols.field4.create_index()
+        table.cols.field5.create_index()
+        table.cols.field6.create_index()
+        table.cols.field7.create_index()
+        table.cols.field8.create_index()
+        table.cols.field9.create_index()
+        table.cols.field10.create_index()
     # Flush the table buffers
     table.flush()
 
