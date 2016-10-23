@@ -64,15 +64,15 @@ elif len(fields) == 4:
 elif len(fields) == 5:
     print("indexing on: "+ field1 + ", " + field2 + ", " + field3 + ", " + field4 + ", " + field5)
 elif len(fields) == 6:
-    print("indexing on: "+ field1 + ", " + field2 + ", " + field3 + ", " + field4 + ", " + field5 + ", " + field5)
+    print("indexing on: "+ field1 + ", " + field2 + ", " + field3 + ", " + field4 + ", " + field5 + ", " + field6)
 elif len(fields) == 7:
-    print("indexing on: "+ field1 + ", " + field2 + ", " + field3 + ", " + field4 + ", " + field5 + ", " + field5 + ", " + field5)
+    print("indexing on: "+ field1 + ", " + field2 + ", " + field3 + ", " + field4 + ", " + field5 + ", " + field6 + ", " + field7)
 elif len(fields) == 8:
-    print("indexing on: "+ field1 + ", " + field2 + ", " + field3 + ", " + field4 + ", " + field5 + ", " + field5 + ", " + field5 + ", " + field5)
+    print("indexing on: "+ field1 + ", " + field2 + ", " + field3 + ", " + field4 + ", " + field5 + ", " + field6 + ", " + field7 + ", " + field8)
 elif len(fields) == 9:
-    print("indexing on: "+ field1 + ", " + field2 + ", " + field3 + ", " + field4 + ", " + field5 + ", " + field5 + ", " + field5 + ", " + field5 + ", " + field5)
+    print("indexing on: "+ field1 + ", " + field2 + ", " + field3 + ", " + field4 + ", " + field5 + ", " + field6 + ", " + field7 + ", " + field8 + ", " + field9)
 elif len(fields) == 10:
-    print("indexing on: "+ field1 + ", " + field2 + ", " + field3 + ", " + field4 + ", " + field5 + ", " + field5 + ", " + field5 + ", " + field5 + ", " + field5 + ", " + field5)
+    print("indexing on: "+ field1 + ", " + field2 + ", " + field3 + ", " + field4 + ", " + field5 + ", " + field6 + ", " + field7 + ", " + field8 + ", " + field9 + ", " + field10)
 
 
 # chose fields to index
