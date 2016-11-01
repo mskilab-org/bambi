@@ -37,10 +37,10 @@
 #' Load the bxbam object (HDF5 format) to be queried via pandas HDFStore() object (PyTables)
 #' The default key ('HDF5 group') created using the Python script `create_bxbam.py` is hdf_key = "bam_fields"
 #' @param bxbam_file Input HDF5 file to be read, created by script 'create_bxbam.py'
-#' @param bam Input bam index file
+#' @param bam Input bam file
 #' @param bami Input bam index file
 #' @param hdf_key key defined upon creation of bxBam via 'create_bxbam.py'; default set to hdf_key = "bam_fields"
-#' @return None
+#' @return Noned
 #' @examples
 #' load_bxbam("pathname/my_bxbam.h5")
 #' @export
@@ -53,8 +53,8 @@ load_bxbam <- function(bxbam_file, bam, bami = NULL, bxbam_key = "bam_fields"){ 
     python.exec("from tables import *")
     python.assign("bxbam_file", bxbam_file)
     python.exec("store = pd.HDFStore(bxbam_file)")
-    python.get("print('Loaded bxBam file')")
-    python.get("store")   # 'store' variable now saved within Python
+    python.get("print('Now loaded bxBam file')")
+    # python.get("store")   # 'store' variable now saved within Python  ; commented out, Nov. 1 2016
     if (!inherits(bam, 'BamFile'))  # check for bam, bami
     {
         if (is.null(bami))
@@ -95,7 +95,7 @@ get_bmates <- function(reads, bxbam_key = "bam_fields", pairs.grl = TRUE, ignore
     python.exec("import tables")
     python.exec("from tables import *")
     python.assign("reads", reads)
-    pand_func_bmate <- python.exec("df = store.select(bxbam_key, where='BX in @reads'")
+    pand_func_bmate <- python.exec("df = store.select(bxbam_key, where='BX in @reads')")
     df <- python.get("df")    #!!!!!!!!!!!!!! is this crappy R code/style?
     df <- data.table(df)   # outputs data.table of bam rows   #!!!!!!!!!!!!!! is this crappy R code/style?
     
