@@ -45,9 +45,9 @@
 #' load_bxbam("pathname/my_bxbam.h5")
 #' @export
 
-load_bxbam <- function(bxbamfile, bam, bami = NULL, bxbam_key = "bam_fields"){     # integreates functionality from BamUtils read.bam
+load_bxbam <- function(bxbamfile, bam, bami = NULL){     # integreates functionality from BamUtils read.bam
     if (missing(bxbamfile)) stop ("'bxbamfile' is missing; please set correct path to bxbam.h5 object")\
-    if (missing(bam)) stop ("'bam' is missing")
+    if (missing(bam)) stop ("'bam' is missing; please set correct path to bam file")
     python.exec("import pandas as pd")
     python.exec("import numpy as np")
     python.exec("import tables")
