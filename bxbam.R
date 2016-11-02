@@ -36,7 +36,7 @@
 #'
 #' Load the bxbam object (HDF5 format) to be queried via pandas HDFStore() object (PyTables)
 #' The default key ('HDF5 group') created using the Python script `create_bxbam.py` is hdf_key = "bam_fields"
-#' @param bxbam_file Input HDF5 file to be read, created by script 'create_bxbam.py'
+#' @param bxbamfile Input HDF5 file to be read, created by script 'create_bxbam.py'
 #' @param bam Input bam file
 #' @param bami Input bam index file
 #' @param hdf_key key defined upon creation of bxBam via 'create_bxbam.py'; default set to hdf_key = "bam_fields"
@@ -45,14 +45,15 @@
 #' load_bxbam("pathname/my_bxbam.h5")
 #' @export
 
-load_bxbam <- function(bxbam_file, bam, bami = NULL, bxbam_key = "bam_fields"){     # integreates functionality from BamUtils read.bam  #if(missing(bxbam_key)){
- 
+load_bxbam <- function(bxbamfile, bam, bami = NULL, bxbam_key = "bam_fields"){     # integreates functionality from BamUtils read.bam
+    if (missing(bxbamfile)) stop ("'bxbamfile' is missing; please set correct path to bxbam.h5 object")\
+    if (missing(bam)) stop ("'bam' is missing")
     python.exec("import pandas as pd")
     python.exec("import numpy as np")
     python.exec("import tables")
     python.exec("from tables import *")
-    python.assign("bxbam_file", bxbam_file)
-    python.exec("store = pd.HDFStore(bxbam_file)")
+    python.assign("bxbamfile", bxbamfile)
+    python.exec("store = pd.HDFStore(bxbamfile)")
     python.get("print('Now loaded bxBam file')")
     # python.get("store")   # 'store' variable now saved within Python  ; commented out, Nov. 1 2016
     if (!inherits(bam, 'BamFile'))  # check for bam, bami
