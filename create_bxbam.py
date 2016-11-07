@@ -123,7 +123,7 @@ class Barcoded_bam_MD(IsDescription):
         RNEXT = StringCol(64)
         PNEXT = Int32Col()
         TLEN  = Int32Col()
-        SEG   =  StringCol(256)
+        SEQ   =  StringCol(256)
         QUAL  = StringCol(256)
         BX    = StringCol(64)
         MD    = StringCol(64)
@@ -138,7 +138,7 @@ class Barcoded_bam(IsDescription):
         RNEXT = StringCol(64)
         PNEXT = Int32Col()
         TLEN  = Int32Col()
-        SEG   =  StringCol(256)
+        SEQ   =  StringCol(256)
         QUAL  = StringCol(256)
         BX    = StringCol(64)
 
@@ -177,7 +177,7 @@ for i, line in enumerate(l.decode(errors='ignore') for l in task.stdout):  # dec
     bxbam["RNEXT"] = merged_dict["RNEXT"] if merged_dict["RNEXT"] != "" else "NaN"
     bxbam["PNEXT"] = merged_dict["PNEXT"] if merged_dict["PNEXT"] != "" else "NaN"
     bxbam["TLEN"]  = merged_dict["TLEN"]  if merged_dict["TLEN"] != ""  else "NaN"
-    bxbam["SEG"]   = merged_dict["SEQ"]   if merged_dict["SEQ"] != ""   else "NaN"
+    bxbam["SEQ"]   = merged_dict["SEQ"]   if merged_dict["SEQ"] != ""   else "NaN"
     bxbam["QUAL"]  = merged_dict["QUAL"]  if merged_dict["QUAL"] != ""  else "NaN"
     bxbam["BX"]    = merged_dict["BX"]    if merged_dict["BX"] != ""    else "NaN"
     # This injects the Record values
