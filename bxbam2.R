@@ -187,12 +187,23 @@ setMethod("get_bmates",'bxbam', function(reads){                 #
     out <- data.table(qname, flag, rname, pos, mapq, cigar, rnext, pnext, tlen, seq, qual, bx)
     
     cigs <- countCigar(out$cigar)
-    # Warning message:
-    # In countCigar(out$cigar) : NAs introduced by coercion
-    out$pos2 <- out$pos + cigs[, "M"]
+    out$pos2 <- out$pos + rowSums(cigs[, c("D", "M")], na.rm=T) - 1  # gives up pos2
     # M" positions in the alignment are encoded in the CIGAR; if add to the BAM pos you get the end position of the interval
-    unmatched = is.na(out$pos)
     
+    bf = out$flag
+    
+    foo = matrix(as.numeric(intToBits(bf)), byrow = T, ncol = 32)[, 1:12, drop = FALSE]   # binary matrix of following columns
+    colnames(foo) = c("isPaired", "isProperPair", "isUnmappedQuery", "hasUnmappedMate", "isMinusStrand", "isMateMinusStrand", "isFirstMateRead", "isSecondMateRead", "isNotPrimaryRead", "isNotPassingQualityControls", "isDuplicate", "isSupplementary")
+    minus = foo[, "isMinusStrand"]   # 1 is "-", 0 is "+"
+    
+    newdt <- data.table(start = out$pos, end = out$pos2, strand = minus, seqnames = out$seq)   # create data.table of start, end, strand, seqnames
+    newdt[, strand := as.character(strand)][strand == "0", strand := "+"]  # change type of binary vec, then replace
+    newdt[, strand := as.character(strand)][strand == "1", strand := "-"]
+
+    NAstrand = is.na(newdt$strand)
+    newdt$strand[NAstrand] ="*"
+
+    unmatched = is.na(out$pos)
     if (any(unmatched))
     {
         out$pos[unmatched] = 1
@@ -200,91 +211,121 @@ setMethod("get_bmates",'bxbam', function(reads){                 #
         out$strand[unmatched] = '*'   # doesn't out why?
     }
     
-    gr.fields = c('rname', 'strand', 'pos', 'pos2');
-    vals = out[, setdiff(names(out), gr.fields)]
-    
-    
-    out <- data.table(seqnames=out$rname, start=out$pos, end= pmax(out$pos2-1, 0), strand=out$strand)
-    val <- data.table(vals)
-    out <- cbind(out, val)
-    
-    # Warning message:
-    # In data.table::data.table(...) :
-    # Item 2 is of size 12 but maximum size is 920 (recycled leaving remainder of 8 items)
-    #
-    
+    rr <- IRanges(newdt$start, newdt$end)
+    sf <- factor(newdt$strand, levels=c('+', '-', '*'))
+    ff <- factor(newdt$seqnames, levels=unique(newdt$seqnames))
+    out <- GRanges(seqnames=ff, ranges=rr, strand=sf)
     return(out)
 }
 
 
+#' @name get_qmates
+#' @title get_qmates
+#' @description
+#' Grab all QNAMEs, return GRanges object
+#'
+#' @export
+#' @author Evan Biederstedt
 
-
-
-
-
-
-
-
-
-cigs <- countCigar(out$cigar)
-out$pos2 <- out$pos + cigs[, "M"]
-
-if (verbose) {
-    print(Sys.time() - now)
-    print('fixing seqdata')
+setMethod("get_qmates",'bxbam', function(reads){                 #
+    python.exec('QNAME1 = tb1.read_where(\'QNAME1==b"Z:GATAACCAGCGCTCAC-1"\')')
+    
+    python.exec("df1 = pd.DataFrame(QNAME1)")
+    
+    # one approach --- hard code each column---probably quickest---# can only run this once per dataframe!!!
+    
+    python.exec('df1.BX = df1.BX.str.decode("utf-8")')
+    python.exec('df1.CIGAR = df1.CIGAR.str.decode("utf-8")')
+    python.exec('df1.QNAME = df1.QNAME.str.decode("utf-8")')
+    python.exec('df1.QUAL = df1.QUAL.str.decode("utf-8")')
+    python.exec('df1.RNAME = df1.RNAME.str.decode("utf-8")')
+    python.exec('df1.RNEXT = df1.RNEXT.str.decode("utf-8")')
+    python.exec('df1.SEQ = df1.SEG.str.decode("utf-8")')      # error here!~!~!!!!!!
+    
+    
+    # convert to Python lists...
+    
+    python.exec(" BX_list = df1.BX.tolist()")
+    python.exec(" CIGAR_list = df1.CIGAR.tolist()")
+    python.exec(" FLAG_list = df1.FLAG.tolist()")
+    python.exec(" MAPQ_list = df1.MAPQ.tolist()")
+    python.exec(" PNEXT_list = df1.PNEXT.tolist()")
+    python.exec(" POS_list = df1.POS.tolist()")
+    python.exec(" QNAME_list = df1.QNAME.tolist()")
+    python.exec(" QUAL_list = df1.QUAL.tolist()")
+    python.exec(" RNAME_list = df1.RNAME.tolist()")
+    python.exec(" RNEXT_list = df1.RNEXT.tolist()")
+    python.exec(" SEQ_list = df1.SEQ.tolist()")
+    python.exec(" TLEN_list = df1.TLEN.tolist()")
+    
+    
+    # ...then access as R vectors
+    
+    BX_vec <- python.get("BX_list")
+    CIGAR_vec <- python.get("CIGAR_list")
+    FLAG_vec <- python.get("FLAG_list")
+    MAPQ_vec <- python.get("MAPQ_list")
+    PNEXT_vec <- python.get("PNEXT_list")
+    POS_vec <- python.get("POS_list")
+    QNAME_vec <- python.get("QNAME_list")
+    QUAL_vec <- python.get("QUAL_list")
+    RNAME_vec <- python.get("RNAME_list")
+    RNEXT_vec <- python.get("RNEXT_list")
+    SEQ_vec <- python.get("SEQ_list")
+    TLEN_vec <- python.get("TLEN_list")
+    
+    
+    qname <- python.get("QNAME_list")
+    flag  <- python.get("FLAG_list")
+    rname <- python.get("RNAME_list")
+    pos <- python.get("POS_list")
+    mapq <- python.get("MAPQ_list")
+    cigar <- python.get("CIGAR_list")
+    rnext <- python.get("RNEXT_list")
+    pnext <- python.get("PNEXT_list")
+    tlen <- python.get("TLEN_list")
+    seq <- python.get("SEQ_list")
+    qual <- python.get("QUAL_list")
+    bx  <- python.get("BX_list")
+    
+    
+    bobby <- data.table(start = out$pos, end = out$pos2, strand = minus, seqnames = out$seq, unmapped = unmapped)
+    
+    # create data.table
+    
+    out <- data.table(qname, flag, rname, pos, mapq, cigar, rnext, pnext, tlen, seq, qual, bx)
+    
+    cigs <- countCigar(out$cigar)
+    out$pos2 <- out$pos + rowSums(cigs[, c("D", "M")], na.rm=T) - 1  # gives up pos2
+    # M" positions in the alignment are encoded in the CIGAR; if add to the BAM pos you get the end position of the interval
+    
+    bf = out$flag
+    
+    foo = matrix(as.numeric(intToBits(bf)), byrow = T, ncol = 32)[, 1:12, drop = FALSE]   # binary matrix of following columns
+    colnames(foo) = c("isPaired", "isProperPair", "isUnmappedQuery", "hasUnmappedMate", "isMinusStrand", "isMateMinusStrand", "isFirstMateRead", "isSecondMateRead", "isNotPrimaryRead", "isNotPassingQualityControls", "isDuplicate", "isSupplementary")
+    minus = foo[, "isMinusStrand"]   # 1 is "-", 0 is "+"
+    
+    newdt <- data.table(start = out$pos, end = out$pos2, strand = minus, seqnames = out$seq)   # create data.table of start, end, strand, seqnames
+    newdt[, strand := as.character(strand)][strand == "0", strand := "+"]  # change type of binary vec, then replace
+    newdt[, strand := as.character(strand)][strand == "1", strand := "-"]
+    
+    NAstrand = is.na(newdt$strand)
+    newdt$strand[NAstrand] ="*"
+    
+    unmatched = is.na(out$pos)
+    if (any(unmatched))
+    {
+        out$pos[unmatched] = 1
+        out$pos2[unmatched] = 0
+        out$strand[unmatched] = '*'   # doesn't out why?
+    }
+    
+    rr <- IRanges(newdt$start, newdt$end)
+    sf <- factor(newdt$strand, levels=c('+', '-', '*'))
+    ff <- factor(newdt$seqnames, levels=unique(newdt$seqnames))
+    out <- GRanges(seqnames=ff, ranges=rr, strand=sf)
+    return(out)
 }
-out$qwidth = nchar(out$seq)
-unm = is.na(out$pos)
-if (any(unm))
-{
-    out$pos[unm] = 1
-    out$pos2[unm] = 0
-    out$strand[unm] = '*'   # doesn't work...
-}
-
-out$strand = "*"  # explcitly define this
-
-
-gr.fields = c('rname', 'strand', 'pos', 'pos2');
-vals = out[, setdiff(names(out), gr.fields), with=FALSE]
-
-
-out <- data.table(seqnames=out$rname, start=out$pos, end= pmax(out$pos2-1, 0), strand=out$strand)
-val <- data.table(vals)
-out <- cbind(out, val)
-
-return(GRanges(seqlengths = seqlengths(intervals)))
-
-
-### from dt2gr
-
-rr <- IRanges(out$pos, out$pos2)
-
-
-#
-# Error in .Call2("solve_user_SEW0", start, end, width, PACKAGE = "IRanges") :
-# solving row 1: range cannot be determined from the supplied arguments (too many NAs)
-#
-
-newdt <- data.table(start = out$pos, end = out$pos2, strand = out$strand, seqnames = out$seq)
-rr <- IRanges(newdt$start, newdt$end)
-sf <- factor(newdt$strand, levels=c('+', '-', '*'))
-ff <- factor(newdt$seqnames, levels=unique(newdt$seqnames))
-
-
-mc <- as.data.frame(out[, setdiff(colnames(out), c('start', 'end', 'seqnames', 'strand')), with=FALSE])
-
-
-
-out <- GRanges(
-
-
-
-
-
-
-
-
 
 
 
