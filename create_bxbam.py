@@ -177,7 +177,7 @@ for i, line in enumerate(l.decode(errors='ignore') for l in task.stdout):  # dec
     bxbam["RNEXT"] = merged_dict["RNEXT"] if merged_dict["RNEXT"] != "" else "NaN"
     bxbam["PNEXT"] = merged_dict["PNEXT"] if merged_dict["PNEXT"] != "" else "NaN"
     bxbam["TLEN"]  = merged_dict["TLEN"]  if merged_dict["TLEN"] != ""  else "NaN"
-    bxbam["SEG"]   = merged_dict["SEQ"]   if merged_dict["SEQ"] != ""   else "NaN"
+    bxbam["SEQ"]   = merged_dict["SEQ"]   if merged_dict["SEQ"] != ""   else "NaN"
     bxbam["QUAL"]  = merged_dict["QUAL"]  if merged_dict["QUAL"] != ""  else "NaN"
     bxbam["BX"]    = merged_dict["BX"]    if merged_dict["BX"] != ""    else "NaN"
     # This injects the Record values
@@ -257,3 +257,254 @@ h5file.close()
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# must do `$ module remove R/3.3.0
+# must do `$  module load R/.3.3.1-milab
+# CORRECT R version: /gpfs/commons/groups/imielinski_lab/Software/R-3.3.1/bin/R ; python 3.4.3
+
+
+/gpfs/commons/home/biederstedte-934/data/Maciejowski2015/10x/IMI-1c-10X-chromium/PHASER_SVCALLER_CS/PHASER_SVCALLER/ATTACH_PHASING/fork0/files/
+
+
+import pandas as pd
+import numpy as np
+import tables
+from tables import *
+
+
+
+
+bxbamfile ="/gpfs/commons/home/biederstedte-934/data/Maciejowski2015/10x/IMI-3-10X-chromium/PHASER_SVCALLER_CS/PHASER_SVCALLER/ATTACH_PHASING/fork0/files/IMI3oct24_bxbam.h5"
+
+bamfile = "/gpfs/commons/home/biederstedte-934/data/Maciejowski2015/10x/IMI-3-10X-chromium/PHASER_SVCALLER_CS/PHASER_SVCALLER/ATTACH_PHASING/fork0/files/phased_possorted_bam.bam"
+
+baifile = "/gpfs/commons/home/biederstedte-934/data/Maciejowski2015/10x/IMI-3-10X-chromium/PHASER_SVCALLER_CS/PHASER_SVCALLER/ATTACH_PHASING/fork0/files/phased_possorted_bam.bai"
+
+import os
+os.chdir("/gpfs/commons/home/biederstedte-934/data/Maciejowski2015/10x/IMI-3-10X-chromium/PHASER_SVCALLER_CS/PHASER_SVCALLER/ATTACH_PHASING/fork0/files/")
+
+
+
+h5f = tables.open_file("IMI3oct24_bxbam.h5")
+tb1 = h5f.get_node("/bam_table/bam_fields")  # entire key
+BX1 = tb1.read_where('BX==b"Z:GATAACCAGCGCTCAC-1"')  # takes like 4 seconds, type=numpy.ndarray
+
+
+BX1 = tb1.read_where(\\'BX==b"Z:GATAACCAGCGCTCAC-1"\\')
+python.exec('BX1 = tb1.read_where(\'BX==b"Z:GATAACCAGCGCTCAC-1"\')')
+
+#len(BX1) = 920
+# REPLICABLE RESULTS!!!!
+#TypeError: You can't use Python's standard boolean operators in NumExpr expressions. You should use their bitwise counterparts instead: '&' instead of 'and', '|' instead of 'or', and '~' instead of 'not'.
+BBB = tb1.read_where('(BX==b"Z:GATAACCAGCGCTCAC-1") |(BX== b"Z:CGATCGGGTACAGATA-1")')
+# len(BBB)  # 2491
+
+
+df1 = pd.DataFrame(BX1)   # shaped (920, 12)
+
+"""
+    >>> df1.columns
+    Index(['BX', 'CIGAR', 'FLAG', 'MAPQ', 'PNEXT', 'POS', 'QNAME', 'QUAL', 'RNAME',
+    'RNEXT', 'SEG', 'TLEN'],
+    dtype='object')
+    
+"""
+
+
+library(rPython)
+library(data.table)
+library(Rsamtools)
+library(GenomicRanges)
+library(GenomicAlignments)
+
+
+
+setwd("/gpfs/commons/home/biederstedte-934/data/Maciejowski2015/10x/IMI-3-10X-chromium/PHASER_SVCALLER_CS/PHASER_SVCALLER/ATTACH_PHASING/fork0/files/")
+
+python.exec("import pandas as pd")
+python.exec("import numpy as np")
+python.exec("import tables")
+python.exec("from tables import *")
+
+
+bxbamfile = "IMI3oct24_bxbam.h5"
+
+python.assign("bxbamfile", bxbamfile)
+
+python.exec("h5f = tables.open_file(bxbamfile)")
+python.exec('tb1 = h5f.get_node("/bam_table/bam_fields")')
+
+python.exec('BX1 = tb1.read_where(\'BX==b"Z:GATAACCAGCGCTCAC-1"\')')
+
+python.exec("df1 = pd.DataFrame(BX1)")
+
+# one approach --- hard code each column---probably quickest---# can only run this once per dataframe!!!
+
+python.exec('df1.BX = df1.BX.str.decode("utf-8")')
+python.exec('df1.CIGAR = df1.CIGAR.str.decode("utf-8")')
+python.exec('df1.QNAME = df1.QNAME.str.decode("utf-8")')
+python.exec('df1.QUAL = df1.QUAL.str.decode("utf-8")')
+python.exec('df1.RNAME = df1.RNAME.str.decode("utf-8")')
+python.exec('df1.RNEXT = df1.RNEXT.str.decode("utf-8")')
+python.exec('df1.SEQ = df1.SEG.str.decode("utf-8")')      # error here!~!~!!!!!!
+
+
+# convert to Python lists...
+
+python.exec(" BX_list = df1.BX.tolist()")
+python.exec(" CIGAR_list = df1.CIGAR.tolist()")
+python.exec(" FLAG_list = df1.FLAG.tolist()")
+python.exec(" MAPQ_list = df1.MAPQ.tolist()")
+python.exec(" PNEXT_list = df1.PNEXT.tolist()")
+python.exec(" POS_list = df1.POS.tolist()")
+python.exec(" QNAME_list = df1.QNAME.tolist()")
+python.exec(" QUAL_list = df1.QUAL.tolist()")
+python.exec(" RNAME_list = df1.RNAME.tolist()")
+python.exec(" RNEXT_list = df1.RNEXT.tolist()")
+python.exec(" SEQ_list = df1.SEQ.tolist()")
+python.exec(" TLEN_list = df1.TLEN.tolist()")
+
+
+# ...then access as R vectors
+
+BX_vec <- python.get("BX_list")
+CIGAR_vec <- python.get("CIGAR_list")
+FLAG_vec <- python.get("FLAG_list")
+MAPQ_vec <- python.get("MAPQ_list")
+PNEXT_vec <- python.get("PNEXT_list")
+POS_vec <- python.get("POS_list")
+QNAME_vec <- python.get("QNAME_list")
+QUAL_vec <- python.get("QUAL_list")
+RNAME_vec <- python.get("RNAME_list")
+RNEXT_vec <- python.get("RNEXT_list")
+SEQ_vec <- python.get("SEQ_list")
+TLEN_vec <- python.get("TLEN_list")
+
+
+qname <- python.get("QNAME_list")
+flag  <- python.get("FLAG_list")
+rname <- python.get("RNAME_list")
+pos <- python.get("POS_list")
+mapq <- python.get("MAPQ_list")
+cigar <- python.get("CIGAR_list")
+rnext <- python.get("RNEXT_list")
+pnext <- python.get("PNEXT_list")
+tlen <- python.get("TLEN_list")
+seq <- python.get("SEQ_list")
+qual <- python.get("QUAL_list")
+bx  <- python.get("BX_list")
+
+
+
+countCigar <- function(cigar) {
+    
+    cigar.vals <- unlist(strsplit(cigar, "\\d+"))
+    cigar.lens <- strsplit(cigar, "[A-Z]")
+    lens <- nchar(gsub('\\d+', '', cigar))
+    lens[is.na(cigar)] <- 1
+    
+    cigar.lens <- as.numeric(unlist(cigar.lens))
+    cigar.vals <- cigar.vals[cigar.vals != ""]
+    repr       <- rep(seq_along(cigar), lens)
+    dt         <- data.table(val=cigar.vals, lens=cigar.lens, group=repr, key="val")
+    
+    smr.d      <- dt["D",][, sum(lens), by=group]
+    smr.i      <- dt["I",][, sum(lens), by=group]
+    smr.m      <- dt["M",][, sum(lens), by=group]
+    smr.s      <- dt["S",][, sum(lens), by=group]
+    
+    out <- matrix(nrow=length(cigar), ncol=4, 0)
+    out[smr.d$group,1] <- smr.d$V1
+    out[smr.i$group,2] <- smr.i$V1
+    out[smr.m$group,3] <- smr.m$V1
+    out[smr.s$group,4] <- smr.s$V1
+    colnames(out) <- c('D','I','M','S')
+    
+    return(out)
+}
+
+# create data.table
+
+out <- data.table(qname, flag, rname, pos, mapq, cigar, rnext, pnext, tlen, seq, qual, bx)
+
+cigs <- countCigar(out$cigar)   # columns  D I M S
+# Warning message:
+# In countCigar(out$cigar) : NAs introduced by coercion
+out$pos2 <- out$pos + cigs[, "M"]
+# M" positions in the alignment are encoded in the CIGAR; if add to the BAM pos you get the end position of the interval
+unmatched = is.na(out$pos)
+
+if (any(unmatched))
+{
+    out$pos[unmatched] = 1
+    out$pos2[unmatched] = 0
+    out$strand[unmatched] = '*'
+}
+
+
+
+gr.fields = c('rname', 'strand', 'pos', 'pos2');
+vals = out[, setdiff(names(out), gr.fields), with=FALSE]
+# vals ==  this is the metadata of the outgoing GRanges object which is pulled from the data.frame "out"
+
+
+out <- GRanges(out$rname, IRanges(out$pos, pmax(0, out$pos2-1)), strand = out$strand, seqlengths = seqlengths(intervals))
+values(out) <- vals
+                             
+                             
+out <- data.table(seqnames=out$rname, start=out$pos, end= pmax(out$pos2-1, 0), strand=out$strand)
+val <- data.table(vals)
+out <- cbind(out, val)
+
+# Warning message:
+# In data.table::data.table(...) :
+# Item 2 is of size 12 but maximum size is 920 (recycled leaving remainder of 8 items)
+#
+
+return(out)
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+intervals = NULL
+
+if (length(intervals)==0)
+    intervals = NULL
+    
+if (is.null(intervals))
+    intervals = gr
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+rr <- IRanges(out$pos, out$pos2)
+if (!'strand' %in% colnames(out))
+    outt$strand <- '*'
+
+
+sf <- factor(out$strand, levels=c('+', '-', '*'))
+ff <- factor(out$seqnames, levels=unique(out$rnames))
+
+# we now have a dataframed
+
+
+b'Z:GATAACCAGCGCTCAC-1'
