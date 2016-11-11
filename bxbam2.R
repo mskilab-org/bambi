@@ -190,32 +190,34 @@ setMethod("get_bmates",'bxbam', function(reads){                 #
     out$pos2 <- out$pos + rowSums(cigs[, c("D", "M")], na.rm=T) - 1  # gives up pos2
     # M" positions in the alignment are encoded in the CIGAR; if add to the BAM pos you get the end position of the interval
     
-    bf = out$flag
     
-    foo = matrix(as.numeric(intToBits(bf)), byrow = T, ncol = 32)[, 1:12, drop = FALSE]   # binary matrix of following columns
-    colnames(foo) = c("isPaired", "isProperPair", "isUnmappedQuery", "hasUnmappedMate", "isMinusStrand", "isMateMinusStrand", "isFirstMateRead", "isSecondMateRead", "isNotPrimaryRead", "isNotPassingQualityControls", "isDuplicate", "isSupplementary")
-    minus = foo[, "isMinusStrand"]   # 1 is "-", 0 is "+"
+    out$qwidth = nchar(out$seq)
     
-    newdt <- data.table(start = out$pos, end = out$pos2, strand = minus, seqnames = out$seq)   # create data.table of start, end, strand, seqnames
-    newdt[, strand := as.character(strand)][strand == "0", strand := "+"]  # change type of binary vec, then replace
-    newdt[, strand := as.character(strand)][strand == "1", strand := "-"]
+    out$strand = bamflag(out$flag)[, "isMinusStrand"] == 1
+    out$strand = ifelse(out$strand, "-", "+")
 
-    NAstrand = is.na(newdt$strand)
-    newdt$strand[NAstrand] ="*"
-
-    unmatched = is.na(out$pos)
-    if (any(unmatched))
+    
+    unmapped = bamflag(out$flag)[,"isUnmappedQuery"] == 1
+    if (any(unmapped))
     {
-        out$pos[unmatched] = 1
-        out$pos2[unmatched] = 0
-        out$strand[unmatched] = '*'   # doesn't out why?
+        out$pos[unmapped] = 1
+        out$pos2[unmapped] = 0
+        out$strand[unmapped] = '*'   # doesn't out why?
     }
     
-    rr <- IRanges(newdt$start, newdt$end)
+    bf = out$flag
+    
+    newdt <- data.table(pos = out$pos, pos2 = out$pos2, strand = out$strand, rname = out$rname)   # create data.table of start, end, strand, seqnames
+    
+    rr <- IRanges(newdt$pos, newdt$pos2)
     sf <- factor(newdt$strand, levels=c('+', '-', '*'))
-    ff <- factor(newdt$seqnames, levels=unique(newdt$seqnames))
-    out <- GRanges(seqnames=ff, ranges=rr, strand=sf)
-    return(out)
+    ff <- factor(newdt$rname, levels=unique(newdt$rname))
+    gr.fields <- c("rname", "strand", "pos", "pos2")
+    grobj <- GRanges(seqnames=ff, ranges=rr, strand=sf)
+    
+    vals = out[, setdiff(names(out), gr.fields), with=FALSE]
+    values(grobj) <- vals
+    return(grobj)
 }
 
 
@@ -268,7 +270,7 @@ setMethod("get_qmates",'bxbam', function(reads){                 #
     PNEXT_vec <- python.get("PNEXT_list")
     POS_vec <- python.get("POS_list")
     QNAME_vec <- python.get("QNAME_list")
-    QUAL_vec <- python.get("QUAL_list")
+    QUAL_vec <- python.get("QUAL_list")table
     RNAME_vec <- python.get("RNAME_list")
     RNEXT_vec <- python.get("RNEXT_list")
     SEQ_vec <- python.get("SEQ_list")
@@ -289,8 +291,6 @@ setMethod("get_qmates",'bxbam', function(reads){                 #
     bx  <- python.get("BX_list")
     
     
-    bobby <- data.table(start = out$pos, end = out$pos2, strand = minus, seqnames = out$seq, unmapped = unmapped)
-    
     # create data.table
     
     out <- data.table(qname, flag, rname, pos, mapq, cigar, rnext, pnext, tlen, seq, qual, bx)
@@ -299,34 +299,35 @@ setMethod("get_qmates",'bxbam', function(reads){                 #
     out$pos2 <- out$pos + rowSums(cigs[, c("D", "M")], na.rm=T) - 1  # gives up pos2
     # M" positions in the alignment are encoded in the CIGAR; if add to the BAM pos you get the end position of the interval
     
-    bf = out$flag
     
-    foo = matrix(as.numeric(intToBits(bf)), byrow = T, ncol = 32)[, 1:12, drop = FALSE]   # binary matrix of following columns
-    colnames(foo) = c("isPaired", "isProperPair", "isUnmappedQuery", "hasUnmappedMate", "isMinusStrand", "isMateMinusStrand", "isFirstMateRead", "isSecondMateRead", "isNotPrimaryRead", "isNotPassingQualityControls", "isDuplicate", "isSupplementary")
-    minus = foo[, "isMinusStrand"]   # 1 is "-", 0 is "+"
+    out$qwidth = nchar(out$seq)
     
-    newdt <- data.table(start = out$pos, end = out$pos2, strand = minus, seqnames = out$seq)   # create data.table of start, end, strand, seqnames
-    newdt[, strand := as.character(strand)][strand == "0", strand := "+"]  # change type of binary vec, then replace
-    newdt[, strand := as.character(strand)][strand == "1", strand := "-"]
+    out$strand = bamflag(out$flag)[, "isMinusStrand"] == 1
+    out$strand = ifelse(out$strand, "-", "+")
     
-    NAstrand = is.na(newdt$strand)
-    newdt$strand[NAstrand] ="*"
     
-    unmatched = is.na(out$pos)
-    if (any(unmatched))
+    unmapped = bamflag(out$flag)[,"isUnmappedQuery"] == 1
+    if (any(unmapped))
     {
-        out$pos[unmatched] = 1
-        out$pos2[unmatched] = 0
-        out$strand[unmatched] = '*'   # doesn't out why?
+        out$pos[unmapped] = 1
+        out$pos2[unmapped] = 0
+        out$strand[unmapped] = '*'   # doesn't out why?
     }
     
-    rr <- IRanges(newdt$start, newdt$end)
+    bf = out$flag
+    
+    newdt <- data.table(pos = out$pos, pos2 = out$pos2, strand = out$strand, rname = out$rname)   # create data.table of start, end, strand, seqnames
+    
+    rr <- IRanges(newdt$pos, newdt$pos2)
     sf <- factor(newdt$strand, levels=c('+', '-', '*'))
-    ff <- factor(newdt$seqnames, levels=unique(newdt$seqnames))
-    out <- GRanges(seqnames=ff, ranges=rr, strand=sf)
-    return(out)
+    ff <- factor(newdt$rname, levels=unique(newdt$rname))
+    gr.fields <- c("rname", "strand", "pos", "pos2")
+    grobj <- GRanges(seqnames=ff, ranges=rr, strand=sf)
+    
+    vals = out[, setdiff(names(out), gr.fields), with=FALSE]
+    values(grobj) <- vals
+    return(grobj)
 }
-
 
 
 
