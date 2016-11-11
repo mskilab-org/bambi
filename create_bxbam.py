@@ -123,7 +123,7 @@ class Barcoded_bam_MD(IsDescription):
         RNEXT = StringCol(64)
         PNEXT = Int32Col()
         TLEN  = Int32Col()
-        SEG   =  StringCol(256)
+        SEQ   =  StringCol(256)
         QUAL  = StringCol(256)
         BX    = StringCol(64)
         MD    = StringCol(64)
@@ -138,7 +138,7 @@ class Barcoded_bam(IsDescription):
         RNEXT = StringCol(64)
         PNEXT = Int32Col()
         TLEN  = Int32Col()
-        SEG   =  StringCol(256)
+        SEQ   =  StringCol(256)
         QUAL  = StringCol(256)
         BX    = StringCol(64)
 
