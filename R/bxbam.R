@@ -154,15 +154,21 @@ setMethod("get_bmates", "bxBam", function(.Object, query){
         if (is.null(query$BX))
             {
                 warning("BX field not found, will use read.bam to pull reads under query GRanges from bam file and find their bmates")
-                query = read.bam(.Object@.bamfile, gr = query, tag = c('BX', 'MD'))              
+                query = read.bam(.Object@.bamfile, gr = query, tag = c('BX', 'MD'), pairs.grl = FALSE)              
             }
         
-        query = query$BX
+        query = query$BX            
     }
-   
+
+    if (any(nix <<- is.na(query)))
+        query = query[!nix]
+
+    if (length(query)==0)
+        stop('Length 0 query, check input')
+            
    qstring = paste(paste0('(BX==b"', query, '")'), collapse = "|")
    queryId = paste0('query', runif(1))
-   python.exec(sprintf("queries['%s'] = run_query(sessions['%s'], '%s')", queryId, .Object@sessionId, qstring))
+   python.exec(sprintf("queries['%s'] = run_query(sessions['%s'], '%s')", queryId, .Object@.sessionId, qstring))
    
    out = data.table(
         bx = python.get(sprintf("queries['%s'].BX.tolist()", queryId)),
@@ -177,10 +183,14 @@ setMethod("get_bmates", "bxBam", function(.Object, query){
         rnext = python.get(sprintf("queries['%s'].RNEXT.tolist()", queryId)),
         seq = python.get(sprintf("queries['%s'].SEQ.tolist()", queryId)),
         tlen = python.get(sprintf("queries['%s'].TLEN.tolist()", queryId)))
-
     
     if (any(nnix <<- out$cigar=='*'))
         out$cigar[nnix] = NA
+
+    if (nrow(out)==0)
+        return(GRanges())
+    
+    browser()
     cigs <- countCigar(out$cigar)
     out$pos2 <- out$pos + rowSums(cigs[, c("D", "M")], na.rm=T) - 1
     
@@ -231,14 +241,21 @@ setMethod("get_qmates", "bxBam", function(.Object, query){
         if (is.null(query$BX))
         {
             warning("BX field not found, will use read.bam to pull reads under query GRanges from bam file and find their bmates")
-            query = read.bam(.Object@.bamfile, gr = query, tag = c('BX', 'MD'))    
+            query = read.bam(.Object@.bamfile, gr = query, tag = c('BX', 'MD'), pairs.grl = FALSE)    
         }      
         query = query$QNMAE
     }
+    
+    if (any(nix <<- is.na(query)))
+        query = query[!nix]
+
+    if (length(query)==0)
+        stop('Length 0 query, check input')
+
    
     qstring = paste(paste0('(QNAME==b"', query, '")'), collapse = "|")
     queryId = paste0('query', runif(1))
-    python.exec(sprintf("queries['%s'] = run_query(sessions['%s'], '%s')", queryId, .Object@sessionId, qstring))
+    python.exec(sprintf("queries['%s'] = run_query(sessions['%s'], '%s')", queryId, .Object@.sessionId, qstring))
   
     out = data.table(
     bx = python.get(sprintf("queries['%s'].BX.tolist()", queryId)),

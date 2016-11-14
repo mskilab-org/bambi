@@ -8,9 +8,9 @@ Depends:
     R (>= 3.3.0),
     GenomicRanges (>= 1.8),
     bamUtils,
+    rPython,		
     Rsamtools
 Imports:
-    rPython,
     data.table
 License: What license is it under?
 Encoding: UTF-8
