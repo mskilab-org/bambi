@@ -25,21 +25,10 @@ Users install Python dependencies with `pip install -r requirements.txt`
 
      python indexing_issues_bxbam.py --input="/pathname/path/file.bam" --output "pathname/bxbam.h5" --index_fields="QNAME","BX" 
 
-Question to self: does it matter if they do not use a .h5 extension? If so, let's just write one in.
-
 Optional column is --MD
 
 (2) Run
-
-install.packages("rPython")   This uses the Python version currently loaded---important for `library(rPython)`
-
-
-# R  data structures from genomic data
-
-GRanges
-Store ranges along with metadata, sequences and the coordaintes of the reference genome.
-GRangesList
-Store groups of ranges, with additional metadata belonging to the group.
-data.table
-Fast and efficient general-purpose container similar to data.frame, but with significant performance improvements.
-
+    
+    install.packages("devtools")
+    library(devtools)
+    install_github("mskilab/bxBam")
