@@ -190,7 +190,6 @@ setMethod("get_bmates", "bxBam", function(.Object, query){
     if (nrow(out)==0)
         return(GRanges())
     
-    browser()
     cigs <- countCigar(out$cigar)
     out$pos2 <- out$pos + rowSums(cigs[, c("D", "M")], na.rm=T) - 1
     
