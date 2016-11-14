@@ -1,19 +1,13 @@
 # zzz.R for bxbam
 
 #' @import rPython
-
-
 .onLoad <- function(libname = find.package("bxbam"), pkgname = "bxbam") {
-    python.exec("import pandas as pd")
-    python.exec("import numpy as np")
-    python.exec("import tables")
-    python.exec("from tables import *")
-    python.exec("sessions = {}")
-    python.exec("queries = {}")
-
-    python.exec(sprintf("", queryId, )
-
-    python.exec("df1 = pd.DataFrame(BX1)")
+    rPython::python.exec("import pandas as pd")
+    rPython::python.exec("import numpy as np")
+    rPython::python.exec("import tables")
+    rPython::python.exec("from tables import *")
+    rPython::python.exec("sessions = {}")
+    rPython::python.exec("queries = {}")
 
     # one approach --- hard code each column---probably quickest---# can only run this once per dataframe!!!
     
@@ -28,6 +22,6 @@
         df1.RNAME = df1.RNAME.str.decode("utf-8")
         df1.RNEXT = df1.RNEXT.str.decode("utf-8")
         df1.SEQ = df1.SEG.str.decode("utf-8")   # error here!~!~!!!!!!
-        return(df1)')
-    python.exec(cmd)
+        return(df1)')
+    rPython::python.exec(cmd)
 }

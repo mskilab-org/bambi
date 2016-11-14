@@ -40,7 +40,6 @@
 #' @param cigar character vector of cigar strings
 #' @return a 4-column, length(cigar)-row matrix with the total counts for each type
 #' @export
-
 countCigar <- function(cigar) {
     
     cigar.vals <- unlist(strsplit(cigar, "\\d+"))
@@ -83,23 +82,61 @@ countCigar <- function(cigar) {
 #' @import Rsamtools
 #' @import GenomicRanges
 #' @import GenomicAlignments
-#' @export Class bxbam
+#' @exportClass bxBam
 #' @author Evan Biederstedt
+setClass("bxBam", representation(.bxbamfile = 'character', .bamfile = 'BamFile', .sessionId = 'character'))
 
-
-setClass("bxBam", representation(.bxbamfile = 'character', sessionId = 'integer'))
-
-setMethod('initialize', function(.Object, bxbamfile)
+setMethod('initialize', 'bxBam', function(.Object, bxbamfile, bamfile = NULL)
 {
     .Object@.sessionId <- paste0('session', runif(1))
-    python.exec(sprintf("sessions['%s'] = tables.open_file('%s').get_node('/bam_table/bam_fields')", .Object@.sessionId, bxbamfile))
- 
+    .Object@.bxbamfile = normalizePath(bxbamfile)
+    message(.Object@.bxbamfile)
+
+    if (is.null(bamfile)) # will try and guess the bamfile name from the bxbam
+    {
+        bamfile = gsub('bxbamfile', 'bxbam', bxbamfile)
+        if (!file.exists(bamfile))
+            bamfile = paste0(bamfile, '.bam')
+        
+        .Object@.bamfile = BamFile(bamfile)
+    }    
+    else ## if bam file is explicitly provided
+    {
+        if (is(bamfile, 'BamFile'))
+            .Object@.bamfile = bamfile
+        else
+            .Object@.bamfile = BamFile(bamfile)
+
+    }
+    python.exec(sprintf("sessions['%s'] = tables.open_file('%s').get_node('/bam_table/bam_fields')", .Object@.sessionId, .Object@.bxbamfile))
+
+    return(.Object)
 })
+
+#' @name bxBam
+#' @title bxBam
+#' @description
+#' Initialize bxBam object specifying .bxbam file and optional .bam path
+#' @export
+#' @author Marcin Imielinski
+bxBam = function(bxbamfile, bamfile = NULL)
+    new('bxBam', bxbamfile, bamfile)
+
 
 setValidity("bxBam", function(object){
     if (!file.exists(bxbamfile)) stop ("'bxbamfile' is missing; please set correct path to bxbam.h5 object")
 })
 
+#' @name show
+#' @title show
+#' @description Display a \code{gTrack} object
+#' @docType methods
+#' @param object \code{gTrack} to display
+#' @author Marcin Imielinski
+setMethod('show', 'bxBam', function(object)
+{
+  cat(sprintf('bxBam object stored in HDF5 file\n\t%s\nwith associated BAM file\n\t%s:\n', object@.bxbamfile, Rsamtools::path(object@.bamfile)))
+})
 
 #' @name get_bmates
 #' @title get_bmates
@@ -109,17 +146,21 @@ setValidity("bxBam", function(object){
 #' @export
 #' @author Evan Biederstedt
 #' @author Marcin Imielinski
-
+setGeneric('get_bmates', function(.Object, query) standardGeneric('get_bmates'))
 setMethod("get_bmates", "bxBam", function(.Object, query){
     
     if (inherits(query, 'GRanges') | inherits(query, 'data.frame'))
     {
         if (is.null(query$BX))
-            stop("query must be either BX or GRanges / data.frame with BX field")
+            {
+                warning("BX field not found, will use read.bam to pull reads under query GRanges from bam file and find their bmates")
+                query = read.bam(.Object@.bamfile, gr = query, tag = c('BX', 'MD'))              
+            }
+        
         query = query$BX
     }
    
-   qstring = paste(paste0('(BX==b"', query, '")'), collapse = "|")
+   qstring = paste(paste0('(BX==b"', query, '")'), collapse = "|")
    queryId = paste0('query', runif(1))
    python.exec(sprintf("queries['%s'] = run_query(sessions['%s'], '%s')", queryId, .Object@sessionId, qstring))
    
@@ -169,7 +210,7 @@ setMethod("get_bmates", "bxBam", function(.Object, query){
     
     vals = out[, setdiff(names(out), gr.fields), with=FALSE]
     values(grobj) <- vals
-    return(grobj)
+    return(grobj)
 })
 
 
@@ -182,18 +223,20 @@ setMethod("get_bmates", "bxBam", function(.Object, query){
 #' @export
 #' @author Evan Biederstedt
 #' @author Marcin Imielinski
-
+setGeneric('get_qmates', function(.Object, query) standardGeneric('get_qmates'))
 setMethod("get_qmates", "bxBam", function(.Object, query){
     
-    
-    if (inherits(query, "GRanges") | inherits(query, "data.frame"))
+    if (inherits(query, 'GRanges') | inherits(query, 'data.frame'))
     {
-        if (is.null(query$QNAME))
-        stop("query must be either QNAME or GRanges / data.frame with QNAME field")
-        query = query$QNAME
+        if (is.null(query$BX))
+        {
+            warning("BX field not found, will use read.bam to pull reads under query GRanges from bam file and find their bmates")
+            query = read.bam(.Object@.bamfile, gr = query, tag = c('BX', 'MD'))    
+        }      
+        query = query$QNMAE
     }
-    
-    qstring = paste(paste0('(QNAME==b"', query, '")'), collapse = "|")
+   
+    qstring = paste(paste0('(QNAME==b"', query, '")'), collapse = "|")
     queryId = paste0('query', runif(1))
     python.exec(sprintf("queries['%s'] = run_query(sessions['%s'], '%s')", queryId, .Object@sessionId, qstring))
   
@@ -242,7 +285,7 @@ setMethod("get_qmates", "bxBam", function(.Object, query){
     
     vals = out[, setdiff(names(out), gr.fields), with=FALSE]
     values(grobj) <- vals
-    return(grobj)
+    return(grobj)
 })
 
 
