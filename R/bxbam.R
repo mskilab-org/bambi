@@ -146,17 +146,26 @@ setMethod('show', 'bxBam', function(object)
 #' @export
 #' @author Evan Biederstedt
 #' @author Marcin Imielinski
-setGeneric('get_bmates', function(.Object, query) standardGeneric('get_bmates'))
-setMethod("get_bmates", "bxBam", function(.Object, query){
-    
+setGeneric('get_bmates', function(.Object, query, ...) standardGeneric('get_bmates'))
+setMethod("get_bmates", "bxBam", function(.Object, query, verbose = TRUE){
+
+    ## check if python session id exists and if not create
+    python.exec( sprintf("
+        if '%s' not in sessions.keys(): sessions['%s'] = tables.open_file('%s').get_node('/bam_table/bam_fields')",        
+        .Object@.sessionId,
+        .Object@.sessionId,
+        .Object@.bxbamfile))
+            
     if (inherits(query, 'GRanges') | inherits(query, 'data.frame'))
     {
         if (is.null(query$BX))
-            {
-                warning("BX field not found, will use read.bam to pull reads under query GRanges from bam file and find their bmates")
-                query = read.bam(.Object@.bamfile, gr = query, tag = c('BX', 'MD'), pairs.grl = FALSE)              
-            }
-        
+        {            
+            if (verbose)
+                message("BX field not found, will use read.bam to pull reads under query GRanges from bam file and find their bmates")
+            query = read.bam(.Object@.bamfile, gr = query, tag = c('BX', 'MD'), pairs.grl = FALSE)
+            if (verbose)
+                message('Retrieved reads')
+            }      
         query = query$BX            
     }
 
@@ -165,10 +174,15 @@ setMethod("get_bmates", "bxBam", function(.Object, query){
 
     if (length(query)==0)
         stop('Length 0 query, check input')
-            
-   qstring = paste(paste0('(BX==b"', query, '")'), collapse = "|")
-   queryId = paste0('query', runif(1))
-   python.exec(sprintf("queries['%s'] = run_query(sessions['%s'], '%s')", queryId, .Object@.sessionId, qstring))
+
+    qstring = paste(paste0('(BX==b"', query, '")'), collapse = "|")
+    queryId = paste0('query', runif(1))
+
+    browser()
+    query = sprintf("queries['%s'] = run_query(sessions['%s'], '%s')", queryId, .Object@.sessionId, qstring)
+    if (verbose)
+        message('Running query: ', query)
+    python.exec(query)
    
    out = data.table(
         bx = python.get(sprintf("queries['%s'].BX.tolist()", queryId)),
@@ -183,6 +197,10 @@ setMethod("get_bmates", "bxBam", function(.Object, query){
         rnext = python.get(sprintf("queries['%s'].RNEXT.tolist()", queryId)),
         seq = python.get(sprintf("queries['%s'].SEQ.tolist()", queryId)),
         tlen = python.get(sprintf("queries['%s'].TLEN.tolist()", queryId)))
+
+
+    if (verbose)
+        message('Built out table with ', nrow(out), ' rows')
     
     if (any(nnix <<- out$cigar=='*'))
         out$cigar[nnix] = NA
@@ -234,15 +252,22 @@ setMethod("get_bmates", "bxBam", function(.Object, query){
 #' @author Marcin Imielinski
 setGeneric('get_qmates', function(.Object, query) standardGeneric('get_qmates'))
 setMethod("get_qmates", "bxBam", function(.Object, query){
-    
+
+    ## check if python session id exists and if not create
+    python.exec( sprintf("
+        if '%s' not in sessions.keys(): sessions['%s'] = tables.open_file('%s').get_node('/bam_table/bam_fields')",        
+        .Object@.sessionId,
+        .Object@.sessionId,
+        .Object@.bxbamfile))            
+
     if (inherits(query, 'GRanges') | inherits(query, 'data.frame'))
     {
-        if (is.null(query$BX))
+        if (is.null(query$QNAME))
         {
-            warning("BX field not found, will use read.bam to pull reads under query GRanges from bam file and find their bmates")
+            warning("QNAME field not found, will use read.bam to pull reads under query GRanges from bam file and find their bmates")
             query = read.bam(.Object@.bamfile, gr = query, tag = c('BX', 'MD'), pairs.grl = FALSE)    
         }      
-        query = query$QNMAE
+        query = query$QNAME
     }
     
     if (any(nix <<- is.na(query)))

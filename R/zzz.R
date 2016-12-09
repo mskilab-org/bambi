@@ -21,7 +21,7 @@
         df1.QUAL = df1.QUAL.str.decode("utf-8")
         df1.RNAME = df1.RNAME.str.decode("utf-8")
         df1.RNEXT = df1.RNEXT.str.decode("utf-8")
-        df1.SEQ = df1.SEG.str.decode("utf-8")   # error here!~!~!!!!!!
+        df1.SEQ = df1.SEQ.str.decode("utf-8")   # error here!~!~!!!!!!
         return(df1)')
     rPython::python.exec(cmd)
 }
