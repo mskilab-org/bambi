@@ -84,16 +84,19 @@ countCigar <- function(cigar) {
 #' @import GenomicAlignments
 #' @exportClass bxBam
 #' @author Evan Biederstedt
-setClass("bxBam", representation(.bxbamfile = 'character', .bamfile = 'BamFile', .sessionId = 'character'))
+setClass("bxBam", representation(.bxbamfile = 'character', .bamfile = 'BamFile', .sessionId = 'character', .sqllite = 'logical'))
 
-setMethod('initialize', 'bxBam', function(.Object, bxbamfile, bamfile = NULL)
+setMethod('initialize', 'bxBam', function(.Object, bxbamfile = '', bamfile = '', tags = NULL, index_on = NULL, chunksize = 1e6, verbose = TRUE, overwrite = FALSE, nlimit = NULL)
 {
+    sqllite = FALSE
     .Object@.sessionId <- paste0('session', runif(1))
-    .Object@.bxbamfile = normalizePath(bxbamfile)
     message(.Object@.bxbamfile)
 
-    if (is.null(bamfile)) # will try and guess the bamfile name from the bxbam
+    if (!file.exists(bamfile)) # will try and guess the bamfile name from the bxbam
     {
+        if (!file.exists(bxbamfile))
+            stop('Either bam or bxbam (.sqllite, .h5) file must be provided')
+        
         bamfile = gsub('bxbamfile', 'bxbam', bxbamfile)
         if (!file.exists(bamfile))
             bamfile = paste0(bamfile, '.bam')
@@ -102,16 +105,49 @@ setMethod('initialize', 'bxBam', function(.Object, bxbamfile, bamfile = NULL)
     }    
     else ## if bam file is explicitly provided
     {
+        if (nchar(bxbamfile) == 0)
+            bxbamfile = NULL
+        
+        if (is.null(bxbamfile)) ## if bxbam is not provided will create automatic name from bam path
+        {       
+            bxbamfile = gsub('.bam$', '.sqllite', bamfile)
+            sqllite = TRUE           
+        }
+        else
+            sqllite = grepl('.sqllite$', bxbamfile)
+
         if (is(bamfile, 'BamFile'))
             .Object@.bamfile = bamfile
         else
             .Object@.bamfile = BamFile(bamfile)
-
+        
     }
-    python.exec(sprintf("sessions['%s'] = tables.open_file('%s').get_node('/bam_table/bam_fields')", .Object@.sessionId, .Object@.bxbamfile))
 
+    print(sqllite)
+    .Object@.bxbamfile = bxbamfile
+    
+    if (!sqllite)
+        python.exec(sprintf("sessions['%s'] = tables.open_file('%s').get_node('/bam_table/bam_fields')", .Object@.sessionId, .Object@.bxbamfile))
+    else
+    {
+        if (!file.exists(bxbamfile) | overwrite)
+        {
+            if (file.exists(bxbamfile))
+                {
+                    message(paste('About to overwrite', bxbamfile, 'giving you a chance to think about it'))
+                    Sys.sleep(1)
+                }
+            message('Creating .sqllite from .bam file')
+            tags = union(c('MD', 'BX'), tags)
+            index_on = union(c('qname', 'BX', 'rname', 'rnext'), index_on)                    
+            bam2sqllite(.Object@.bxbamfile, Rsamtools::path(.Object@.bamfile), tags, index_on, chunksize = chunksize, verbose = verbose, nlimit = nlimit)
+        }
+    }
+        
+    .Object@.sqllite = sqllite
     return(.Object)
 })
+
 
 #' @name bxBam
 #' @title bxBam
@@ -119,8 +155,118 @@ setMethod('initialize', 'bxBam', function(.Object, bxbamfile, bamfile = NULL)
 #' Initialize bxBam object specifying .bxbam file and optional .bam path
 #' @export
 #' @author Marcin Imielinski
-bxBam = function(bxbamfile, bamfile = NULL)
-    new('bxBam', bxbamfile, bamfile)
+bxBam = function(bxbamfile = '', bamfile = '', tags = NULL, index_on = NULL, chunksize = 1e6, verbose = TRUE, overwrite = FALSE, nlimit = NULL)
+    new('bxBam', bxbamfile = bxbamfile, bamfile = bamfile,
+        tags = tags, index_on = index_on, chunksize = chunksize, verbose = verbose,
+        overwrite = overwrite, nlimit = nlimit)
+
+
+#' @name bam2sqllite
+#' @title bam2sqllite
+#' @description
+#' Pipe output from samtools and make indexed sqllite table +/- drawing specific optional tags from bam file
+#' and +/- creating optional indices
+#' @export
+#' @author Marcin Imielinski
+bam2sqllite = function(sqllite_path, bam_path, tags = NULL, index_on = NULL, chunksize = 1e6, verbose = FALSE, nlimit = NULL)
+{
+    begin = Sys.time()
+
+    if (!is.null(nlimit))
+        verbose = TRUE
+    
+    if (verbose)
+        message('Creating brand new SQLLite db in ', sqllite_path)
+
+    create_str = sprintf("
+CREATE TABLE reads (
+ qname VARCHAR,
+ flag INTEGER,
+ rname VARCHAR,
+ pos INTEGER,
+ mapq INTEGER,
+ cigar VARCHAR,
+ rnext VARCHAR,
+ pnext INTEGER,
+ tlen INTEGER,
+ seq VARCHAR,
+ qual VARCHAR,
+ %s
+);", paste(tags, 'varchar', collapse = ','))
+    
+    system(paste('rm -rf', sqllite_path))
+    mydb <- dbConnect(RSQLite::SQLite(), sqllite_path)
+    index_cols = c('qname', 'BX', 'rname', 'rnext')
+    dbExecute(mydb, create_str)
+    
+    create_index_str = sapply(index_cols, function(x)
+    {
+        str = sprintf("CREATE INDEX %s ON reads(%s)", x,x)
+        dbExecute(mydb, str)
+        return(str)        
+    })
+        
+    
+    if (verbose)
+        message('Table created with indices on ', paste(index_cols, collapse = ', '), ' on additional tags ', paste(tags, collapse = ','),
+                ' using SQL commands \n', paste(c(create_str, create_index_str), collapse = ';\n'))
+    
+    p = pipe(paste('samtools view', bam_path), open = 'r')
+    chunksize = 1e5
+    fields = c('qname', 'flag', 'rname', 'pos', 'mapq', 'cigar', 'rnext', 'pnext', 'tlen', 'seq', 'qual')
+    tags = c('MD', 'BX')
+    
+    while (length(lines <- readLines(p, n = chunksize))>0)
+    {
+        now = Sys.time()
+        linesp = strsplit(lines, '\t')
+        chunk = as.data.table(do.call(rbind, lapply(linesp, function(x) x[1:11])))[, line := 1:length(V1)]
+        m = munlist(lapply(linesp, function(x) x[-c(1:11)]))
+        tagchunk = fread(paste(m[,3], collapse = '\n'), sep = ':')
+        tagchunk[, line := as.numeric(m[,1])]
+        tagchunk = dcast.data.table(tagchunk[V1 %in% tags, ], line ~ V1, value.var = 'V3')
+        chunk = merge(chunk, tagchunk, by = 'line')[, -1, with = FALSE]
+        setnames(chunk, 1:11, fields)
+        chunk = chunk[, c(fields, tags), with = FALSE]
+        if (verbose)
+            message('processed ', nrow(chunk), ' from bam file, now writing to SQLlite')
+        dbWriteTable(mydb, "reads", chunk, append = TRUE)
+        if (verbose)
+        {
+            nlines = dbGetQuery(mydb, 'SELECT COUNT(*) FROM reads')
+            message(prettyNum(nlines, big.mark = ','), ' records in table')
+            print(Sys.time()-now)
+            message(' .. since beginning this chunk')
+            print(Sys.time()-begin)
+            message(' .. since starting file creation')                    
+            if (!is.null(nlimit))
+                if (nlines>nlimit)
+                    stop('Reached nlimit')
+        }
+    }
+}
+
+
+#' @name head
+#' @title gets head of file
+#' 
+#' @exportMethod head
+#' @export
+#' @import RSQLite
+#' @author Marcin Imielinski
+setMethod('head', 'bxBam', function(x, n = 5)
+{
+    if (!.hasSlot(x, '.sqllite')) ## check for older version of sqllite
+        sqllite = FALSE
+    else
+        sqllite = x@.sqllite
+
+    if (sqllite)
+    {
+        mydb <- RSQLite::dbConnect(RSQLite::SQLite(), x@.bxbamfile)
+        return( RSQLite::dbGetQuery(mydb, sprintf('SELECT * FROM reads LIMIT %s', n)))
+    }
+})
 
 
 setValidity("bxBam", function(object){
@@ -147,58 +293,84 @@ setMethod('show', 'bxBam', function(object)
 #' @author Evan Biederstedt
 #' @author Marcin Imielinski
 setGeneric('get_bmates', function(.Object, query, ...) standardGeneric('get_bmates'))
-setMethod("get_bmates", "bxBam", function(.Object, query, verbose = TRUE){
-
-    ## check if python session id exists and if not create
-    python.exec( sprintf("
-        if '%s' not in sessions.keys(): sessions['%s'] = tables.open_file('%s').get_node('/bam_table/bam_fields')",        
-        .Object@.sessionId,
-        .Object@.sessionId,
-        .Object@.bxbamfile))
-            
+setMethod("get_bmates", "bxBam", function(.Object, query, verbose = FALSE){
+    
+    if (!.hasSlot(.Object, '.sqllite')) ## check for older version of bxbam
+        sqllite = FALSE
+    else
+        sqllite = .Object@.sqllite
+    
     if (inherits(query, 'GRanges') | inherits(query, 'data.frame'))
     {
         if (is.null(query$BX))
         {            
             if (verbose)
-                message("BX field not found, will use read.bam to pull reads under query GRanges from bam file and find their bmates")
+                {
+                    message("BX field not found, will use read.bam to pull reads under query GRanges from bam file and find their bmates")
+                    if (verbose)
+                        now = Sys.time()
+                }
             query = read.bam(.Object@.bamfile, gr = query, tag = c('BX', 'MD'), pairs.grl = FALSE)
             if (verbose)
-                message('Retrieved reads')
-            }      
+                {
+                    message('Retrieved reads:')
+                    print(Sys.time()-now)
+                }
+        }    
         query = query$BX            
     }
 
-    if (any(nix <<- is.na(query)))
-        query = query[!nix]
-
-    if (length(query)==0)
-        stop('Length 0 query, check input')
-
-    qstring = paste(paste0('(BX==b"', query, '")'), collapse = "|")
-    queryId = paste0('query', runif(1))
-
-    browser()
-    query = sprintf("queries['%s'] = run_query(sessions['%s'], '%s')", queryId, .Object@.sessionId, qstring)
     if (verbose)
-        message('Running query: ', query)
-    python.exec(query)
-   
-   out = data.table(
-        bx = python.get(sprintf("queries['%s'].BX.tolist()", queryId)),
-        cigar = python.get(sprintf("queries['%s'].CIGAR.tolist()", queryId)),
-        flag = python.get(sprintf("queries['%s'].FLAG.tolist()", queryId)),
-        mapq = python.get(sprintf("queries['%s'].MAPQ.tolist()", queryId)),
-        pnext = python.get(sprintf("queries['%s'].PNEXT.tolist()", queryId)),
-        pos = python.get(sprintf("queries['%s'].POS.tolist()", queryId)),
-        qname = python.get(sprintf("queries['%s'].QNAME.tolist()", queryId)),
-        qual = python.get(sprintf("queries['%s'].QUAL.tolist()", queryId)),
-        rname = python.get(sprintf("queries['%s'].RNAME.tolist()", queryId)),
-        rnext = python.get(sprintf("queries['%s'].RNEXT.tolist()", queryId)),
-        seq = python.get(sprintf("queries['%s'].SEQ.tolist()", queryId)),
-        tlen = python.get(sprintf("queries['%s'].TLEN.tolist()", queryId)))
+        now = Sys.time()
+    
+    if (sqllite)
+        {
+            ## ahh how easy!
+            mydb <- RSQLite::dbConnect(RSQLite::SQLite(), .Object@.bxbamfile)
+            out = as.data.table(dbGetQuery(mydb, sprintf('SELECT * FROM reads WHERE BX in (%s)', paste0('"', query, '"', collapse = ','))))
+        }
+    else
+        {            
+            ## check if python session id exists and if not create
+            python.exec( sprintf("
+        if '%s' not in sessions.keys(): sessions['%s'] = tables.open_file('%s').get_node('/bam_table/bam_fields')",        
+        .Object@.sessionId,
+        .Object@.sessionId,
+        .Object@.bxbamfile))
+            
 
+            if (any(nix <<- is.na(query)))
+                query = query[!nix]
 
+            if (length(query)==0)
+                stop('Length 0 query, check input')
+
+            qstring = paste(paste0('(BX==b"', query, '")'), collapse = "|")
+            queryId = paste0('query', runif(1))
+
+            query = sprintf("queries['%s'] = run_query(sessions['%s'], '%s')", queryId, .Object@.sessionId, qstring)
+            if (verbose)
+                message('Running query: ', query)
+            python.exec(query)
+            
+            out = data.table(
+                bx = python.get(sprintf("queries['%s'].BX.tolist()", queryId)),
+                cigar = python.get(sprintf("queries['%s'].CIGAR.tolist()", queryId)),
+                flag = python.get(sprintf("queries['%s'].FLAG.tolist()", queryId)),
+                mapq = python.get(sprintf("queries['%s'].MAPQ.tolist()", queryId)),
+                pnext = python.get(sprintf("queries['%s'].PNEXT.tolist()", queryId)),
+                pos = python.get(sprintf("queries['%s'].POS.tolist()", queryId)),
+                qname = python.get(sprintf("queries['%s'].QNAME.tolist()", queryId)),
+                qual = python.get(sprintf("queries['%s'].QUAL.tolist()", queryId)),
+                rname = python.get(sprintf("queries['%s'].RNAME.tolist()", queryId)),
+                rnext = python.get(sprintf("queries['%s'].RNEXT.tolist()", queryId)),
+                seq = python.get(sprintf("queries['%s'].SEQ.tolist()", queryId)),
+                tlen = python.get(sprintf("queries['%s'].TLEN.tolist()", queryId)))
+        }
+
+    if (verbose)
+        print(Sys.time()-now)
+    
     if (verbose)
         message('Built out table with ', nrow(out), ' rows')
     
@@ -250,51 +422,90 @@ setMethod("get_bmates", "bxBam", function(.Object, query, verbose = TRUE){
 #' @export
 #' @author Evan Biederstedt
 #' @author Marcin Imielinski
-setGeneric('get_qmates', function(.Object, query) standardGeneric('get_qmates'))
-setMethod("get_qmates", "bxBam", function(.Object, query){
+setGeneric('get_qmates', function(.Object, query, ...) standardGeneric('get_qmates'))
+setMethod("get_qmates", "bxBam", function(.Object, query, verbose = FALSE){
 
-    ## check if python session id exists and if not create
-    python.exec( sprintf("
+    if (!.hasSlot(.Object, '.sqllite')) ## check for older version of bxbam
+        sqllite = FALSE
+    else
+        sqllite = .Object@.sqllite
+    
+    if (inherits(query, 'GRanges') | inherits(query, 'data.frame'))
+    {
+        if (is.null(query$BX))
+        {            
+            if (verbose)
+            {
+                message("BX field not found, will use read.bam to pull reads under query GRanges from bam file and find their bmates")
+                if (verbose)
+                    now = Sys.time()
+            }
+            query = read.bam(.Object@.bamfile, gr = query, tag = c('BX', 'MD'), pairs.grl = FALSE)
+            if (verbose)
+            {
+                message('Retrieved reads:')
+                print(Sys.time()-now)
+            }
+        }    
+        query = query$qname
+    }
+    
+    if (verbose)
+        now = Sys.time()
+    
+    if (sqllite)
+    {
+        ## ahh how easy!
+        mydb <- RSQLite::dbConnect(RSQLite::SQLite(), .Object@.bxbamfile)
+        out = as.data.table(dbGetQuery(mydb, sprintf('SELECT * FROM reads WHERE qname in (%s)', paste0('"', query, '"', collapse = ','))))
+    }
+    else
+        {
+            ## check if python session id exists and if not create
+            python.exec( sprintf("
         if '%s' not in sessions.keys(): sessions['%s'] = tables.open_file('%s').get_node('/bam_table/bam_fields')",        
         .Object@.sessionId,
         .Object@.sessionId,
         .Object@.bxbamfile))            
 
-    if (inherits(query, 'GRanges') | inherits(query, 'data.frame'))
-    {
-        if (is.null(query$QNAME))
-        {
-            warning("QNAME field not found, will use read.bam to pull reads under query GRanges from bam file and find their bmates")
-            query = read.bam(.Object@.bamfile, gr = query, tag = c('BX', 'MD'), pairs.grl = FALSE)    
-        }      
-        query = query$QNAME
-    }
-    
-    if (any(nix <<- is.na(query)))
-        query = query[!nix]
+            if (inherits(query, 'GRanges') | inherits(query, 'data.frame'))
+            {
+                if (is.null(query$QNAME))
+                {
+                    warning("QNAME field not found, will use read.bam to pull reads under query GRanges from bam file and find their bmates")
+                    query = read.bam(.Object@.bamfile, gr = query, tag = c('BX', 'MD'), pairs.grl = FALSE)    
+                }      
+                query = query$QNAME
+            }
+            
+            if (any(nix <<- is.na(query)))
+                query = query[!nix]
 
-    if (length(query)==0)
-        stop('Length 0 query, check input')
+            if (length(query)==0)
+                stop('Length 0 query, check input')
 
-   
-    qstring = paste(paste0('(QNAME==b"', query, '")'), collapse = "|")
-    queryId = paste0('query', runif(1))
-    python.exec(sprintf("queries['%s'] = run_query(sessions['%s'], '%s')", queryId, .Object@.sessionId, qstring))
-  
-    out = data.table(
-    bx = python.get(sprintf("queries['%s'].BX.tolist()", queryId)),
-    cigar = python.get(sprintf("queries['%s'].CIGAR.tolist()", queryId)),
-    flag = python.get(sprintf("queries['%s'].FLAG.tolist()", queryId)),
-    mapq = python.get(sprintf("queries['%s'].MAPQ.tolist()", queryId)),
-    pnext = python.get(sprintf("queries['%s'].PNEXT.tolist()", queryId)),
-    pos = python.get(sprintf("queries['%s'].POS.tolist()", queryId)),
-    qname = python.get(sprintf("queries['%s'].QNAME.tolist()", queryId)),
-    qual = python.get(sprintf("queries['%s'].QUAL.tolist()", queryId)),
-    rname = python.get(sprintf("queries['%s'].RNAME.tolist()", queryId)),
-    rnext = python.get(sprintf("queries['%s'].RNEXT.tolist()", queryId)),
-    seq = python.get(sprintf("queries['%s'].SEQ.tolist()", queryId)),
-    tlen = python.get(sprintf("queries['%s'].TLEN.tolist()", queryId)))
-    
+            
+            qstring = paste(paste0('(QNAME==b"', query, '")'), collapse = "|")
+            queryId = paste0('query', runif(1))
+            python.exec(sprintf("queries['%s'] = run_query(sessions['%s'], '%s')", queryId, .Object@.sessionId, qstring))
+            
+            out = data.table(
+                bx = python.get(sprintf("queries['%s'].BX.tolist()", queryId)),
+                cigar = python.get(sprintf("queries['%s'].CIGAR.tolist()", queryId)),
+                flag = python.get(sprintf("queries['%s'].FLAG.tolist()", queryId)),
+                mapq = python.get(sprintf("queries['%s'].MAPQ.tolist()", queryId)),
+                pnext = python.get(sprintf("queries['%s'].PNEXT.tolist()", queryId)),
+                pos = python.get(sprintf("queries['%s'].POS.tolist()", queryId)),
+                qname = python.get(sprintf("queries['%s'].QNAME.tolist()", queryId)),
+                qual = python.get(sprintf("queries['%s'].QUAL.tolist()", queryId)),
+                rname = python.get(sprintf("queries['%s'].RNAME.tolist()", queryId)),
+                rnext = python.get(sprintf("queries['%s'].RNEXT.tolist()", queryId)),
+                seq = python.get(sprintf("queries['%s'].SEQ.tolist()", queryId)),
+                tlen = python.get(sprintf("queries['%s'].TLEN.tolist()", queryId)))
+        }
+
+    if (verbose)
+        print(Sys.time()-now)
     
     if (any(nnix <<- out$cigar=='*'))
     out$cigar[nnix] = NA

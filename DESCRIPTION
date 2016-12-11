@@ -8,7 +8,8 @@ Depends:
     R (>= 3.3.0),
     GenomicRanges (>= 1.8),
     bamUtils,
-    rPython,		
+    rPython,
+    RSQLite,
     Rsamtools
 Imports:
     data.table
