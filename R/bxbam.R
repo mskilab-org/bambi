@@ -222,13 +222,6 @@ CREATE TABLE reads (
             if (verbose)
                 message('\nprocessed ', nrow(chunk), ' from bam file, now writing to SQLlite')
             
-
-            ## MUCH slower than dbWriteTable call below 
-            ##     insert_statement = paste0(insert_frag, " ('",
-            ##                             do.call(paste, c(as.list(chunk), list(sep = "','"))),
-            ##                            "')")
-            ##        bla = lapply(insert_statement, dbExecute, conn = mydb)
-
             now.write = Sys.time()
             dbWriteTable(mydb, "reads", chunk, append = TRUE, overwrite = FALSE)
             if (verbose)
