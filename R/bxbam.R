@@ -347,7 +347,7 @@ setMethod('show', 'bxBam', function(object)
 #' @author Evan Biederstedt
 #' @author Marcin Imielinski
 setGeneric('get_bmates', function(.Object, query, ...) standardGeneric('get_bmates'))
-setMethod("get_bmates", "bxBam", function(.Object, query, verbose = FALSE){
+setMethod("get_bmates", "bxBam", function(.Object, query, verbose = FALSE, mc.cores = 1){
     
     if (!.hasSlot(.Object, '.sqllite')) ## check for older version of bxbam
         sqllite = FALSE
@@ -378,11 +378,24 @@ setMethod("get_bmates", "bxBam", function(.Object, query, verbose = FALSE){
         now = Sys.time()
     
     if (sqllite)
+    {
+
+        if (mc.cores == 1)
+            {
+                ## ahh how easy!
+                if (verbose)
+                    cat('.')
+                mydb <- RSQLite::dbConnect(RSQLite::SQLite(), .Object@.bxbamfile)
+                out = as.data.table(dbGetQuery(mydb, sprintf('SELECT * FROM reads WHERE BX in (%s)', paste0('"', query, '"', collapse = ','))))
+                if (verbose)
+                    cat('\n')
+            }
+        else
         {
-            ## ahh how easy!
-            mydb <- RSQLite::dbConnect(RSQLite::SQLite(), .Object@.bxbamfile)
-            out = as.data.table(dbGetQuery(mydb, sprintf('SELECT * FROM reads WHERE BX in (%s)', paste0('"', query, '"', collapse = ','))))
+            queryl = split(query, rep(1:mc.cores, ceiling(length(query)/mc.cores))[1:length(query)])
+            return(do.call('c', mclapply(queryl, get_bmates, .Object = .Object, verbose = verbose, mc.cores = mc.cores)))
         }
+    }
     else
         {            
             ## check if python session id exists and if not create
@@ -438,7 +451,7 @@ setMethod("get_bmates", "bxBam", function(.Object, query, verbose = FALSE){
         return(GRanges())
     
     cigs <- countCigar(out$cigar)
-    out$pos2 <- out$pos + rowSums(cigs[, c("D", "M")], na.rm=T) - 1
+    out$pos2 <- out$pos + rowSums(cigs[, c("D", "M"), drop = FALSE], na.rm=T) - 1
     
     
     out$qwidth = nchar(out$seq)
@@ -480,7 +493,7 @@ setMethod("get_bmates", "bxBam", function(.Object, query, verbose = FALSE){
 #' @author Evan Biederstedt
 #' @author Marcin Imielinski
 setGeneric('get_qmates', function(.Object, query, ...) standardGeneric('get_qmates'))
-setMethod("get_qmates", "bxBam", function(.Object, query, verbose = FALSE){
+setMethod("get_qmates", "bxBam", function(.Object, query, verbose = FALSE, mc.cores = 1){
 
     if (!.hasSlot(.Object, '.sqllite')) ## check for older version of bxbam
         sqllite = FALSE
@@ -512,9 +525,17 @@ setMethod("get_qmates", "bxBam", function(.Object, query, verbose = FALSE){
     
     if (sqllite)
     {
-        ## ahh how easy!
-        mydb <- RSQLite::dbConnect(RSQLite::SQLite(), .Object@.bxbamfile)
-        out = as.data.table(dbGetQuery(mydb, sprintf('SELECT * FROM reads WHERE qname in (%s)', paste0('"', query, '"', collapse = ','))))
+        if (mc.cores == 1)
+            {
+                ## ahh how easy!
+                mydb <- RSQLite::dbConnect(RSQLite::SQLite(), .Object@.bxbamfile)
+                out = as.data.table(dbGetQuery(mydb, sprintf('SELECT * FROM reads WHERE qname in (%s)', paste0('"', query, '"', collapse = ','))))
+            }
+        else
+        {
+            queryl = split(query, rep(1:mc.cores, ceiling(length(query)/mc.cores))[1:length(query)])
+            return(do.call('c', mclapply(queryl, get_qmates, .Object = .Object, verbose = verbose, mc.cores = mc.cores)))
+        }
     }
     else
         {
@@ -570,7 +591,7 @@ setMethod("get_qmates", "bxBam", function(.Object, query, verbose = FALSE){
     if (any(nnix <<- out$cigar=='*'))
     out$cigar[nnix] = NA
     cigs <- countCigar(out$cigar)
-    out$pos2 <- out$pos + rowSums(cigs[, c("D", "M")], na.rm=T) - 1
+    out$pos2 <- out$pos + rowSums(cigs[, c("D", "M"), drop = FALSE], na.rm=T) - 1
     
     out$qwidth = nchar(out$seq)
     out$strand = bamflag(out$flag)[, "isMinusStrand"] == 1
