@@ -165,8 +165,6 @@ bxBam = function(bxbamfile = '', bamfile = '', tags = NULL, index_on = NULL, chu
 #' @author Marcin Imielinski
 bam2sqllite = function(sqllite_path, bam_path, tags = NULL, index_on = NULL, chunksize = 1e6, verbose = FALSE, nlimit = NULL)
 {
-    begin = Sys.time()
-
     if (!is.null(nlimit))
         verbose = TRUE
     
@@ -209,35 +207,63 @@ CREATE TABLE reads (
     p = pipe(paste('samtools view', bam_path), open = 'r')
     fields = c('qname', 'flag', 'rname', 'pos', 'mapq', 'cigar', 'rnext', 'pnext', 'tlen', 'seq', 'qual')
     tags = c('MD', 'BX')
-    
-    while (length(lines <- readLines(p, n = chunksize))>0)
+
+  #   fandt = union(fields, tags)
+  #    insert_frag = sprintf("INSERT INTO reads (%s) VALUES", 
+  #                             paste(fandt, collapse = ','))
+
+
+    begin = Sys.time()
+
+    ## this DBI dbWithTransaction statement should cause the dbWriteTable
+    ## statements to be inside a transaction
+    DBI::dbWithTransaction(mydb,
     {
-        now = Sys.time()
-        linesp = strsplit(lines, '\t')
-        chunk = as.data.table(do.call(rbind, lapply(linesp, function(x) x[1:11])))[, line := 1:length(V1)]
-        m = munlist(lapply(linesp, function(x) x[-c(1:11)]))
-        tagchunk = fread(paste(m[,3], collapse = '\n'), sep = ':')
-        tagchunk[, line := as.numeric(m[,1])]
-        tagchunk = dcast.data.table(tagchunk[V1 %in% tags, ], line ~ V1, value.var = 'V3')
-        chunk = merge(chunk, tagchunk, by = 'line')[, -1, with = FALSE]
-        setnames(chunk, 1:11, fields)
-        chunk = chunk[, c(fields, tags), with = FALSE]
-        if (verbose)
-            message('processed ', nrow(chunk), ' from bam file, now writing to SQLlite')
-        dbWriteTable(mydb, "reads", chunk, append = TRUE)
-        if (verbose)
+        while (length(lines <- readLines(p, n = chunksize))>0)
         {
-            nlines = dbGetQuery(mydb, 'SELECT COUNT(*) FROM reads')
-            message(prettyNum(nlines, big.mark = ','), ' records in table')
-            print(Sys.time()-now)
-            message(' .. since beginning this chunk')
-            print(Sys.time()-begin)
-            message(' .. since starting file creation')                    
-            if (!is.null(nlimit))
-                if (nlines>nlimit)
-                    break()
+            now = Sys.time()
+            linesp = strsplit(lines, '\t')
+            chunk = as.data.table(do.call(rbind, lapply(linesp, function(x) x[1:11])))[, line := 1:length(V1)]
+            m = munlist(lapply(linesp, function(x) x[-c(1:11)]))
+            tagchunk = fread(paste(m[,3], collapse = '\n'), sep = ':')
+            tagchunk[, line := as.numeric(m[,1])]
+            tagchunk = dcast.data.table(tagchunk[V1 %in% tags, ], line ~ V1, value.var = 'V3')
+            chunk = merge(chunk, tagchunk, by = 'line')[, -1, with = FALSE]
+            setnames(chunk, 1:11, fields)
+            chunk = chunk[, c(fields, tags), with = FALSE]
+            if (verbose)
+                message('processed ', nrow(chunk), ' from bam file, now writing to SQLlite')
+            
+
+            ## MUCH slower than dbWriteTable call below 
+            ##     insert_statement = paste0(insert_frag, " ('",
+            ##                             do.call(paste, c(as.list(chunk), list(sep = "','"))),
+            ##                            "')")
+            ##        bla = lapply(insert_statement, dbExecute, conn = mydb)
+
+            now.write = Sys.time()
+            dbWriteTable(mydb, "reads", chunk, append = TRUE)
+            if (verbose)
+            {
+                nlines = dbGetQuery(mydb, 'SELECT COUNT(*) FROM reads')
+                nsecs = as.numeric(difftime( Sys.time(), now, units = 'secs'))
+                nsecs.write = as.numeric(difftime( Sys.time(), now.write, units = 'secs'))
+                nsecs.begin = as.numeric(difftime( Sys.time(), begin, units = 'secs'))                
+                message(prettyNum(nlines, big.mark = ','), ' records in table')
+                print(Sys.time()-now)
+                message(sprintf(' .. since beginning this chunk \n\t\t(parse + SQL write speed: %s records / second, \n\t\t SQL write speed: %s records / second)',
+                                prettyNum(round(nrow(chunk) / nsecs, 2)),
+                                prettyNum(round(nrow(chunk) / nsecs.write, 2))))
+                print(Sys.time()-begin)
+                message(sprintf(' .. since file creation\n\t\t(overall speed: %s records / second)',
+                                prettyNum(round(nlines / nsecs.begin,2))))
+
+                if (!is.null(nlimit))
+                    if (nlines>nlimit)
+                        break()
+            }
         }
-    }
+    })
 }
 
 
@@ -288,7 +314,7 @@ setValidity("bxBam", function(object){
 #' @author Marcin Imielinski
 setMethod('show', 'bxBam', function(object)
 {
-    cat(sprintf('bxBam object stored in HDF5 file\n\t%s\nwith associated BAM file\n\t%s:\n', object@.bxbamfile, Rsamtools::path(object@.bamfile)))
+    cat(sprintf('bxBam object stored in data file\n\t%s\nwith associated BAM file\n\t%s:\n', object@.bxbamfile, Rsamtools::path(object@.bamfile)))
     print(head(object))
 })
 
