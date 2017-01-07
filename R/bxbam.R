@@ -100,30 +100,25 @@ setMethod('initialize', 'bxBam', function(.Object, bxbamfile = '', bamfile = '',
         bamfile = gsub('bxbamfile', 'bxbam', bxbamfile)
         if (!file.exists(bamfile))
             bamfile = paste0(bamfile, '.bam')
-        
-        .Object@.bamfile = BamFile(bamfile)
-    }    
-    else ## if bam file is explicitly provided
-    {
-        if (nchar(bxbamfile) == 0)
-            bxbamfile = NULL
-        
-        if (is.null(bxbamfile)) ## if bxbam is not provided will create automatic name from bam path
-        {       
-            bxbamfile = gsub('.bam$', '.sqllite', bamfile)
-            sqllite = TRUE           
-        }
-        else
-            sqllite = grepl('.sqllite$', bxbamfile)
 
-        if (is(bamfile, 'BamFile'))
-            .Object@.bamfile = bamfile
-        else
-            .Object@.bamfile = BamFile(bamfile)
-        
     }
+        
+    if (!is(bamfile, 'BamFile'))
+        bamfile =  BamFile(bamfile)
 
-    print(sqllite)
+    .Object@.bamfile = bamfile
+    
+    if (nchar(bxbamfile) == 0)
+        bxbamfile = NULL
+    
+    if (is.null(bxbamfile)) ## if bxbam is not provided will create automatic name from bam path
+    {       
+        bxbamfile = gsub('.bam$', '.sqllite', bamfile)
+        sqllite = TRUE           
+    }
+    else
+        sqllite = grepl('.sqllite$', bxbamfile)
+    
     .Object@.bxbamfile = bxbamfile
     
     if (!sqllite)
@@ -140,7 +135,7 @@ setMethod('initialize', 'bxBam', function(.Object, bxbamfile = '', bamfile = '',
             message('Creating .sqllite from .bam file')
             tags = union(c('MD', 'BX'), tags)
             index_on = union(c('qname', 'BX', 'rname', 'rnext'), index_on)                    
-            bam2sqllite(.Object@.bxbamfile, Rsamtools::path(.Object@.bamfile), tags, index_on, chunksize = chunksize, verbose = verbose, nlimit = nlimit)
+            bam2sqllite(.Object@.bxbamfile, Rsamtools::path(.Object@.bamfile), tags = tags, index_on = index_on, chunksize = chunksize, verbose = verbose, nlimit = nlimit)
         }
     }
         
@@ -209,10 +204,9 @@ CREATE TABLE reads (
     
     if (verbose)
         message('Table created with indices on ', paste(index_cols, collapse = ', '), ' on additional tags ', paste(tags, collapse = ','),
-                ' using SQL commands \n', paste(c(create_str, create_index_str), collapse = ';\n'))
+                ' using SQL commands:', paste(c(create_str, create_index_str), collapse = ';\n'))
     
     p = pipe(paste('samtools view', bam_path), open = 'r')
-    chunksize = 1e5
     fields = c('qname', 'flag', 'rname', 'pos', 'mapq', 'cigar', 'rnext', 'pnext', 'tlen', 'seq', 'qual')
     tags = c('MD', 'BX')
     
@@ -241,7 +235,7 @@ CREATE TABLE reads (
             message(' .. since starting file creation')                    
             if (!is.null(nlimit))
                 if (nlines>nlimit)
-                    stop('Reached nlimit')
+                    break()
         }
     }
 }
@@ -269,6 +263,19 @@ setMethod('head', 'bxBam', function(x, n = 5)
 })
 
 
+#' @name show
+#' @title show
+#' @description Display a \code{gTrack} object
+#' @docType methods
+#' @param object \code{gTrack} to display
+#' @author Marcin Imielinski
+setGeneric('reindex', function(.Object) standardGeneric('reindex'))
+setMethod("reindex", "bxBam", function(.Object)
+{    
+    mydb <- RSQLite::dbConnect(RSQLite::SQLite(), .Object@.bxbamfile)
+    DBI::dbExecute(mydb, 'REINDEX main.reads')
+})
+
 setValidity("bxBam", function(object){
     if (!file.exists(bxbamfile)) stop ("'bxbamfile' is missing; please set correct path to bxbam.h5 object")
 })
@@ -281,7 +288,8 @@ setValidity("bxBam", function(object){
 #' @author Marcin Imielinski
 setMethod('show', 'bxBam', function(object)
 {
-  cat(sprintf('bxBam object stored in HDF5 file\n\t%s\nwith associated BAM file\n\t%s:\n', object@.bxbamfile, Rsamtools::path(object@.bamfile)))
+    cat(sprintf('bxBam object stored in HDF5 file\n\t%s\nwith associated BAM file\n\t%s:\n', object@.bxbamfile, Rsamtools::path(object@.bamfile)))
+    print(head(object))
 })
 
 #' @name get_bmates
@@ -368,6 +376,9 @@ setMethod("get_bmates", "bxBam", function(.Object, query, verbose = FALSE){
                 tlen = python.get(sprintf("queries['%s'].TLEN.tolist()", queryId)))
         }
 
+    if (nrow(out)==0)
+        return(out)
+            
     if (verbose)
         print(Sys.time()-now)
     
@@ -504,6 +515,9 @@ setMethod("get_qmates", "bxBam", function(.Object, query, verbose = FALSE){
                 tlen = python.get(sprintf("queries['%s'].TLEN.tolist()", queryId)))
         }
 
+    if (nrow(out)==0)
+        return(out)    
+    
     if (verbose)
         print(Sys.time()-now)
     
@@ -542,3 +556,53 @@ setMethod("get_qmates", "bxBam", function(.Object, query, verbose = FALSE){
 
 
 
+
+#############################################################
+#' @name munlist
+#' @title munlist
+#'
+#' @description
+#' unlists a list of vectors, matrices, data frames into a n x k matrix
+#' whose first column specifies the list item index of the entry
+#' and second column specifies the sublist item index of the entry
+#' and the remaining columns specifies the value(s) of the vector
+#' or matrices.
+#'
+#' force.cbind = T will force concatenation via 'cbind'
+#' force.rbind = T will force concatenation via 'rbind'
+#'
+#' @param x list of vectors, matrices, or data frames
+#' @param force.rbind logical flag to force concatenation via rbind (=FALSE), otherwise will guess
+#' @param force.cbind logical flag to force concatenation via cbind (=FALSE), otherwise will guess
+#' @param force.list logical flag to force concatenation via unlist (=FALSE), otherwise will guess
+#' @return data.frame of concatenated input data with additional fields $ix and $iix specifying the list item and within-list index from which the given row originated from
+#' @author Marcin Imielinski9
+#' @export
+#############################################################
+munlist = function(x, force.rbind = F, force.cbind = F, force.list = F)
+  {
+    if (!any(c(force.list, force.cbind, force.rbind)))
+      {
+        if (any(sapply(x, function(y) is.null(dim(y)))))
+          force.list = T
+        if (length(unique(sapply(x, function(y) dim(y)[2]))) == 1)
+          force.rbind = T
+        if ((length(unique(sapply(x, function(y) dim(y)[1]))) == 1))
+          force.cbind = T
+      }
+    else
+      force.list = T
+
+    if (force.list)
+      return(cbind(ix = unlist(lapply(1:length(x), function(y) rep(y, length(x[[y]])))),
+                   iix = unlist(lapply(1:length(x), function(y) if (length(x[[y]])>0) 1:length(x[[y]]) else NULL)),
+                   unlist(x)))
+    else if (force.rbind)
+      return(cbind(ix = unlist(lapply(1:length(x), function(y) rep(y, nrow(x[[y]])))),
+                   iix = unlist(lapply(1:length(x), function(y) if (nrow(x[[y]])>0) 1:nrow(x[[y]]) else NULL)),
+                   do.call('rbind', x)))
+    else if (force.cbind)
+      return(t(rbind(ix = unlist(lapply(1:length(x), function(y) rep(y, ncol(x[[y]])))),
+                     iix = unlist(lapply(1:length(x), function(y) if (ncol(x[[y]])>0) 1:ncol(x[[y]]) else NULL)),
+                   do.call('cbind', x))))
+  }
