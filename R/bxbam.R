@@ -191,18 +191,10 @@ CREATE TABLE reads (
     mydb <- dbConnect(RSQLite::SQLite(), sqllite_path)
     index_cols = c('qname', 'BX', 'rname', 'rnext')
     dbExecute(mydb, create_str)
-    
-    create_index_str = sapply(index_cols, function(x)
-    {
-        str = sprintf("CREATE INDEX %s ON reads(%s)", x,x)
-        dbExecute(mydb, str)
-        return(str)        
-    })
-        
-    
+           
     if (verbose)
         message('Table created with indices on ', paste(index_cols, collapse = ', '), ' on additional tags ', paste(tags, collapse = ','),
-                ' using SQL commands:', paste(c(create_str, create_index_str), collapse = ';\n'))
+                ' using SQL commands:', paste(c(create_str), collapse = ';\n'))
     
     p = pipe(paste('samtools view', bam_path), open = 'r')
     fields = c('qname', 'flag', 'rname', 'pos', 'mapq', 'cigar', 'rnext', 'pnext', 'tlen', 'seq', 'qual')
@@ -242,7 +234,7 @@ CREATE TABLE reads (
             ##        bla = lapply(insert_statement, dbExecute, conn = mydb)
 
             now.write = Sys.time()
-            dbWriteTable(mydb, "reads", chunk, append = TRUE)
+            dbWriteTable(mydb, "reads", chunk, append = TRUE, overwrite = FALSE)
             if (verbose)
             {
                 nlines = dbGetQuery(mydb, 'SELECT COUNT(*) FROM reads')
@@ -264,6 +256,19 @@ CREATE TABLE reads (
             }
         }
     })
+    
+    create_index_str = sapply(index_cols, function(x)
+    {
+        str = sprintf("CREATE INDEX %s ON reads(%s)", x,x)
+        dbExecute(mydb, str)
+        return(str)        
+    })
+
+    if (verbose)
+        message('Table created with indices on ', paste(index_cols, collapse = ', '), ' on additional tags ', paste(tags, collapse = ','),
+                ' using SQL commands:', paste(c(create_index_str), collapse = ';\n'))
+
+                   
 }
 
 
