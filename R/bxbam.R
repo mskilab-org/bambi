@@ -247,8 +247,15 @@ CREATE TABLE reads (
     })
 
     close(p)
+
+    if (verbose)
+        message("Records inserted .. now creating index")
+
     create_index_str = sapply(index_cols, function(x)
     {
+        if (verbose)
+            message("\t ..on ", x)
+        
         str = sprintf("CREATE INDEX %s ON reads(%s)", x,x)
         dbExecute(mydb, str)
         return(str)        
