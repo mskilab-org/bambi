@@ -86,7 +86,7 @@ countCigar <- function(cigar) {
 #' @author Evan Biederstedt
 setClass("bxBam", representation(.bxbamfile = 'character', .bamfile = 'BamFile', .sessionId = 'character', .sqllite = 'logical'))
 
-setMethod('initialize', 'bxBam', function(.Object, bxbamfile = '', bamfile = '', tags = NULL, index_on = NULL, chunksize = 1e6, verbose = TRUE, overwrite = FALSE, nlimit = NULL)
+setMethod('initialize', 'bxBam', function(.Object, bxbamfile = '', bamfile = '', tags = NULL, index_on = NULL, chunksize = 1e6, verbose = TRUE, overwrite = FALSE, nlimit = NULL, mc.cores = 1)
 {
     sqllite = FALSE
     .Object@.sessionId <- paste0('session', runif(1))
@@ -135,7 +135,7 @@ setMethod('initialize', 'bxBam', function(.Object, bxbamfile = '', bamfile = '',
             message('Creating .sqllite from .bam file')
             tags = union(c('MD', 'BX'), tags)
             index_on = union(c('qname', 'BX', 'rname', 'rnext'), index_on)                    
-            bam2sqllite(.Object@.bxbamfile, Rsamtools::path(.Object@.bamfile), tags = tags, index_on = index_on, chunksize = chunksize, verbose = verbose, nlimit = nlimit)
+            bam2sqllite(.Object@.bxbamfile, Rsamtools::path(.Object@.bamfile), tags = tags, index_on = index_on, chunksize = chunksize, verbose = verbose, nlimit = nlimit, mc.cores = mc.cores)
         }
     }
         
@@ -150,10 +150,10 @@ setMethod('initialize', 'bxBam', function(.Object, bxbamfile = '', bamfile = '',
 #' Initialize bxBam object specifying .bxbam file and optional .bam path
 #' @export
 #' @author Marcin Imielinski
-bxBam = function(bxbamfile = '', bamfile = '', tags = NULL, index_on = NULL, chunksize = 1e6, verbose = TRUE, overwrite = FALSE, nlimit = NULL)
+bxBam = function(bxbamfile = '', bamfile = '', tags = NULL, index_on = NULL, chunksize = 1e6, verbose = TRUE, overwrite = FALSE, nlimit = NULL, mc.cores = 1)
     new('bxBam', bxbamfile = bxbamfile, bamfile = bamfile,
         tags = tags, index_on = index_on, chunksize = chunksize, verbose = verbose,
-        overwrite = overwrite, nlimit = nlimit)
+        overwrite = overwrite, nlimit = nlimit, mc.cores = mc.cores)
 
 
 #' @name bam2sqllite
@@ -163,7 +163,7 @@ bxBam = function(bxbamfile = '', bamfile = '', tags = NULL, index_on = NULL, chu
 #' and +/- creating optional indices
 #' @export
 #' @author Marcin Imielinski
-bam2sqllite = function(sqllite_path, bam_path, tags = NULL, index_on = NULL, chunksize = 1e6, verbose = FALSE, nlimit = NULL)
+bam2sqllite = function(sqllite_path, bam_path, tags = NULL, index_on = NULL, chunksize = 1e6, verbose = FALSE, nlimit = NULL, mc.cores = 1)
 {
     if (!is.null(nlimit))
         verbose = TRUE
@@ -214,17 +214,13 @@ CREATE TABLE reads (
         while (length(lines <- readLines(p, n = chunksize))>0)
         {
             now = Sys.time()
-            linesp = strsplit(lines, '\t')
-            chunk = as.data.table(do.call(rbind, lapply(linesp, function(x) x[1:11])))[, line := 1:length(V1)]
-            m = munlist(lapply(linesp, function(x) x[-c(1:11)]))
-            tagchunk = fread(paste(m[,3], collapse = '\n'), sep = ':')
-            tagchunk[, line := as.numeric(m[,1])]
-            tagchunk = dcast.data.table(tagchunk[V1 %in% tags, ], line ~ V1, value.var = 'V3')
-            chunk = merge(chunk, tagchunk, by = 'line')[, -1, with = FALSE]
-            setnames(chunk, 1:11, fields)
-            chunk = chunk[, c(fields, tags), with = FALSE]
+            lchunks = split(lines, rep(1:mc.cores, ceiling(length(lines)/mc.cores)))
+            chunk = rbindlist(mclapply(lchunks,
+                                     .proclines, fields = fields, tags = tags, verbose = TRUE,
+                                     mc.cores = mc.cores))
+                                          
             if (verbose)
-                message('processed ', nrow(chunk), ' from bam file, now writing to SQLlite')
+                message('\nprocessed ', nrow(chunk), ' from bam file, now writing to SQLlite')
             
 
             ## MUCH slower than dbWriteTable call below 
@@ -256,7 +252,8 @@ CREATE TABLE reads (
             }
         }
     })
-    
+
+    close(p)
     create_index_str = sapply(index_cols, function(x)
     {
         str = sprintf("CREATE INDEX %s ON reads(%s)", x,x)
@@ -271,6 +268,24 @@ CREATE TABLE reads (
                    
 }
 
+## process chunk of lines, used by bam2sqllite
+.proclines = function(lines, fields, tags, verbose = FALSE)
+{
+    if (verbose)
+        cat(".")
+    linesp = strsplit(lines, '\t')
+    chunk = as.data.table(do.call(rbind, lapply(linesp, function(x) x[1:11])))[, line := 1:length(V1)]
+    m = munlist(lapply(linesp, function(x) x[-c(1:11)]))
+    tagchunk = fread(paste(m[,3], collapse = '\n'), sep = ':')
+    tagchunk[, line := as.numeric(m[,1])]
+    tagchunk = dcast.data.table(tagchunk[V1 %in% tags, ], line ~ V1, value.var = 'V3')
+    chunk = merge(chunk, tagchunk, by = 'line')[, -1, with = FALSE]
+    setnames(chunk, 1:11, fields)
+    chunk = chunk[, c(fields, tags), with = FALSE]
+    if (verbose)
+        cat("|")
+    return(chunk)    
+}
 
 #' @name head
 #' @title gets head of file
