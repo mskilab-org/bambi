@@ -214,7 +214,7 @@ CREATE TABLE reads (
         while (length(lines <- readLines(p, n = chunksize))>0)
         {
             now = Sys.time()
-            lchunks = split(lines, rep(1:mc.cores, ceiling(length(lines)/mc.cores)))
+            lchunks = split(lines, rep(1:mc.cores, ceiling(length(lines)/mc.cores))[1:length(lines)])
             chunk = rbindlist(mclapply(lchunks,
                                      .proclines, fields = fields, tags = tags, verbose = TRUE,
                                      mc.cores = mc.cores))
