@@ -309,11 +309,10 @@ setMethod('head', 'bxBam', function(x, n = 5)
 })
 
 
-#' @name show
-#' @title show
-#' @description Display a \code{gTrack} object
+#' @name reindex
+#' @title reindex
+#' @description SQLite REINDEX: delete and recreate indices from scratch
 #' @docType methods
-#' @param object \code{gTrack} to display
 #' @author Marcin Imielinski
 setGeneric('reindex', function(.Object) standardGeneric('reindex'))
 setMethod("reindex", "bxBam", function(.Object)
