@@ -1,34 +1,27 @@
 # bxBam
 indexed file format for barcoded BAMs with API for converting and accessing alignment records
 
-# dependencies
+## Table of contents
+* [Installation](#installation)
+* [Examples](#examples)
 
-Python >= 2.7 or Python 3.x
+## Installation
 
-HDF5 >= 1.8.4 (recommend >=1.8.15 , HDF5 v1.10 not supported)
+```R
+## install packages via devtools::install_github().
+library(devtools)
+install_github("KhagayN/bxBamTesting") ## this will change to mskilab/bxBam shortly.
+```
 
-PyTables (https://github.com/PyTables/PyTables)
+## Examples
 
-NumPy >= 1.8.1
+```R
+## via functions available in package.
+library(bxBam)
+ls.str('package:bxBam')
+```
 
-Numexpr >= 2.5.2
-
-Cython >= 0.21
-
-Samtools https://github.com/samtools/samtools
-
-Users install Python dependencies with `pip install -r requirements.txt`
-
-# Rough API: 
-
-(1) Given a 10x bam file, create bxBam file with `python create_bxbam.py`. First at the path to your bam in the script, as well as the bxbam name. Users can chose which fields to index---the default is on `BX` and `QUAL` to query bmates against qmates. There exists a flag `--MD` to include the `MD` tag, if this is included (e.g. if user has generated MD tags with `samtools calmd <bam-file>`). Otherwise, the default will include 12 fields: the 11 mandatory bam fields and BX. 
-
-     python indexing_issues_bxbam.py --input="/pathname/path/file.bam" --output "pathname/bxbam.h5" --index_fields="QNAME","BX" 
-
-Optional column is --MD
-
-(2) Run
-    
-    install.packages("devtools")
-    library(devtools)
-    install_github("mskilab/bxBam")
+```R
+## generate index file given a BAM file.
+bxBam('path_to_bam_file')
+```
