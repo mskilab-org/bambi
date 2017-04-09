@@ -11,12 +11,8 @@
 #include "htslib/bgzf.h"
 
 #include "include/bamdb.h"
-#include "include/bam_sqlite.h"
 #include "include/bam_lmdb.h"
 #include "include/bam_api.h"
-
-/* I really hope we don't have sequences longer than this */
-#define WORK_BUFFER_SIZE 65536
 
 #define get_int_chars(i) ((i == 0) ? 1 : floor(log10(abs(i))) + 1)
 
@@ -184,15 +180,12 @@ print_bam_row(const bam1_t *row, const bam_hdr_t *header, char *work_buffer)
 	printf("\tPNEXT: %d\n", row->core.mpos + 1);
 	printf("\tTLEN: %d\n", row->core.isize);
 
-	temp = work_buffer;
 	printf("\tSEQ: %s\n", bam_seq_str(row, work_buffer));
 	work_buffer = temp;
 
-	temp = work_buffer;
 	printf("\tQUAL: %s\n", bam_qual_str(row, work_buffer));
 	work_buffer = temp;
 
-	temp = work_buffer;
 	printf("\tBX: %s\n", bam_bx_str(row, work_buffer));
 	work_buffer = temp;
 
@@ -204,13 +197,13 @@ print_bam_row(const bam1_t *row, const bam_hdr_t *header, char *work_buffer)
 	return 0;
 }
 
-	
+
 static int
 read_file(samFile *input_file, offset_list_t *offset_list)
 {
 	bam_hdr_t *header = NULL;
 	bam1_t *bam_row;
-	char *work_buffer;
+	char *work_buffer = NULL;
 	int r = 0;
 	int rc = 0;
 	int64_t src = 0;
@@ -220,7 +213,7 @@ read_file(samFile *input_file, offset_list_t *offset_list)
 	if (header == NULL) {
 		fprintf(stderr, "Unable to read the header from %s\n", input_file->fn);
 		rc = 1;
-		goto exit;
+		return 1;
 	}
 
 	bam_row = bam_init1();
@@ -258,14 +251,26 @@ exit:
 }
 
 
+int 
+generate_index_file (char *input_file_name)
+{
+	samFile *input_file = 0;
+
+	if ((input_file = sam_open(input_file_name, "r")) == 0) {
+		fprintf(stderr, "Unable to open file %s\n", input_file_name);
+		return 1;
+	}
+
+	return convert_to_lmdb(input_file, NULL);
+}
+
+
 int
 main(int argc, char *argv[]) {
 	int rc = 0;
 	int c;
-	samFile *input_file = 0;
 	bam_args_t bam_args;
 	int max_rows = 0;
-	offset_list_t *offset_list = NULL;
 
 	bam_args.index_file_name = NULL;
 	bam_args.bx = NULL;
@@ -273,9 +278,7 @@ main(int argc, char *argv[]) {
 	while ((c = getopt(argc, argv, "t:f:n:i:b:")) != -1) {
 			switch(c) {
 				case 't':
-					if (strcmp(optarg, "sqlite") == 0) {
-						bam_args.convert_to = BAMDB_CONVERT_TO_SQLITE;
-					} else if (strcmp(optarg, "lmdb") == 0) {
+					if (strcmp(optarg, "lmdb") == 0) {
 						bam_args.convert_to = BAMDB_CONVERT_TO_LMDB;
 					} else if (strcmp(optarg, "text") == 0) {
 						bam_args.convert_to = BAMDB_CONVERT_TO_TEXT;
@@ -307,22 +310,16 @@ main(int argc, char *argv[]) {
 		strcpy(bam_args.input_file_name, argv[optind]);
 	}
 
-	if ((input_file = sam_open(bam_args.input_file_name, "r")) == 0) {
-		fprintf(stderr, "Unable to open file %s\n", bam_args.input_file_name);
-		return 1;
-	}
-
 	if (bam_args.bx != NULL && bam_args.index_file_name != NULL) {
-		offset_list = calloc(1, sizeof(offset_list_t));
-		get_offsets(offset_list, bam_args.index_file_name, bam_args.bx);
+		bam_row_set_t *row_set = get_bx_rows(bam_args.input_file_name, bam_args.index_file_name, bam_args.bx);
+		for (int j = 0; j < row_set->n_entries; ++j) {
+			print_sequence_row(row_set->rows[j]);
+		}
+		free_row_set(row_set);
 	}
 
-	if (bam_args.convert_to == BAMDB_CONVERT_TO_SQLITE) {
-		rc = convert_to_sqlite(input_file, NULL, max_rows);
-	} else if (bam_args.convert_to == BAMDB_CONVERT_TO_LMDB) {
-		rc = convert_to_lmdb(input_file, NULL, max_rows);
-	} else {
-		rc = read_file(input_file, offset_list);
+	if (bam_args.convert_to == BAMDB_CONVERT_TO_LMDB) {
+		rc = generate_index_file(bam_args.input_file_name);
 	}
 
 	return rc;

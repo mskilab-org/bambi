@@ -13,3 +13,5 @@ typedef struct bamdb_args {
 	char *index_file_name;
 	char *bx;
 } bam_args_t;
+
+int generate_index_file(char *input_file_name);
