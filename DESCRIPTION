@@ -13,8 +13,8 @@ Depends:
     RSQLite,
     Rsamtools
 Imports:
-    data.table
-    Rcpp(>= 0.12.5)
+	data.table,
+	Rcpp(>= 0.12.5)
 LinkingTo: Rcpp
 License: GPL-2
 Encoding: UTF-8
