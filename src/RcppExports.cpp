@@ -17,3 +17,13 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// generate_bxi
+void generate_bxi(const std::string& bamFile);
+RcppExport SEXP bxBam_generate_bxi(SEXP bamFileSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const std::string& >::type bamFile(bamFileSEXP);
+    generate_bxi(bamFile);
+    return R_NilValue;
+END_RCPP
+}

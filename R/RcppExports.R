@@ -5,3 +5,7 @@ barcodedReads <- function(bamFile, indexFile, barcode) {
     invisible(.Call('bxBam_barcodedReads', PACKAGE = 'bxBam', bamFile, indexFile, barcode))
 }
 
+generate_bxi <- function(bamFile) {
+    invisible(.Call('bxBam_generate_bxi', PACKAGE = 'bxBam', bamFile))
+}
+

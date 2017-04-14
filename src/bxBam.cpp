@@ -64,7 +64,7 @@ void barcodedReads(std::string& bamFile, std::string& indexFile, std::string& ba
 
 // [[Rcpp::export]]
 void
-generate_db(const std::string& bamFile){
+generate_bxi(const std::string& bamFile){
   int c = 0;
   int rc = 0;
   samFile *input_file = 0;
