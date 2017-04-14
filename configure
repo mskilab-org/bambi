@@ -33,6 +33,7 @@ echo "the current working directory is" $(pwd);
 
 echo "entering sqlite directory and compiling...";
 cd $sqlite3;
+touch Makefile.am Makefile.in aclocal.m4
 make;
 ar sr libsqlite3.a sqlite3.o sqlite3-shell.o sqlite3-sqlite3.o
 echo "leaving ${sqlite3} directory";
