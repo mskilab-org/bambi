@@ -62,6 +62,31 @@ void barcodedReads(std::string& bamFile, std::string& indexFile, std::string& ba
   rc = read_file(input_file, offset_list);
 }
 
+// [[Rcpp::export]]
+void
+generate_db(const std::string& bamFile){
+  int c = 0;
+  int rc = 0;
+  samFile *input_file = 0;
+  bam_args_t bam_args;
+  int max_rows = 0;
+  offset_list_t *offset_list = NULL;
+
+  bam_args.index_file_name = NULL;
+  bam_args.bx = NULL;
+  bam_args.convert_to = BAMDB_CONVERT_TO_TEXT;
+  // the following command is for the -t parameter and the "sqlite" string that is passed to it.
+  bam_args.convert_to = BAMDB_CONVERT_TO_SQLITE;
+  // the following command is for the -f parameter.
+  strcpy(bam_args.input_file_name, bamFile.c_str());
+
+  input_file = sam_open(bam_args.input_file_name, "r");
+
+  if (bam_args.convert_to == BAMDB_CONVERT_TO_SQLITE) {
+    rc = convert_to_sqlite(input_file, NULL, max_rows);
+  }
+}
+
 int main()
 {
 }
