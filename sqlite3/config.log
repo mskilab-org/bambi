@@ -486,8 +486,8 @@ configure:12937: $? = 0
 configure:12937: result: yes
 configure:12937: checking for fullfsync
 configure:12937: gcc -o conftest -g -O2   conftest.c  >&5
-/tmp/cchHR0gp.o: In function `main':
-/gpfs/commons/home/knagdimov/temp/git/bxBamTesting/sqlite3/conftest.c:59: undefined reference to `fullfsync'
+/tmp/cctDPeeA.o: In function `main':
+/gpfs/commons/home/knagdimov/temp/git/development/bxBam/sqlite3/conftest.c:59: undefined reference to `fullfsync'
 collect2: error: ld returned 1 exit status
 configure:12937: $? = 1
 configure: failed program was:
@@ -879,8 +879,8 @@ configure:13158: checking for readline/readline.h
 configure:13158: result: no
 configure:13308: checking for library containing pthread_create
 configure:13339: gcc -o conftest -g -O2   conftest.c  >&5
-/tmp/ccXETvAh.o: In function `main':
-/gpfs/commons/home/knagdimov/temp/git/bxBamTesting/sqlite3/conftest.c:40: undefined reference to `pthread_create'
+/tmp/ccER7VFq.o: In function `main':
+/gpfs/commons/home/knagdimov/temp/git/development/bxBam/sqlite3/conftest.c:40: undefined reference to `pthread_create'
 collect2: error: ld returned 1 exit status
 configure:13339: $? = 1
 configure: failed program was:
@@ -936,8 +936,8 @@ configure:13395: $? = 0
 configure:13412: result: none required
 configure:13435: checking for library containing dlopen
 configure:13466: gcc -o conftest -g -O2   conftest.c -lpthread  >&5
-/tmp/ccOuZPWB.o: In function `main':
-/gpfs/commons/home/knagdimov/temp/git/bxBamTesting/sqlite3/conftest.c:40: undefined reference to `dlopen'
+/tmp/ccQwvFhI.o: In function `main':
+/gpfs/commons/home/knagdimov/temp/git/development/bxBam/sqlite3/conftest.c:40: undefined reference to `dlopen'
 collect2: error: ld returned 1 exit status
 configure:13466: $? = 1
 configure: failed program was:
@@ -1105,7 +1105,7 @@ lt_cv_truncate_bin='/usr/bin/dd bs=4096 count=1'
 ## Output variables. ##
 ## ----------------- ##
 
-ACLOCAL='${SHELL} /gpfs/commons/home/knagdimov/temp/git/bxBamTesting/sqlite3/missing aclocal-1.15'
+ACLOCAL='${SHELL} /gpfs/commons/home/knagdimov/temp/git/development/bxBam/sqlite3/missing aclocal-1.15'
 AMDEPBACKSLASH='\'
 AMDEP_FALSE='#'
 AMDEP_TRUE=''
@@ -1115,9 +1115,9 @@ AM_DEFAULT_V='$(AM_DEFAULT_VERBOSITY)'
 AM_DEFAULT_VERBOSITY='1'
 AM_V='$(V)'
 AR='ar'
-AUTOCONF='${SHELL} /gpfs/commons/home/knagdimov/temp/git/bxBamTesting/sqlite3/missing autoconf'
-AUTOHEADER='${SHELL} /gpfs/commons/home/knagdimov/temp/git/bxBamTesting/sqlite3/missing autoheader'
-AUTOMAKE='${SHELL} /gpfs/commons/home/knagdimov/temp/git/bxBamTesting/sqlite3/missing automake-1.15'
+AUTOCONF='${SHELL} /gpfs/commons/home/knagdimov/temp/git/development/bxBam/sqlite3/missing autoconf'
+AUTOHEADER='${SHELL} /gpfs/commons/home/knagdimov/temp/git/development/bxBam/sqlite3/missing autoheader'
+AUTOMAKE='${SHELL} /gpfs/commons/home/knagdimov/temp/git/development/bxBam/sqlite3/missing automake-1.15'
 AWK='gawk'
 BUILD_CFLAGS=''
 CC='gcc'
@@ -1155,7 +1155,7 @@ LIPO=''
 LN_S='ln -s'
 LTLIBOBJS=''
 LT_SYS_LIBRARY_PATH=''
-MAKEINFO='${SHELL} /gpfs/commons/home/knagdimov/temp/git/bxBamTesting/sqlite3/missing makeinfo'
+MAKEINFO='${SHELL} /gpfs/commons/home/knagdimov/temp/git/development/bxBam/sqlite3/missing makeinfo'
 MANIFEST_TOOL=':'
 MKDIR_P='/usr/bin/mkdir -p'
 NM='/usr/bin/nm -B'
@@ -1214,7 +1214,7 @@ host_vendor='unknown'
 htmldir='${docdir}'
 includedir='${prefix}/include'
 infodir='${datarootdir}/info'
-install_sh='${SHELL} /gpfs/commons/home/knagdimov/temp/git/bxBamTesting/sqlite3/install-sh'
+install_sh='${SHELL} /gpfs/commons/home/knagdimov/temp/git/development/bxBam/sqlite3/install-sh'
 libdir='${exec_prefix}/lib'
 libexecdir='${exec_prefix}/libexec'
 localedir='${datarootdir}/locale'
