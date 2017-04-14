@@ -38,31 +38,6 @@ PATH: /gpfs/commons/home/knagdimov/Software/sratoolkit.2.5.7-centos_linux64/bin
 PATH: /gpfs/commons/home/knagdimov/Software/HMMCopy/HMMcopy/bin/
 PATH: /gpfs/commons/home/knagdimov/Software/UCSC/
 PATH: /nfs/sw/emacs/emacs-24.5/bin
-PATH: /gpfs/commons/home/knagdimov/lab/.local/bin/
-PATH: /gpfs/commons/home/knagdimov/git/dapars/
-PATH: /gpfs/commons/home/knagdimov/lab/git/MACS/bin/
-PATH: /gpfs/commons/home/knagdimov/scripts/
-PATH: /gpfs/commons/home/knagdimov/modules/Snowman/
-PATH: /gpfs/commons/home/knagdimov/modules/STAR
-PATH: /nethome/mimielinski/Software/sshpass-1.05
-PATH: /gpfs/commons/home/knagdimov/Software/sratoolkit.2.5.7-centos_linux64/bin
-PATH: /gpfs/commons/home/knagdimov/Software/HMMCopy/HMMcopy/bin/
-PATH: /gpfs/commons/home/knagdimov/Software/UCSC/
-PATH: /nfs/sw/emacs/emacs-24.5/bin
-PATH: /nethome/mimielinski/perl5/bin
-PATH: /opt/sge/bin
-PATH: /opt/sge/bin/lx-amd64
-PATH: /gpfs/commons/home/knagdimov/lab/.local/bin/
-PATH: /gpfs/commons/home/knagdimov/git/dapars/
-PATH: /gpfs/commons/home/knagdimov/lab/git/MACS/bin/
-PATH: /gpfs/commons/home/knagdimov/scripts/
-PATH: /gpfs/commons/home/knagdimov/modules/Snowman/
-PATH: /gpfs/commons/home/knagdimov/modules/STAR
-PATH: /nethome/mimielinski/Software/sshpass-1.05
-PATH: /gpfs/commons/home/knagdimov/Software/sratoolkit.2.5.7-centos_linux64/bin
-PATH: /gpfs/commons/home/knagdimov/Software/HMMCopy/HMMcopy/bin/
-PATH: /gpfs/commons/home/knagdimov/Software/UCSC/
-PATH: /nfs/sw/emacs/emacs-24.5/bin
 PATH: /nethome/mimielinski/perl5/bin
 PATH: /opt/sge/bin
 PATH: /opt/sge/bin/lx-amd64
@@ -107,17 +82,6 @@ PATH: /gpfs/commons/home/knagdimov/Scripts/bash
 PATH: /gpfs/commons/home/knagdimov/lab/Software/CPLEX/CPLEX_Studio/cplex/bin/x86-64_linux/
 PATH: /gpfs/commons/home/knagdimov/SeqLib/bin/
 PATH: /usr/lpp/mmfs/bin/
-PATH: /gpfs/commons/home/knagdimov/bin
-PATH: /gpfs/commons/home/knagdimov/dev/scripts/
-PATH: /gpfs/commons/home/knagdimov/Scripts/bash
-PATH: /gpfs/commons/home/knagdimov/lab/Software/CPLEX/CPLEX_Studio/cplex/bin/x86-64_linux/
-PATH: /gpfs/commons/home/knagdimov/SeqLib/bin/
-PATH: /usr/lpp/mmfs/bin/
-PATH: /gpfs/commons/home/knagdimov/bin
-PATH: /gpfs/commons/home/knagdimov/dev/scripts/
-PATH: /gpfs/commons/home/knagdimov/Scripts/bash
-PATH: /gpfs/commons/home/knagdimov/lab/Software/CPLEX/CPLEX_Studio/cplex/bin/x86-64_linux/
-PATH: /gpfs/commons/home/knagdimov/SeqLib/bin/
 PATH: /gpfs/commons/home/knagdimov/bin
 PATH: /gpfs/commons/home/knagdimov/dev/scripts/
 PATH: /gpfs/commons/home/knagdimov/Scripts/bash
@@ -175,27 +139,27 @@ gcc: fatal error: no input files
 compilation terminated.
 configure:3286: $? = 4
 configure:3306: checking whether the C compiler works
-configure:3328: gcc    conftest.c  >&5
+configure:3328: gcc -g -O2 -fpic   conftest.c  >&5
 configure:3332: $? = 0
 configure:3380: result: yes
 configure:3383: checking for C compiler default output file name
 configure:3385: result: a.out
 configure:3391: checking for suffix of executables
-configure:3398: gcc -o conftest    conftest.c  >&5
+configure:3398: gcc -o conftest -g -O2 -fpic   conftest.c  >&5
 configure:3402: $? = 0
 configure:3424: result: 
 configure:3446: checking whether we are cross compiling
-configure:3454: gcc -o conftest    conftest.c  >&5
+configure:3454: gcc -o conftest -g -O2 -fpic   conftest.c  >&5
 configure:3458: $? = 0
 configure:3465: ./conftest
 configure:3469: $? = 0
 configure:3484: result: no
 configure:3489: checking for suffix of object files
-configure:3511: gcc -c   conftest.c >&5
+configure:3511: gcc -c -g -O2 -fpic  conftest.c >&5
 configure:3515: $? = 0
 configure:3536: result: o
 configure:3540: checking whether we are using the GNU C compiler
-configure:3559: gcc -c   conftest.c >&5
+configure:3559: gcc -c -g -O2 -fpic  conftest.c >&5
 configure:3559: $? = 0
 configure:3568: result: yes
 configure:3577: checking whether gcc accepts -g
@@ -203,7 +167,7 @@ configure:3597: gcc -c -g  conftest.c >&5
 configure:3597: $? = 0
 configure:3638: result: yes
 configure:3655: checking for gcc option to accept ISO C89
-configure:3718: gcc  -c -g -O2  conftest.c >&5
+configure:3718: gcc  -c -g -O2 -fpic  conftest.c >&5
 configure:3718: $? = 0
 configure:3731: result: none needed
 configure:3756: checking whether gcc understands -c and -o together
@@ -217,7 +181,7 @@ configure:3923: result: gcc3
 configure:3946: checking for special C compiler options needed for large files
 configure:3991: result: no
 configure:3997: checking for _FILE_OFFSET_BITS value needed for large files
-configure:4022: gcc -c -g -O2  conftest.c >&5
+configure:4022: gcc -c -g -O2 -fpic  conftest.c >&5
 configure:4022: $? = 0
 configure:4054: result: no
 configure:4189: checking for gcc
@@ -280,7 +244,7 @@ configure:5430: result: yes
 configure:5442: checking for BSD- or MS-compatible name lister (nm)
 configure:5496: result: /usr/bin/nm -B
 configure:5626: checking the name lister (/usr/bin/nm -B) interface
-configure:5633: gcc -c -g -O2  conftest.c >&5
+configure:5633: gcc -c -g -O2 -fpic  conftest.c >&5
 configure:5636: /usr/bin/nm -B "conftest.o"
 configure:5639: output
 0000000000000000 B some_variable
@@ -308,7 +272,7 @@ configure:6486: checking for ar
 configure:6502: found /usr/bin/ar
 configure:6513: result: ar
 configure:6550: checking for archiver @FILE support
-configure:6567: gcc -c -g -O2  conftest.c >&5
+configure:6567: gcc -c -g -O2 -fpic  conftest.c >&5
 configure:6567: $? = 0
 configure:6570: ar cru libconftest.a @conftest.lst >&5
 configure:6573: $? = 0
@@ -323,11 +287,11 @@ configure:6750: checking for ranlib
 configure:6766: found /usr/bin/ranlib
 configure:6777: result: ranlib
 configure:6879: checking command to parse /usr/bin/nm -B output from gcc object
-configure:7032: gcc -c -g -O2  conftest.c >&5
+configure:7032: gcc -c -g -O2 -fpic  conftest.c >&5
 configure:7035: $? = 0
 configure:7039: /usr/bin/nm -B conftest.o \| sed -n -e 's/^.*[ ]\([ABCDGIRSTW][ABCDGIRSTW]*\)[ ][ ]*\([_A-Za-z][_A-Za-z0-9]*\)$/\1 \2 \2/p' | sed '/ __gnu_lto/d' \> conftest.nm
 configure:7042: $? = 0
-configure:7108: gcc -o conftest -g -O2   conftest.c conftstm.o >&5
+configure:7108: gcc -o conftest -g -O2 -fpic   conftest.c conftstm.o >&5
 configure:7111: $? = 0
 configure:7149: result: ok
 configure:7196: checking for sysroot
@@ -336,7 +300,7 @@ configure:7233: checking for a working dd
 configure:7271: result: /usr/bin/dd
 configure:7275: checking how to truncate binary pipes
 configure:7290: result: /usr/bin/dd bs=4096 count=1
-configure:7426: gcc -c -g -O2  conftest.c >&5
+configure:7426: gcc -c -g -O2 -fpic  conftest.c >&5
 configure:7429: $? = 0
 configure:7619: checking for mt
 configure:7649: result: no
@@ -386,70 +350,70 @@ configure: failed program was:
 | /* end confdefs.h.  */
 | #include <ac_nonexistent.h>
 configure:8493: checking for ANSI C header files
-configure:8513: gcc -c -g -O2  conftest.c >&5
+configure:8513: gcc -c -g -O2 -fpic  conftest.c >&5
 configure:8513: $? = 0
-configure:8586: gcc -o conftest -g -O2   conftest.c  >&5
+configure:8586: gcc -o conftest -g -O2 -fpic   conftest.c  >&5
 configure:8586: $? = 0
 configure:8586: ./conftest
 configure:8586: $? = 0
 configure:8597: result: yes
 configure:8610: checking for sys/types.h
-configure:8610: gcc -c -g -O2  conftest.c >&5
+configure:8610: gcc -c -g -O2 -fpic  conftest.c >&5
 configure:8610: $? = 0
 configure:8610: result: yes
 configure:8610: checking for sys/stat.h
-configure:8610: gcc -c -g -O2  conftest.c >&5
+configure:8610: gcc -c -g -O2 -fpic  conftest.c >&5
 configure:8610: $? = 0
 configure:8610: result: yes
 configure:8610: checking for stdlib.h
-configure:8610: gcc -c -g -O2  conftest.c >&5
+configure:8610: gcc -c -g -O2 -fpic  conftest.c >&5
 configure:8610: $? = 0
 configure:8610: result: yes
 configure:8610: checking for string.h
-configure:8610: gcc -c -g -O2  conftest.c >&5
+configure:8610: gcc -c -g -O2 -fpic  conftest.c >&5
 configure:8610: $? = 0
 configure:8610: result: yes
 configure:8610: checking for memory.h
-configure:8610: gcc -c -g -O2  conftest.c >&5
+configure:8610: gcc -c -g -O2 -fpic  conftest.c >&5
 configure:8610: $? = 0
 configure:8610: result: yes
 configure:8610: checking for strings.h
-configure:8610: gcc -c -g -O2  conftest.c >&5
+configure:8610: gcc -c -g -O2 -fpic  conftest.c >&5
 configure:8610: $? = 0
 configure:8610: result: yes
 configure:8610: checking for inttypes.h
-configure:8610: gcc -c -g -O2  conftest.c >&5
+configure:8610: gcc -c -g -O2 -fpic  conftest.c >&5
 configure:8610: $? = 0
 configure:8610: result: yes
 configure:8610: checking for stdint.h
-configure:8610: gcc -c -g -O2  conftest.c >&5
+configure:8610: gcc -c -g -O2 -fpic  conftest.c >&5
 configure:8610: $? = 0
 configure:8610: result: yes
 configure:8610: checking for unistd.h
-configure:8610: gcc -c -g -O2  conftest.c >&5
+configure:8610: gcc -c -g -O2 -fpic  conftest.c >&5
 configure:8610: $? = 0
 configure:8610: result: yes
 configure:8624: checking for dlfcn.h
-configure:8624: gcc -c -g -O2  conftest.c >&5
+configure:8624: gcc -c -g -O2 -fpic  conftest.c >&5
 configure:8624: $? = 0
 configure:8624: result: yes
 configure:8880: checking for objdir
 configure:8895: result: .libs
 configure:9155: checking if gcc supports -fno-rtti -fno-exceptions
-configure:9173: gcc -c -g -O2  -fno-rtti -fno-exceptions conftest.c >&5
+configure:9173: gcc -c -g -O2 -fpic  -fno-rtti -fno-exceptions conftest.c >&5
 cc1: warning: command line option '-fno-rtti' is valid for C++/ObjC++ but not for C [enabled by default]
 configure:9177: $? = 0
 configure:9190: result: no
 configure:9548: checking for gcc option to produce PIC
 configure:9555: result: -fPIC -DPIC
 configure:9563: checking if gcc PIC flag -fPIC -DPIC works
-configure:9581: gcc -c -g -O2  -fPIC -DPIC -DPIC conftest.c >&5
+configure:9581: gcc -c -g -O2 -fpic  -fPIC -DPIC -DPIC conftest.c >&5
 configure:9585: $? = 0
 configure:9598: result: yes
 configure:9627: checking if gcc static flag -static works
 configure:9655: result: no
 configure:9670: checking if gcc supports -c -o file.o
-configure:9691: gcc -c -g -O2  -o out/conftest2.o conftest.c >&5
+configure:9691: gcc -c -g -O2 -fpic  -o out/conftest2.o conftest.c >&5
 configure:9695: $? = 0
 configure:9717: result: yes
 configure:9725: checking if gcc supports -c -o file.o
@@ -457,13 +421,13 @@ configure:9772: result: yes
 configure:9805: checking whether the gcc linker (/usr/bin/ld -m elf_x86_64) supports shared libraries
 configure:11064: result: yes
 configure:11101: checking whether -lc should be explicitly linked in
-configure:11109: gcc -c -g -O2  conftest.c >&5
+configure:11109: gcc -c -g -O2 -fpic  conftest.c >&5
 configure:11112: $? = 0
 configure:11127: gcc -shared  -fPIC -DPIC conftest.o  -v -Wl,-soname -Wl,conftest -o conftest 2\>\&1 \| /usr/bin/grep  -lc  \>/dev/null 2\>\&1
 configure:11130: $? = 0
 configure:11144: result: no
 configure:11304: checking dynamic linker characteristics
-configure:11885: gcc -o conftest -g -O2   -Wl,-rpath -Wl,/foo conftest.c  >&5
+configure:11885: gcc -o conftest -g -O2 -fpic   -Wl,-rpath -Wl,/foo conftest.c  >&5
 configure:11885: $? = 0
 configure:12122: result: GNU/Linux ld.so
 configure:12244: checking how to hardcode library paths into programs
@@ -477,16 +441,16 @@ configure:12887: result: yes
 configure:12890: checking whether to build static libraries
 configure:12894: result: yes
 configure:12937: checking for fdatasync
-configure:12937: gcc -o conftest -g -O2   conftest.c  >&5
+configure:12937: gcc -o conftest -g -O2 -fpic   conftest.c  >&5
 configure:12937: $? = 0
 configure:12937: result: yes
 configure:12937: checking for usleep
-configure:12937: gcc -o conftest -g -O2   conftest.c  >&5
+configure:12937: gcc -o conftest -g -O2 -fpic   conftest.c  >&5
 configure:12937: $? = 0
 configure:12937: result: yes
 configure:12937: checking for fullfsync
-configure:12937: gcc -o conftest -g -O2   conftest.c  >&5
-/tmp/cctDPeeA.o: In function `main':
+configure:12937: gcc -o conftest -g -O2 -fpic   conftest.c  >&5
+/tmp/ccSaraXQ.o: In function `main':
 /gpfs/commons/home/knagdimov/temp/git/development/bxBam/sqlite3/conftest.c:59: undefined reference to `fullfsync'
 collect2: error: ld returned 1 exit status
 configure:12937: $? = 1
@@ -555,23 +519,23 @@ configure: failed program was:
 | }
 configure:12937: result: no
 configure:12937: checking for localtime_r
-configure:12937: gcc -o conftest -g -O2   conftest.c  >&5
+configure:12937: gcc -o conftest -g -O2 -fpic   conftest.c  >&5
 configure:12937: $? = 0
 configure:12937: result: yes
 configure:12937: checking for gmtime_r
-configure:12937: gcc -o conftest -g -O2   conftest.c  >&5
+configure:12937: gcc -o conftest -g -O2 -fpic   conftest.c  >&5
 configure:12937: $? = 0
 configure:12937: result: yes
 configure:12946: checking whether strerror_r is declared
-configure:12946: gcc -c -g -O2  conftest.c >&5
+configure:12946: gcc -c -g -O2 -fpic  conftest.c >&5
 configure:12946: $? = 0
 configure:12946: result: yes
 configure:12959: checking for strerror_r
-configure:12959: gcc -o conftest -g -O2   conftest.c  >&5
+configure:12959: gcc -o conftest -g -O2 -fpic   conftest.c  >&5
 configure:12959: $? = 0
 configure:12959: result: yes
 configure:12968: checking whether strerror_r returns char *
-configure:12992: gcc -c -g -O2  conftest.c >&5
+configure:12992: gcc -c -g -O2 -fpic  conftest.c >&5
 conftest.c: In function 'main':
 conftest.c:67:13: error: invalid type argument of unary '*' (have 'int')
     char x = *strerror_r (0, buf, sizeof buf);
@@ -656,7 +620,7 @@ configure: failed program was:
 | }
 configure:13030: result: no
 configure:13074: checking editline/readline.h usability
-configure:13074: gcc -c -g -O2  conftest.c >&5
+configure:13074: gcc -c -g -O2 -fpic  conftest.c >&5
 conftest.c:62:31: fatal error: editline/readline.h: No such file or directory
  #include <editline/readline.h>
                                ^
@@ -767,7 +731,7 @@ configure:13074: result: no
 configure:13074: checking for editline/readline.h
 configure:13074: result: no
 configure:13158: checking readline/readline.h usability
-configure:13158: gcc -c -g -O2  conftest.c >&5
+configure:13158: gcc -c -g -O2 -fpic  conftest.c >&5
 conftest.c:62:31: fatal error: readline/readline.h: No such file or directory
  #include <readline/readline.h>
                                ^
@@ -878,8 +842,8 @@ configure:13158: result: no
 configure:13158: checking for readline/readline.h
 configure:13158: result: no
 configure:13308: checking for library containing pthread_create
-configure:13339: gcc -o conftest -g -O2   conftest.c  >&5
-/tmp/ccER7VFq.o: In function `main':
+configure:13339: gcc -o conftest -g -O2 -fpic   conftest.c  >&5
+/tmp/cckCbi6J.o: In function `main':
 /gpfs/commons/home/knagdimov/temp/git/development/bxBam/sqlite3/conftest.c:40: undefined reference to `pthread_create'
 collect2: error: ld returned 1 exit status
 configure:13339: $? = 1
@@ -927,16 +891,16 @@ configure: failed program was:
 |   ;
 |   return 0;
 | }
-configure:13339: gcc -o conftest -g -O2   conftest.c -lpthread   >&5
+configure:13339: gcc -o conftest -g -O2 -fpic   conftest.c -lpthread   >&5
 configure:13339: $? = 0
 configure:13356: result: -lpthread
 configure:13364: checking for library containing pthread_mutexattr_init
-configure:13395: gcc -o conftest -g -O2   conftest.c -lpthread  >&5
+configure:13395: gcc -o conftest -g -O2 -fpic   conftest.c -lpthread  >&5
 configure:13395: $? = 0
 configure:13412: result: none required
 configure:13435: checking for library containing dlopen
-configure:13466: gcc -o conftest -g -O2   conftest.c -lpthread  >&5
-/tmp/ccQwvFhI.o: In function `main':
+configure:13466: gcc -o conftest -g -O2 -fpic   conftest.c -lpthread  >&5
+/tmp/ccizV8vY.o: In function `main':
 /gpfs/commons/home/knagdimov/temp/git/development/bxBam/sqlite3/conftest.c:40: undefined reference to `dlopen'
 collect2: error: ld returned 1 exit status
 configure:13466: $? = 1
@@ -984,13 +948,13 @@ configure: failed program was:
 |   ;
 |   return 0;
 | }
-configure:13466: gcc -o conftest -g -O2   conftest.c -ldl  -lpthread  >&5
+configure:13466: gcc -o conftest -g -O2 -fpic   conftest.c -ldl  -lpthread  >&5
 configure:13466: $? = 0
 configure:13483: result: -ldl
 configure:13494: checking for whether to support dynamic extensions
 configure:13496: result: yes
 configure:13625: checking for posix_fallocate
-configure:13625: gcc -o conftest -g -O2   conftest.c -ldl -lpthread  >&5
+configure:13625: gcc -o conftest -g -O2 -fpic   conftest.c -ldl -lpthread  >&5
 configure:13625: $? = 0
 configure:13625: result: yes
 configure:13805: checking that generated files are newer than configure
@@ -1005,8 +969,8 @@ ac_cv_build=x86_64-unknown-linux-gnu
 ac_cv_c_compiler_gnu=yes
 ac_cv_env_CC_set=
 ac_cv_env_CC_value=
-ac_cv_env_CFLAGS_set=
-ac_cv_env_CFLAGS_value=
+ac_cv_env_CFLAGS_set=set
+ac_cv_env_CFLAGS_value='-g -O2 -fpic'
 ac_cv_env_CPPFLAGS_set=
 ac_cv_env_CPPFLAGS_value=
 ac_cv_env_CPP_set=
@@ -1122,7 +1086,7 @@ AWK='gawk'
 BUILD_CFLAGS=''
 CC='gcc'
 CCDEPMODE='depmode=gcc3'
-CFLAGS='-g -O2'
+CFLAGS='-g -O2 -fpic'
 CPP='gcc -E'
 CPPFLAGS=''
 CYGPATH_W='echo'
