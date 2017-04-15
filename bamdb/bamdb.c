@@ -168,41 +168,57 @@ get_bam_tags(const bam1_t *row, char *buffer)
 }
 
 static int
-print_bam_row(const bam1_t *row, const bam_hdr_t *header, char *work_buffer)
+print_bam_row(const bam1_t *row, const bam_hdr_t *header, char *work_buffer, FILE *ifp)
 {
   static uint32_t rows = 0;
   char *temp;
 
-  printf("Row %u:\n", rows);
-  printf("\tQNAME: %s\n", bam_get_qname(row));
-  printf("\tFLAG: %u\n", row->core.flag);
-  printf("\tRNAME: %s\n", bam_get_rname(row, header));
-  printf("\tPOS: %d\n", row->core.pos);
-  printf("\tMAPQ: %u\n", row->core.qual);
+  //printf("Row %u:\n", rows);
+  fprintf(ifp, "Row %u:\n", rows);
 
+  //printf("\tQNAME: %s\n", bam_get_qname(row));
+  //printf("\tFLAG: %u\n", row->core.flag);
+  //printf("\tRNAME: %s\n", bam_get_rname(row, header));
+  //printf("\tPOS: %d\n", row->core.pos);
+  //printf("\tMAPQ: %u\n", row->core.qual);
+
+  fprintf(ifp, "\tQNAME: %s\n", bam_get_qname(row));
+  fprintf(ifp, "\tFLAG: %u\n", row->core.flag);
+  fprintf(ifp, "\tRNAME: %s\n", bam_get_rname(row, header));
+  fprintf(ifp, "\tPOS: %d\n", row->core.pos);
+  fprintf(ifp, "\tMAPQ: %u\n", row->core.qual);
+  
   temp = work_buffer;
-  printf("\tCIGAR: %s\n", bam_cigar_str(row, work_buffer));
+  //printf("\tCIGAR: %s\n", bam_cigar_str(row, work_buffer));
+  fprintf(ifp, "\tCIGAR: %s\n", bam_cigar_str(row, work_buffer));
   work_buffer = temp;
 
-  printf("\tRNEXT: %s\n", bam_get_rnext(row, header));
-  printf("\tPNEXT: %d\n", row->core.mpos + 1);
-  printf("\tTLEN: %d\n", row->core.isize);
-
+  //printf("\tRNEXT: %s\n", bam_get_rnext(row, header));
+  //printf("\tPNEXT: %d\n", row->core.mpos + 1);
+  //printf("\tTLEN: %d\n", row->core.isize);
+  fprintf(ifp, "\tRNEXT: %s\n", bam_get_rnext(row, header));
+  fprintf(ifp, "\tPNEXT: %d\n", row->core.mpos + 1);
+  fprintf(ifp, "\tTLEN: %d\n", row->core.isize);
+  
   temp = work_buffer;
-  printf("\tSEQ: %s\n", bam_seq_str(row, work_buffer));
+  //printf("\tSEQ: %s\n", bam_seq_str(row, work_buffer));
+  fprintf(ifp, "\tSEQ: %s\n", bam_seq_str(row, work_buffer));
   work_buffer = temp;
 
   temp = work_buffer;
-  printf("\tQUAL: %s\n", bam_qual_str(row, work_buffer));
+  //printf("\tQUAL: %s\n", bam_qual_str(row, work_buffer));
+  fprintf(ifp, "\tQUAL: %s\n", bam_qual_str(row, work_buffer));
   work_buffer = temp;
 
   temp = work_buffer;
-  printf("\tBX: %s\n", bam_bx_str(row, work_buffer));
+  //printf("\tBX: %s\n", bam_bx_str(row, work_buffer));
+  fprintf(ifp, "\tBX: %s\n", bam_bx_str(row, work_buffer));
   work_buffer = temp;
 
   /* TAGs */
   get_bam_tags(row, work_buffer);
-  printf("\tTAGs: %s\n", work_buffer);
+  //printf("\tTAGs: %s\n", work_buffer);
+  fprintf(ifp, "\tTAGs: %s\n", work_buffer);
 
   rows++;
   return 0;
@@ -231,6 +247,16 @@ int read_file(samFile *input_file, offset_list_t *offset_list)
   work_buffer = malloc(WORK_BUFFER_SIZE);
   if (offset_list != NULL) {
     offset_node = offset_list->head;
+    // open file that will store BAM records that share barcode.
+    FILE *ifp;
+    printf("HAROOOOOOOOOOOOOO\n");
+    ifp = fopen("/gpfs/commons/home/knagdimov/testing.txt", "w");
+
+    if (ifp == NULL){
+      fprintf(stderr, "Can't open the input file\n");
+      exit(1);
+    }
+    
     while (offset_node != NULL) {
       src = bgzf_seek(input_file->fp.bgzf, offset_node->offset, SEEK_SET);
       if (src != 0) {
@@ -240,12 +266,14 @@ int read_file(samFile *input_file, offset_list_t *offset_list)
       }
 
       r = sam_read1(input_file, header, bam_row);
-      print_bam_row(bam_row, header, work_buffer);
+      print_bam_row(bam_row, header, work_buffer, ifp);
       offset_node = offset_node->next;
     }
   } else {
     while ((r = sam_read1(input_file, header, bam_row)) >= 0) { // read one alignment from `in'
-      print_bam_row(bam_row, header, work_buffer);
+      FILE *ifp;
+      ifp = open("/gpfs/commons/home/knagdimov/testing.txt", "w");
+      print_bam_row(bam_row, header, work_buffer, ifp);
     }
     if (r < -1) {
       fprintf(stderr, "Attempting to process truncated file.\n");

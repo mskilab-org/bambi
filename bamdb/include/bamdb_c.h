@@ -18,7 +18,7 @@ extern "C" {
 
   void print_it();
   static void get_bam_tags(const bam1_t *row, char *buffer);
-  static int print_bam_row(const bam1_t *row, const bam_hdr_t *header, char *work_buffer);
+  static int print_bam_row(const bam1_t *row, const bam_hdr_t *header, char *work_buffer, FILE *ifp);
   int read_file(samFile *input_file, offset_list_t *offset_list);
 
     #ifdef __cplusplus
