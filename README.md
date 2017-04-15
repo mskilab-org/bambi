@@ -21,12 +21,14 @@ library(bxBam)
 ls.str('package:bxBam')
 ```
 
-```
+```R
 ## to generate db file specify bam file generated from 10x Genomics. Use generate_bxi()
 generate_bxi(system.file("extdata", "shortened_HCC1143_BL_phased_possorted.bam", package="bxBam")
+```
 
+```R
 ## using that index file, query the bam file for records that match a given BX barcode.
-barcodedReads(bam_file, index_file, barcode)
+## barcodedReads(bam_file, index_file, barcode)
 
 barcodedReads(system.file("extdata", "shortened_HCC1143_BL_phased_possorted.bam", package="bxBam"),
 system.file("extdata", "shortened_HCC1143_BL_phased_possorted.db", package="bxBam"), 'CGGAGCTAGTAAGTAC-1')
