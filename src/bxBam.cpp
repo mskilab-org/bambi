@@ -30,7 +30,7 @@ barcodedReads('/gpfs/commons/groups/imielinski_lab/data/10X/bam3/HCC1143_BL_phas
 #define get_int_chars(i) ((i == 0) ? 1 : floor(log10(abs(i))) + 1)
 
 // [[Rcpp::export]]
-void barcodedReads(std::string& bamFile, std::string& indexFile, std::string& barcode, std::string outputFile){
+void barcodedReads(std::string& bamFile, std::string& indexFile, std::string& barcode){
 
   printf("KHAGAY\n");
   print_bam_sqlite();
