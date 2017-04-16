@@ -250,7 +250,7 @@ int read_file(samFile *input_file, offset_list_t *offset_list)
     // open file that will store BAM records that share barcode.
     FILE *ifp;
     printf("HAROOOOOOOOOOOOOO\n");
-    ifp = fopen("testing.txt", "w");
+    ifp = fopen("queryResults.txt", "w");
 
     if (ifp == NULL){
       fprintf(stderr, "Can't open the input file\n");
@@ -272,7 +272,7 @@ int read_file(samFile *input_file, offset_list_t *offset_list)
   } else {
     while ((r = sam_read1(input_file, header, bam_row)) >= 0) { // read one alignment from `in'
       FILE *ifp;
-      ifp = open("testing.txt", "w");
+      ifp = open("queryResults.txt", "w");
       print_bam_row(bam_row, header, work_buffer, ifp);
     }
     if (r < -1) {
