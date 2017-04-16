@@ -6,15 +6,14 @@
 using namespace Rcpp;
 
 // barcodedReads
-void barcodedReads(std::string& bamFile, std::string& indexFile, std::string& barcode, std::string outputFile);
-RcppExport SEXP bxBam_barcodedReads(SEXP bamFileSEXP, SEXP indexFileSEXP, SEXP barcodeSEXP, SEXP outputFileSEXP) {
+void barcodedReads(std::string& bamFile, std::string& indexFile, std::string& barcode);
+RcppExport SEXP bxBam_barcodedReads(SEXP bamFileSEXP, SEXP indexFileSEXP, SEXP barcodeSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::string& >::type bamFile(bamFileSEXP);
     Rcpp::traits::input_parameter< std::string& >::type indexFile(indexFileSEXP);
     Rcpp::traits::input_parameter< std::string& >::type barcode(barcodeSEXP);
-    Rcpp::traits::input_parameter< std::string >::type outputFile(outputFileSEXP);
-    barcodedReads(bamFile, indexFile, barcode, outputFile);
+    barcodedReads(bamFile, indexFile, barcode);
     return R_NilValue;
 END_RCPP
 }
