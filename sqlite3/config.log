@@ -450,7 +450,7 @@ configure:12937: $? = 0
 configure:12937: result: yes
 configure:12937: checking for fullfsync
 configure:12937: gcc -o conftest -g -O2 -fpic   conftest.c  >&5
-/tmp/ccJ8IcgK.o: In function `main':
+/tmp/ccCaZMvl.o: In function `main':
 /gpfs/commons/home/knagdimov/temp/git/development/bxBam/sqlite3/conftest.c:59: undefined reference to `fullfsync'
 collect2: error: ld returned 1 exit status
 configure:12937: $? = 1
@@ -843,7 +843,7 @@ configure:13158: checking for readline/readline.h
 configure:13158: result: no
 configure:13308: checking for library containing pthread_create
 configure:13339: gcc -o conftest -g -O2 -fpic   conftest.c  >&5
-/tmp/cc2t1Ssj.o: In function `main':
+/tmp/ccQCMLIb.o: In function `main':
 /gpfs/commons/home/knagdimov/temp/git/development/bxBam/sqlite3/conftest.c:40: undefined reference to `pthread_create'
 collect2: error: ld returned 1 exit status
 configure:13339: $? = 1
@@ -900,7 +900,7 @@ configure:13395: $? = 0
 configure:13412: result: none required
 configure:13435: checking for library containing dlopen
 configure:13466: gcc -o conftest -g -O2 -fpic   conftest.c -lpthread  >&5
-/tmp/ccutOGDC.o: In function `main':
+/tmp/ccSmPIJu.o: In function `main':
 /gpfs/commons/home/knagdimov/temp/git/development/bxBam/sqlite3/conftest.c:40: undefined reference to `dlopen'
 collect2: error: ld returned 1 exit status
 configure:13466: $? = 1
