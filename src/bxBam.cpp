@@ -73,23 +73,23 @@ void barcodedReads(std::string& bamFile, std::string& indexFile, std::string& ba
   // fprintf(stderr, "Can't open the input file\n");
   // exit(1);
   //}
-  
+
   if (bam_args.bx != NULL && bam_args.index_file_name != NULL) {
     // allocate memory for an object of offset_list_t that has 1 element.
     offset_list = (offset_list_t *)calloc(1, sizeof(offset_list_t));
     int intermediate = get_offsets(offset_list, bam_args.index_file_name, bam_args.bx);
     //printf("%d\n", intermediate);
     // write bam records that share barcode to file.
-    
+
     //fprintf(ifp, "%d\n", intermediate);
 
     // writing to file.
-    // outfile << intermediate << std::endl;  
+    // outfile << intermediate << std::endl;
   }
   //outfile.close();
   //fclose(ifp);
 
-  
+
   rc = read_file(input_file, offset_list);
 }
 
