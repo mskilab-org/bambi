@@ -32,8 +32,6 @@ barcodedReads('/gpfs/commons/groups/imielinski_lab/data/10X/bam3/HCC1143_BL_phas
 // [[Rcpp::export]]
 void barcodedReads(std::string& bamFile, std::string& indexFile, std::string& barcode){
 
-  printf("KHAGAY\n");
-  print_bam_sqlite();
   int rc = 0;
   samFile *input_file = 0;
   bam_args_t bam_args;
@@ -46,50 +44,18 @@ void barcodedReads(std::string& bamFile, std::string& indexFile, std::string& ba
   int c;
 
   // change the values of the struct bam_args_t to those of the input values.
-
   strcpy(bam_args.input_file_name, bamFile.c_str());
   bam_args.index_file_name = strdup(indexFile.c_str()); // returns a pointer to a new string which is a duplicate of the input c-style string.
   bam_args.bx = strdup(barcode.c_str());
 
   input_file = sam_open(bam_args.input_file_name, "r");
 
-  //  printf("%p\n", input_file);
-
-  printf("SDASDSADSSSSSSSSSSSSSSSSSSSSS\n");
-  // open file and write to it.
-  //  ofstream outfile;
-  //  outfile.open(outputFile);
-
-  //  ofstream outfile;
-
-  //  std::ifstream in(outputFile.c_str());
-
-  // open file for writing results of querying a bam file for a given barcode.
-
-  //FILE *ifp; // this worked.
-  //ifp = fopen(outputFile.c_str(), "w"); //this worked.
-
-  //if (ifp == NULL){
-  // fprintf(stderr, "Can't open the input file\n");
-  // exit(1);
-  //}
-
   if (bam_args.bx != NULL && bam_args.index_file_name != NULL) {
     // allocate memory for an object of offset_list_t that has 1 element.
     offset_list = (offset_list_t *)calloc(1, sizeof(offset_list_t));
     int intermediate = get_offsets(offset_list, bam_args.index_file_name, bam_args.bx);
-    //printf("%d\n", intermediate);
-    // write bam records that share barcode to file.
 
-    //fprintf(ifp, "%d\n", intermediate);
-
-    // writing to file.
-    // outfile << intermediate << std::endl;
   }
-  //outfile.close();
-  //fclose(ifp);
-
-
   rc = read_file(input_file, offset_list);
 }
 
