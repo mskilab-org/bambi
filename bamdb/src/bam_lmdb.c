@@ -55,7 +55,7 @@ start_transaction(MDB_env *env, MDB_dbi *dbi, MDB_txn **txn)
     rc = mdb_dbi_open(*txn, lmdb_key_names[i], MDB_DUPSORT | MDB_CREATE, &dbi[i]);
     if (rc != MDB_SUCCESS) {
       fprintf(stderr, "Error opening database: %s\n", mdb_strerror(rc));
-      return 1;
+      return NULL;
     }
   }
 
@@ -104,7 +104,7 @@ convert_to_lmdb(samFile *input_file, char *db_name, int max_rows)
   MDB_env *env;
   MDB_dbi dbi[LMDB_MAX];
   MDB_val key, data;
-  MDB_txn *txn;
+  MDB_txn *txn = NULL;
   int mapsize = LMDB_INIT_MAPSIZE;
   int rc, r;
   int ret = 0;
