@@ -287,3 +287,10 @@ int read_file(samFile *input_file, offset_list_t *offset_list)
   bam_destroy1(bam_row);
   return rc;
 }
+
+int main(int argc, char* argv[]){
+  int rc = 0;
+  int c;
+  samFile *input_file = 0;
+  
+}
