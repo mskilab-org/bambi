@@ -300,6 +300,20 @@ int main(int argc, char* argv[]){
   bam_args.index_file_name = NULL;
   bam_args.bx = NULL;
   bam_args.convert_to = BAMDB_CONVERT_TO_TEXT;
-  
-  
+  while ((c = getopt(argc, argv, "t:f:n:i:b:")) != -1) {
+    switch(c) {
+    case 't':
+      if (strcmp(optarg, "sqlite") == 0) {
+	bam_args.convert_to = BAMDB_CONVERT_TO_SQLITE;
+      } else if (strcmp(optarg, "lmdb") == 0) {
+	bam_args.convert_to = BAMDB_CONVERT_TO_LMDB;
+      } else if (strcmp(optarg, "text") == 0) {
+	bam_args.convert_to = BAMDB_CONVERT_TO_TEXT;
+      } else {
+	fprintf(stderr, "Invalid output format %s\n", optarg);
+	return 1;
+      }
+      break;
+    }
+  }
 }
