@@ -292,5 +292,14 @@ int main(int argc, char* argv[]){
   int rc = 0;
   int c;
   samFile *input_file = 0;
+  bam_args_t bam_args;
+  int max_rows = 0;
+  offset_list_t *offset_list = NULL;
+  int headered_bam = 0; // set to 1, if -bh is supplied then, return headered bam.
+  
+  bam_args.index_file_name = NULL;
+  bam_args.bx = NULL;
+  bam_args.convert_to = BAMDB_CONVERT_TO_TEXT;
+  
   
 }
