@@ -3,8 +3,8 @@ indexed file format for barcoded BAMs with API for converting and accessing alig
 
 ## Table of contents
 * [Installation](#installation)
-* [Examples to run in command line](#examples to run from the command line)
-* [Examples to run in R](#examples to run in R)
+* [Examples to run in command line](#examples-to-run-from-the-command-line)
+* [Examples to run in R](#examples-to-run-in-R)
 
 ## Installation
 
