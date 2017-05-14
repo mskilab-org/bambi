@@ -300,7 +300,7 @@ int main(int argc, char* argv[]){
   bam_args.index_file_name = NULL;
   bam_args.bx = NULL;
   bam_args.convert_to = BAMDB_CONVERT_TO_TEXT;
-  while ((c = getopt(argc, argv, "t:f:n:i:b:")) != -1) {
+  while ((c = getopt(argc, argv, "t:f:n:i:b:q:")) != -1) {
     switch(c) {
     case 't':
       if (strcmp(optarg, "sqlite") == 0) {
@@ -314,6 +314,25 @@ int main(int argc, char* argv[]){
 	return 1;
       }
       break;
+    case 'f':
+      strcpy(bam_args.input_file_name, optarg);
+      break;
+    case 'h':
+      // if this is supplied, we want to return a headered bam
+      headered_bam=1;
+      break;
+    case 'n':
+      max_rows = atoi(optarg);
+      break;
+    case 'i':
+      bam_args.index_file_name = strdup(optarg);
+      break;
+    case 'b':
+      bam_args.bx = strdup(optarg);
+      break;
+    default:
+      fprintf(stderr, "Unknown argument\n");
+      return 1;
     }
   }
 }
