@@ -13,7 +13,7 @@ indexed file format for barcoded BAMs with API for converting and accessing alig
 ```R
 ## install packages via devtools::install_github().
 library(devtools)
-install_github("mskilab/bxBam", auth_token="your_auth_token")
+install_github("mskilab/bxBam")
 ```
 
 ## Examples to run from the command line
