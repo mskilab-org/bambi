@@ -45,6 +45,7 @@ Query Bam File and Return Headered bam
 --------------------------------------
 ```bash
 bxbam -h bam_file query_string
+## for example:
 bxbam -h HCC1143_BL_phased_possorted.bam GTGGTCGCAACGCTTA-1
 ```
 
