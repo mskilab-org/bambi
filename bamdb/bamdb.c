@@ -11,328 +11,362 @@
 #include "htslib/bgzf.h"
 
 #include "include/bamdb.h"
-#include "include/bam_sqlite.h"
 #include "include/bam_lmdb.h"
 #include "include/bam_api.h"
-#include "include/bamdb_c.h"
-
-/* I really hope we don't have sequences longer than this */
-#define WORK_BUFFER_SIZE 65536
 
 #define get_int_chars(i) ((i == 0) ? 1 : floor(log10(abs(i))) + 1)
 
 
-void print_it(){
-  printf("print it boys\n");
-}
-
 static void
 get_bam_tags(const bam1_t *row, char *buffer)
 {
-  /* Output as TAG:TYPE:VALUE
-   * TAG is two characters
-   * TYPE is a single character
-   * Example: QT:Z:AAFFFKKK */
-  uint8_t *aux;
-  uint8_t key[2];
-  uint8_t type, sub_type;
-  size_t buffer_pos = 0;
-  uint32_t arr_size;
-  char *dummy = 0;
+	/* Output as TAG:TYPE:VALUE
+	 * TAG is two characters
+	 * TYPE is a single character
+	 * Example: QT:Z:AAFFFKKK */
+	uint8_t *aux;
+	uint8_t key[2];
+	uint8_t type, sub_type;
+	size_t buffer_pos = 0;
+	uint32_t arr_size;
+	char *dummy = 0;
 
-  aux = bam_get_aux(row);
-  while (aux+4 <= row->data + row->l_data) {
-    key[0] = aux[0];
-    key[1] = aux[1];
-    sprintf(buffer + buffer_pos, "%c%c:", key[0], key[1]);
-    buffer_pos += 3;
+	aux = bam_get_aux(row);
+	while (aux+4 <= row->data + row->l_data) {
+		key[0] = aux[0];
+		key[1] = aux[1];
+		sprintf(buffer + buffer_pos, "%c%c:", key[0], key[1]);
+		buffer_pos += 3;
 
-    type = aux[2];
-    aux += 3;
+		type = aux[2];
+		aux += 3;
 
-    /* TODO: add error handling for values that don't conform to type */
-    switch(type) {
-    case 'A': /* Printable character */
-      sprintf(buffer + buffer_pos, "A:%c", *aux);
-      buffer_pos += 3;
-      aux++;
-      break;
-    case 'C': /*Signed integer */
-      sprintf(buffer + buffer_pos, "i:%d", *aux);
-      buffer_pos += 2 + get_int_chars(*aux);
-      aux++;
-      break;
-    case 'c':
-      sprintf(buffer + buffer_pos, "i:%" PRId8, *(int8_t*)aux);
-      buffer_pos += 2 + get_int_chars(*aux);
-      aux++;
-      break;
-    case 'S':
-      sprintf(buffer + buffer_pos, "i:%" PRIu16, *(uint16_t*)aux);
-      buffer_pos += 2 + get_int_chars(*aux);
-      aux += 2;
-      break;
-    case 's':
-      sprintf(buffer + buffer_pos, "i:%" PRId16, *(int16_t*)aux);
-      buffer_pos += 2 + get_int_chars(*aux);
-      aux += 2;
-      break;
-    case 'I':
-      sprintf(buffer + buffer_pos, "i:%" PRIu32, *(uint32_t*)aux);
-      buffer_pos += 2 + get_int_chars(*aux);
-      aux += 4;
-      break;
-    case 'i':
-      sprintf(buffer + buffer_pos, "i:%" PRId32, *(int32_t*)aux);
-      buffer_pos += 2 + get_int_chars(*aux);
-      aux += 4;
-      break;
-    case 'f': /* Single precision floating point */
-      sprintf(buffer + buffer_pos, "f:%g", *(float*)aux);
-      /* Figure out how many chars the fp takes as a string */
-      buffer_pos += 2 + snprintf(dummy, 0, "%g", *(float*)aux);
-      aux += 4;
-      break;
-    case 'd':
-      /* Double precision floating point. This does appear to be in the BAM spec,
-       * I'm copying from samtools which does provide for this */
-      sprintf(buffer + buffer_pos, "d:%g", *(float*)aux);
-      /* Figure out how many chars the fp takes as a string */
-      buffer_pos += 2 + snprintf(dummy, 0, "%g", *(float*)aux);
-      aux += 4;
-      break;
-    case 'Z': /* Printable string */
-    case 'H': /* Byte array */
-      sprintf(buffer + buffer_pos, "%c:", type);
-      buffer_pos += 2;
-      while (aux < row->data + row->l_data && *aux) {
-	sprintf(buffer + buffer_pos, "%c", *aux++);
-	buffer_pos++;
-      }
-      aux++;
-      break;
-    case 'B': /* Integer or numeric array */
-      sub_type = *(aux++);
-      memcpy(&arr_size, aux, 4);
+		/* TODO: add error handling for values that don't conform to type */
+		switch(type) {
+			case 'A': /* Printable character */
+				sprintf(buffer + buffer_pos, "A:%c", *aux);
+				buffer_pos += 3;
+				aux++;
+				break;
+			case 'C': /*Signed integer */
+				sprintf(buffer + buffer_pos, "i:%d", *aux);
+				buffer_pos += 2 + get_int_chars(*aux);
+				aux++;
+				break;
+			case 'c':
+				sprintf(buffer + buffer_pos, "i:%" PRId8, *(int8_t*)aux);
+				buffer_pos += 2 + get_int_chars(*aux);
+				aux++;
+				break;
+			case 'S':
+				sprintf(buffer + buffer_pos, "i:%" PRIu16, *(uint16_t*)aux);
+				buffer_pos += 2 + get_int_chars(*aux);
+				aux += 2;
+				break;
+			case 's':
+				sprintf(buffer + buffer_pos, "i:%" PRId16, *(int16_t*)aux);
+				buffer_pos += 2 + get_int_chars(*aux);
+				aux += 2;
+				break;
+			case 'I':
+				sprintf(buffer + buffer_pos, "i:%" PRIu32, *(uint32_t*)aux);
+				buffer_pos += 2 + get_int_chars(*aux);
+				aux += 4;
+				break;
+			case 'i':
+				sprintf(buffer + buffer_pos, "i:%" PRId32, *(int32_t*)aux);
+				buffer_pos += 2 + get_int_chars(*aux);
+				aux += 4;
+				break;
+			case 'f': /* Single precision floating point */
+				sprintf(buffer + buffer_pos, "f:%g", *(float*)aux);
+				/* Figure out how many chars the fp takes as a string */
+				buffer_pos += 2 + snprintf(dummy, 0, "%g", *(float*)aux);
+				aux += 4;
+				break;
+			case 'd':
+				/* Double precision floating point. This does appear to be in the BAM spec,
+				 * I'm copying from samtools which does provide for this */
+				sprintf(buffer + buffer_pos, "d:%g", *(float*)aux);
+				/* Figure out how many chars the fp takes as a string */
+				buffer_pos += 2 + snprintf(dummy, 0, "%g", *(float*)aux);
+				aux += 4;
+				break;
+			case 'Z': /* Printable string */
+			case 'H': /* Byte array */
+				sprintf(buffer + buffer_pos, "%c:", type);
+				buffer_pos += 2;
+				while (aux < row->data + row->l_data && *aux) {
+					sprintf(buffer + buffer_pos, "%c", *aux++);
+					buffer_pos++;
+				}
+				aux++;
+				break;
+			case 'B': /* Integer or numeric array */
+				sub_type = *(aux++);
+				memcpy(&arr_size, aux, 4);
 
-      sprintf(buffer + buffer_pos, "B:%c", sub_type);
-      buffer_pos += 3;
-      for (int i = 0; i < arr_size; ++i) {
-	sprintf(buffer + buffer_pos, ",");
-	buffer_pos++;
-	switch (sub_type) {
-	case 'c':
-	  sprintf(buffer + buffer_pos, "%d", *aux);
-	  buffer_pos += get_int_chars(*aux);
-	  aux++;
-	  break;
-	case 'C':
-	  sprintf(buffer + buffer_pos, "%" PRId8, *(int8_t*)aux);
-	  buffer_pos += get_int_chars(*aux);
-	  aux++;
-	  break;
-	case 'S':
-	  sprintf(buffer + buffer_pos, "%" PRIu16, *(uint16_t*)aux);
-	  buffer_pos += get_int_chars(*aux);
-	  aux += 2;
-	  break;
-	case 's':
-	  sprintf(buffer + buffer_pos, "%" PRId16, *(int16_t*)aux);
-	  buffer_pos += get_int_chars(*aux);
-	  aux += 2;
-	  break;
-	case 'I':
-	  sprintf(buffer + buffer_pos, "i:%" PRIu32, *(uint32_t*)aux);
-	  buffer_pos += 2 + get_int_chars(*aux);
-	  aux += 4;
-	  break;
-	case 'i':
-	  sprintf(buffer + buffer_pos, "i:%" PRId32, *(int32_t*)aux);
-	  buffer_pos += 2 + get_int_chars(*aux);
-	  aux += 4;
-	  break;
-	case 'f': /* Single precision floating point */
-	  sprintf(buffer + buffer_pos, "f:%g", *(float*)aux);
-	  /* Figure out how many chars the fp takes as a string */
-	  buffer_pos += 2 + snprintf(dummy, 0, "%g", *(float*)aux);
-	  aux += 4;
-	  break;
+				sprintf(buffer + buffer_pos, "B:%c", sub_type);
+				buffer_pos += 3;
+				for (int i = 0; i < arr_size; ++i) {
+					sprintf(buffer + buffer_pos, ",");
+					buffer_pos++;
+					switch (sub_type) {
+						case 'c':
+							sprintf(buffer + buffer_pos, "%d", *aux);
+							buffer_pos += get_int_chars(*aux);
+							aux++;
+							break;
+						case 'C':
+							sprintf(buffer + buffer_pos, "%" PRId8, *(int8_t*)aux);
+							buffer_pos += get_int_chars(*aux);
+							aux++;
+							break;
+						case 'S':
+							sprintf(buffer + buffer_pos, "%" PRIu16, *(uint16_t*)aux);
+							buffer_pos += get_int_chars(*aux);
+							aux += 2;
+							break;
+						case 's':
+							sprintf(buffer + buffer_pos, "%" PRId16, *(int16_t*)aux);
+							buffer_pos += get_int_chars(*aux);
+							aux += 2;
+							break;
+						case 'I':
+							sprintf(buffer + buffer_pos, "i:%" PRIu32, *(uint32_t*)aux);
+							buffer_pos += 2 + get_int_chars(*aux);
+							aux += 4;
+							break;
+						case 'i':
+							sprintf(buffer + buffer_pos, "i:%" PRId32, *(int32_t*)aux);
+							buffer_pos += 2 + get_int_chars(*aux);
+							aux += 4;
+							break;
+						case 'f': /* Single precision floating point */
+							sprintf(buffer + buffer_pos, "f:%g", *(float*)aux);
+							/* Figure out how many chars the fp takes as a string */
+							buffer_pos += 2 + snprintf(dummy, 0, "%g", *(float*)aux);
+							aux += 4;
+							break;
+					}
+				}
+				break;
+		}
+
+		sprintf(buffer + buffer_pos, "\t");
+		buffer_pos++;
 	}
-      }
-      break;
-    }
-
-    sprintf(buffer + buffer_pos, "\t");
-    buffer_pos++;
-  }
 }
+
 
 static int
-print_bam_row(const bam1_t *row, const bam_hdr_t *header, char *work_buffer, FILE *ifp)
+print_bam_row(const bam1_t *row, const bam_hdr_t *header, char *work_buffer)
 {
-  static uint32_t rows = 0;
-  char *temp;
+	static uint32_t rows = 0;
+	char *temp;
 
-  //printf("Row %u:\n", rows);
-  fprintf(ifp, "Row %u:\n", rows);
+	printf("Row %u:\n", rows);
+	printf("\tQNAME: %s\n", bam_get_qname(row));
+	printf("\tFLAG: %u\n", row->core.flag);
+	printf("\tRNAME: %s\n", bam_get_rname(row, header));
+	printf("\tPOS: %d\n", row->core.pos);
+	printf("\tMAPQ: %u\n", row->core.qual);
 
-  //printf("\tQNAME: %s\n", bam_get_qname(row));
-  //printf("\tFLAG: %u\n", row->core.flag);
-  //printf("\tRNAME: %s\n", bam_get_rname(row, header));
-  //printf("\tPOS: %d\n", row->core.pos);
-  //printf("\tMAPQ: %u\n", row->core.qual);
+	temp = work_buffer;
+	printf("\tCIGAR: %s\n", bam_cigar_str(row, work_buffer));
+	work_buffer = temp;
 
-  fprintf(ifp, "\tQNAME: %s\n", bam_get_qname(row));
-  fprintf(ifp, "\tFLAG: %u\n", row->core.flag);
-  fprintf(ifp, "\tRNAME: %s\n", bam_get_rname(row, header));
-  fprintf(ifp, "\tPOS: %d\n", row->core.pos);
-  fprintf(ifp, "\tMAPQ: %u\n", row->core.qual);
-  
-  temp = work_buffer;
-  //printf("\tCIGAR: %s\n", bam_cigar_str(row, work_buffer));
-  fprintf(ifp, "\tCIGAR: %s\n", bam_cigar_str(row, work_buffer));
-  work_buffer = temp;
+	printf("\tRNEXT: %s\n", bam_get_rnext(row, header));
+	printf("\tPNEXT: %d\n", row->core.mpos + 1);
+	printf("\tTLEN: %d\n", row->core.isize);
 
-  //printf("\tRNEXT: %s\n", bam_get_rnext(row, header));
-  //printf("\tPNEXT: %d\n", row->core.mpos + 1);
-  //printf("\tTLEN: %d\n", row->core.isize);
-  fprintf(ifp, "\tRNEXT: %s\n", bam_get_rnext(row, header));
-  fprintf(ifp, "\tPNEXT: %d\n", row->core.mpos + 1);
-  fprintf(ifp, "\tTLEN: %d\n", row->core.isize);
-  
-  temp = work_buffer;
-  //printf("\tSEQ: %s\n", bam_seq_str(row, work_buffer));
-  fprintf(ifp, "\tSEQ: %s\n", bam_seq_str(row, work_buffer));
-  work_buffer = temp;
+	printf("\tSEQ: %s\n", bam_seq_str(row, work_buffer));
+	work_buffer = temp;
 
-  temp = work_buffer;
-  //printf("\tQUAL: %s\n", bam_qual_str(row, work_buffer));
-  fprintf(ifp, "\tQUAL: %s\n", bam_qual_str(row, work_buffer));
-  work_buffer = temp;
+	printf("\tQUAL: %s\n", bam_qual_str(row, work_buffer));
+	work_buffer = temp;
 
-  temp = work_buffer;
-  //printf("\tBX: %s\n", bam_bx_str(row, work_buffer));
-  fprintf(ifp, "\tBX: %s\n", bam_bx_str(row, work_buffer));
-  work_buffer = temp;
+	printf("\tBX: %s\n", bam_bx_str(row, work_buffer));
+	work_buffer = temp;
 
-  /* TAGs */
-  get_bam_tags(row, work_buffer);
-  //printf("\tTAGs: %s\n", work_buffer);
-  fprintf(ifp, "\tTAGs: %s\n", work_buffer);
+	/* TAGs */
+	get_bam_tags(row, work_buffer);
+	printf("\tTAGs: %s\n", work_buffer);
 
-  rows++;
-  return 0;
-}
- 
-int read_file(samFile *input_file, offset_list_t *offset_list)
-{
-
-  bam_hdr_t *header = NULL;
-  bam1_t *bam_row;
-  char *work_buffer = NULL;
-  static int r = 0;
-  int rc = 0;
-  int64_t src = 0;
-  offset_node_t *offset_node;
-
-  header = sam_hdr_read(input_file);
-
-  if (header == NULL) {
-    fprintf(stderr, "Unable to read the header from %s\n", input_file->fn);
-    rc = 1;
-    return 1;
-  }
-
-  work_buffer = malloc(WORK_BUFFER_SIZE);
-  if (offset_list != NULL) {
-    offset_node = offset_list->head;
-    // open file that will store BAM records that share barcode.
-    FILE *ifp;
-    printf("HAROOOOOOOOOOOOOO\n");
-    ifp = fopen("queryResults.txt", "w");
-
-    if (ifp == NULL){
-      fprintf(stderr, "Can't open the input file\n");
-      exit(1);
-    }
-    
-    while (offset_node != NULL) {
-      src = bgzf_seek(input_file->fp.bgzf, offset_node->offset, SEEK_SET);
-      if (src != 0) {
-	fprintf(stderr, "Error seeking to file offset\n");
-	rc = 1;
-	goto exit;
-      }
-
-      r = sam_read1(input_file, header, bam_row);
-      print_bam_row(bam_row, header, work_buffer, ifp);
-      offset_node = offset_node->next;
-    }
-  } else {
-    while ((r = sam_read1(input_file, header, bam_row)) >= 0) { // read one alignment from `in'
-      FILE *ifp;
-      ifp = open("queryResults.txt", "w");
-      print_bam_row(bam_row, header, work_buffer, ifp);
-    }
-    if (r < -1) {
-      fprintf(stderr, "Attempting to process truncated file.\n");
-      rc = 1;
-      goto exit;
-    }
-  }
-
-
- exit:
-  free(work_buffer);
-  bam_destroy1(bam_row);
-  return rc;
+	rows++;
+	return 0;
 }
 
-int main(int argc, char* argv[]){
-  int rc = 0;
-  int c;
-  samFile *input_file = 0;
-  bam_args_t bam_args;
-  int max_rows = 0;
-  offset_list_t *offset_list = NULL;
-  int headered_bam = 0; // set to 1, if -bh is supplied then, return headered bam.
-  
-  bam_args.index_file_name = NULL;
-  bam_args.bx = NULL;
-  bam_args.convert_to = BAMDB_CONVERT_TO_TEXT;
-  while ((c = getopt(argc, argv, "t:f:n:i:b:q:")) != -1) {
-    switch(c) {
-    case 't':
-      if (strcmp(optarg, "sqlite") == 0) {
-	bam_args.convert_to = BAMDB_CONVERT_TO_SQLITE;
-      } else if (strcmp(optarg, "lmdb") == 0) {
-	bam_args.convert_to = BAMDB_CONVERT_TO_LMDB;
-      } else if (strcmp(optarg, "text") == 0) {
+
+static int
+read_file(samFile *input_file, offset_list_t *offset_list)
+{
+	bam_hdr_t *header = NULL;
+	bam1_t *bam_row;
+	char *work_buffer = NULL;
+	int r = 0;
+	int rc = 0;
+	int64_t src = 0;
+	offset_node_t *offset_node;
+
+	header = sam_hdr_read(input_file);
+	if (header == NULL) {
+		fprintf(stderr, "Unable to read the header from %s\n", input_file->fn);
+		rc = 1;
+		return 1;
+	}
+
+	bam_row = bam_init1();
+	work_buffer = malloc(WORK_BUFFER_SIZE);
+	if (offset_list != NULL) {
+		offset_node = offset_list->head;
+		while (offset_node != NULL) {
+			src = bgzf_seek(input_file->fp.bgzf, offset_node->offset, SEEK_SET);
+			if (src != 0) {
+				fprintf(stderr, "Error seeking to file offset\n");
+				rc = 1;
+				goto exit;
+			}
+
+			r = sam_read1(input_file, header, bam_row);
+			print_bam_row(bam_row, header, work_buffer);
+			offset_node = offset_node->next;
+		}
+	} else {
+		while ((r = sam_read1(input_file, header, bam_row)) >= 0) { // read one alignment from `in'
+			print_bam_row(bam_row, header, work_buffer);
+		}
+
+	}
+	if (r < -1) {
+		fprintf(stderr, "Attempting to process truncated file.\n");
+		rc = 1;
+		goto exit;
+	}
+
+exit:
+	free(work_buffer);
+	bam_destroy1(bam_row);
+	return rc;
+}
+
+
+int 
+generate_index_file (char *input_file_name)
+{
+	samFile *input_file = 0;
+
+	if ((input_file = sam_open(input_file_name, "r")) == 0) {
+		fprintf(stderr, "Unable to open file %s\n", input_file_name);
+		return 1;
+	}
+
+	return convert_to_lmdb(input_file, NULL);
+}
+
+
+int
+main(int argc, char *argv[]) {
+	int rc = 0;
+	int c;
+	bam_args_t bam_args;
+	int max_rows = 0;
+
+	bam_args.index_file_name = NULL;
+	bam_args.bx = NULL;
 	bam_args.convert_to = BAMDB_CONVERT_TO_TEXT;
-      } else {
-	fprintf(stderr, "Invalid output format %s\n", optarg);
-	return 1;
-      }
-      break;
-    case 'f':
-      strcpy(bam_args.input_file_name, optarg);
-      break;
-    case 'h':
-      // if this is supplied, we want to return a headered bam
-      headered_bam=1;
-      break;
-    case 'n':
-      max_rows = atoi(optarg);
-      break;
-    case 'i':
-      bam_args.index_file_name = strdup(optarg);
-      break;
-    case 'b':
-      bam_args.bx = strdup(optarg);
-      break;
-    default:
-      fprintf(stderr, "Unknown argument\n");
-      return 1;
-    }
-  }
+	while ((c = getopt(argc, argv, "t:f:n:i:b:q:h:")) != -1) {
+			switch(c) {
+				case 't':
+					if (strcmp(optarg, "lmdb") == 0) {
+						bam_args.convert_to = BAMDB_CONVERT_TO_LMDB;
+					} else if (strcmp(optarg, "text") == 0) {
+						bam_args.convert_to = BAMDB_CONVERT_TO_TEXT;
+					} else {
+						fprintf(stderr, "Invalid output format %s\n", optarg);
+						return 1;
+					}
+					break;
+				case 'f':
+					strcpy(bam_args.input_file_name, optarg);
+					break;
+				case 'n':
+					max_rows = atoi(optarg);
+					break;
+				case 'i':
+					bam_args.index_file_name = strdup(optarg);
+					break;
+				case 'b':
+					bam_args.bx = strdup(optarg);
+					break;
+				default:
+					fprintf(stderr, "Unknown argument\n");
+					return 1;
+			}
+	}
+
+	// if 3 arguments were passed, assume that a user passed a bam file and a query barcode.
+	if(argc == 3){
+	  //      printf("%s\n", argv[1]);
+	  // take the bam file and guess the .bxi file's name.
+
+	  // size of the bam file's name supplied.
+	  size_t bamFile_length = strlen(argv[1]);
+
+	  // create an array
+	  char bxi_file[bamFile_length];
+	  //printf("%zu\n", strlen(bxi_file));
+
+	  //      printf("%zu\n", bamFile_length - 2 );
+
+	  // do the copying now.
+	  strncpy( bxi_file, argv[1], bamFile_length - 3 );
+	  // for the last three indices, append the characters 'd', 'b', and '\0'
+	  bxi_file[bamFile_length-3] = 'd';
+	  bxi_file[bamFile_length-2] = 'b';
+	  bxi_file[bamFile_length-1] = '\0';
+	  //printf("%zu\n", strlen(bxi_file));
+
+	  bam_args.index_file_name = strdup(bxi_file);
+	  char *barcode = "GTGGTCGCAACGCTTA-1";
+	  bam_args.bx = strdup(barcode);
+
+	  //      printf("%s\n", bxi_file);
+	  // test if the .bxi file exists. If not, complain.
+	  if( access(bxi_file, F_OK) != -1) {
+	    // file exists, set the proper values using the command line arguments.
+
+	    // pass the bam file's name to our internal data structure.
+	    strcpy(bam_args.input_file_name, argv[1]);
+	  }
+	  else {
+	    printf("The index file does not exist. Please, create one using the following format:\n");
+	    printf("bxbam -t 'sqlite' bam_file_name\n");
+	    // exit out of main because the user needs to create an index file.
+	    exit(0);
+	  }
+	}
+
+	//	printf("%s\n", bam_args.input_file_name);
+	//	printf("%s\n", bam_args.index_file_name);
+	//	printf("%s\n", bam_args.bx);
+	
+	/* Get filename from first non option argument */
+	if (optind < argc) {
+		strcpy(bam_args.input_file_name, argv[optind]);
+	}
+
+	if (bam_args.bx != NULL && bam_args.index_file_name != NULL) {
+		bam_row_set_t *row_set = get_bx_rows(bam_args.input_file_name, bam_args.index_file_name, bam_args.bx);
+		for (int j = 0; j < row_set->n_entries; ++j) {
+			print_sequence_row(row_set->rows[j]);
+		}
+		free_row_set(row_set);
+	}
+
+	if (bam_args.convert_to == BAMDB_CONVERT_TO_LMDB) {
+		rc = generate_index_file(bam_args.input_file_name);
+	}
+
+	return rc;
 }

@@ -1,0 +1,10 @@
+prefix=/usr/local
+includedir=/usr/local/include
+libdir=/usr/local/lib
+
+Name: Concurrency Kit
+Description: Toolkit for well-specified design and implementation of concurrent systems
+URL: http://concurrencykit.org/
+Version: 1.0.0
+Libs: -L${libdir} -lck
+Cflags: -D__x86_64__ -I${includedir} 

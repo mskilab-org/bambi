@@ -1,23 +1,13 @@
 
 #include <lmdb.h>
+
+#include "bam_api.h"
 #include "htslib/sam.h"
 
-#include "include/bam_api.h"
 
-//#include "htslib/sam.h"
-//#include "htslib/bgzf.h"
+int convert_to_lmdb(samFile *input_file, char *db_path);
 
-//#include "include/bam_sqlite.h"
-//#include "include/bam_lmdb.h"
-//#include "include/bam_api.h"
+/* Return number of offsets on success, -1 on failure */
+int get_offsets(offset_list_t *offset_list, const char *lmdb_db_name, const char *bx);
 
-#ifdef __cplusplus
-extern "C" {
-    #endif
-
-  int convert_to_lmdb(samFile *input_file, char *db_path, int max_rows);
-  //static int read_file(samFile *input_file, offset_list_t *offset_list);
-
-    #ifdef __cplusplus
-}
-#endif
+bam_row_set_t *get_bx_rows(char *input_file_name, char *db_path, char *bx);
