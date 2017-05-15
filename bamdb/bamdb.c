@@ -275,7 +275,7 @@ main(int argc, char *argv[]) {
 	bam_args.index_file_name = NULL;
 	bam_args.bx = NULL;
 	bam_args.convert_to = BAMDB_CONVERT_TO_TEXT;
-	while ((c = getopt(argc, argv, "t:f:n:i:q:hb")) != -1) {
+	while ((c = getopt(argc, argv, "t:f:n:i:q:h")) != -1) {
 			switch(c) {
 				case 't':
 					if (strcmp(optarg, "lmdb") == 0) {
@@ -341,10 +341,7 @@ main(int argc, char *argv[]) {
 					  // exit out of main because the user needs to create an index file.
 					  exit(0);
 					}                                            
-				  } break; 
-			        case 'b':
-			               // do 
-				       break;
+				  } break;
 				default:
 					fprintf(stderr, "Unknown argument\n");
 					return 1;
