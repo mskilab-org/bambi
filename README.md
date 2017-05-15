@@ -21,15 +21,24 @@ install_github("mskilab/bxBam", auth_token="your_auth_token")
 git clone git@github.com:mskilab/bxBam.git
 make
 cd bamdb/bin/
+## LD_LIBRARY_PATH may have to be set to point to lmdb, htslib, and ck.
 ```
 
 Index Generation
 ----------------
-
-./bxbam
-
+```bash
+bxbam -t "lmdb" -f path_to_bam_file
+for example:
+bxbam -t "lmdb" -f HCC1143_BL_phased_possorted.bam
 ```
 
+Query Bam File
+--------------
+```bash
+bxbam -f path_to_bam_file -i path_to_index_file_directory -b barcode_characters
+## for example:
+bxbam -f HCC1143_BL_phased_possorted.bam -i HCC1143_BL_phased_possorted_lmdb -b GTGGTCGCAACGCTTA-1
+```
 
 ## Examples to run in R
 
