@@ -275,7 +275,7 @@ main(int argc, char *argv[]) {
 	bam_args.index_file_name = NULL;
 	bam_args.bx = NULL;
 	bam_args.convert_to = BAMDB_CONVERT_TO_TEXT;
-	while ((c = getopt(argc, argv, "t:f:n:i:b:q:h:")) != -1) {
+	while ((c = getopt(argc, argv, "t:f:n:i:q:hb")) != -1) {
 			switch(c) {
 				case 't':
 					if (strcmp(optarg, "lmdb") == 0) {
@@ -296,10 +296,21 @@ main(int argc, char *argv[]) {
 				case 'i':
 					bam_args.index_file_name = strdup(optarg);
 					break;
-				case 'b':
+			        case 'z':
+			                // this use to be run when -b was supplied. Previous version functionality.
 					bam_args.bx = strdup(optarg);
+					//	printf("%s\n", optarg);
 					break;
-				
+			        case 'h':
+				        // get the barcode, should be the fourth CLI argument.
+				        bam_args.bx = argv[2];
+					// set the bam file name.
+					bam_args.input_file_name = argv[2];
+					// set the index file name.
+				        break;
+			        case 'b':
+			               //
+				       break;
 				default:
 					fprintf(stderr, "Unknown argument\n");
 					return 1;
@@ -307,8 +318,7 @@ main(int argc, char *argv[]) {
 	}
 
 	// if 3 arguments were passed, assume that a user passed a bam file and a query barcode.
-	if(argc == 3){
-	  //      printf("%s\n", argv[1]);
+	if(argc == 3){ 
 	  // take the bam file and guess the .bxi file's name.
 
 	  // size of the bam file's name supplied.
@@ -346,7 +356,7 @@ main(int argc, char *argv[]) {
 	  }
 	  else {
 	    printf("The index file does not exist. Please, create one using the following format:\n");
-	    printf("bxbam -t 'lmdb' bam_file_name\n");
+	    printf("bxbam -t 'sqlite' bam_file_name\n");
 	    // exit out of main because the user needs to create an index file.
 	    exit(0);
 	  }
