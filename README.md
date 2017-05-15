@@ -48,7 +48,8 @@ bxbam -bh bam_file query_string
 bxbam -bh HCC1143_BL_phased_possorted.bam GTGGTCGCAACGCTTA-1
 ```
 
-## Examples to run in R
+Examples to run in R
+--------------------
 
 ```R
 ## via functions available in package.
