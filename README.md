@@ -36,9 +36,19 @@ bxbam -t "lmdb" -f HCC1143_BL_phased_possorted.bam
 Query Bam File
 --------------
 ```bash
+
+## (new way)
+
+bxbam bam_file query_string
+## for example:
+bxbam HCC1143_BL_phased_possorted.bam GTGGTCGCAACGCTTA-1
+
+## (previous version)
+
 bxbam -f path_to_bam_file -i path_to_index_file_directory -b barcode_characters
 ## for example:
 bxbam -f HCC1143_BL_phased_possorted.bam -i HCC1143_BL_phased_possorted_lmdb -b GTGGTCGCAACGCTTA-1
+
 ```
 
 
