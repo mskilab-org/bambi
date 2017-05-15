@@ -341,7 +341,7 @@ main(int argc, char *argv[]) {
 	  }
 	  else {
 	    printf("The index file does not exist. Please, create one using the following format:\n");
-	    printf("bxbam -t 'sqlite' bam_file_name\n");
+	    printf("bxbam -t 'lmdb' bam_file_name\n");
 	    // exit out of main because the user needs to create an index file.
 	    exit(0);
 	  }
