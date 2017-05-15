@@ -299,6 +299,7 @@ main(int argc, char *argv[]) {
 				case 'b':
 					bam_args.bx = strdup(optarg);
 					break;
+				
 				default:
 					fprintf(stderr, "Unknown argument\n");
 					return 1;
@@ -312,61 +313,66 @@ main(int argc, char *argv[]) {
 
 	  // size of the bam file's name supplied.
 	  size_t bamFile_length = strlen(argv[1]);
-
-	  // create an array
-	  char bxi_file[bamFile_length];
-	  //printf("%zu\n", strlen(bxi_file));
-
-	  //      printf("%zu\n", bamFile_length - 2 );
-
-	  // do the copying now.
-	  strncpy( bxi_file, argv[1], bamFile_length - 3 );
+	  
+	  // create an array for the full bxi file path.
+	  char bxi_path[bamFile_length+2];
+	  // create a temporary array for the total size of the index file's name.
+	  int newArraySize = bamFile_length+2;
+	  // copy all but the last 4 characters of the bam file to the bxi file name.
+	  strncpy( bxi_path, argv[1], bamFile_length - 4 );
+	  
 	  // for the last three indices, append the characters 'd', 'b', and '\0'
-	  bxi_file[bamFile_length-3] = 'd';
-	  bxi_file[bamFile_length-2] = 'b';
-	  bxi_file[bamFile_length-1] = '\0';
-	  //printf("%zu\n", strlen(bxi_file));
-
-	  bam_args.index_file_name = strdup(bxi_file);
-	  char *barcode = "GTGGTCGCAACGCTTA-1";
+	  bxi_path[newArraySize - 6] = '_';
+	  bxi_path[newArraySize-5] = 'l';
+	  bxi_path[newArraySize-4] = 'm';
+	  bxi_path[newArraySize-3] = 'd';
+	  bxi_path[newArraySize-2] = 'b';	  
+	  bxi_path[newArraySize-1] = '/';
+	  bxi_path[newArraySize] = '\0';
+	
+	  bam_args.index_file_name = strdup(bxi_path);
+	  //	  char *barcode = "GTGGTCGCAACGCTTA-1";
+	  char *barcode = argv[2];
 	  bam_args.bx = strdup(barcode);
 
-	  //      printf("%s\n", bxi_file);
+	  char bxi_file[strlen(bxi_path) + 9];
+	  strcpy(bxi_file, bxi_path);
+	  
 	  // test if the .bxi file exists. If not, complain.
-	  if( access(bxi_file, F_OK) != -1) {
-	    // file exists, set the proper values using the command line arguments.
-
-	    // pass the bam file's name to our internal data structure.
+	  if( access(bxi_file , F_OK) != -1) {
+	    printf("%s\n", "Sucessfully opened index file.");
+	    // file exists, pass the bam file's name to our internal data structure.
 	    strcpy(bam_args.input_file_name, argv[1]);
 	  }
 	  else {
 	    printf("The index file does not exist. Please, create one using the following format:\n");
-	    printf("bxbam -t 'lmdb' bam_file_name\n");
+	    printf("bxbam -t 'sqlite' bam_file_name\n");
 	    // exit out of main because the user needs to create an index file.
 	    exit(0);
 	  }
 	}
+	// printf("%s\n", bam_args.input_file_name);
+       	// printf("%s\n", bam_args.index_file_name);
+	// printf("%s\n", bam_args.bx);
 
-	//	printf("%s\n", bam_args.input_file_name);
-	//	printf("%s\n", bam_args.index_file_name);
-	//	printf("%s\n", bam_args.bx);
-	
-	/* Get filename from first non option argument */
+	/* Get filename from first non option argument */	
 	if (optind < argc) {
 		strcpy(bam_args.input_file_name, argv[optind]);
 	}
-
+	
 	if (bam_args.bx != NULL && bam_args.index_file_name != NULL) {
-		bam_row_set_t *row_set = get_bx_rows(bam_args.input_file_name, bam_args.index_file_name, bam_args.bx);
-		for (int j = 0; j < row_set->n_entries; ++j) {
+	  
+	  bam_row_set_t *row_set = get_bx_rows(bam_args.input_file_name, bam_args.index_file_name, bam_args.bx); 
+	  for (int j = 0; j < row_set->n_entries; ++j) {
 			print_sequence_row(row_set->rows[j]);
 		}
 		free_row_set(row_set);
+	
 	}
-
+	
 	if (bam_args.convert_to == BAMDB_CONVERT_TO_LMDB) {
 		rc = generate_index_file(bam_args.input_file_name);
 	}
-
-	return rc;
+	
+	return rc;	
 }

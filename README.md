@@ -6,6 +6,7 @@ indexed file format for barcoded BAMs with API for converting and accessing alig
 * [Examples to run in command line](#examples-to-run-from-the-command-line)
   * [Index Generation](#index-generation)
   * [Query Bam File](#query-bam-file)
+  * [](#)
 * [Examples to run in R](#examples-to-run-in-R)
 
 ## Installation
@@ -39,6 +40,8 @@ bxbam -f path_to_bam_file -i path_to_index_file_directory -b barcode_characters
 ## for example:
 bxbam -f HCC1143_BL_phased_possorted.bam -i HCC1143_BL_phased_possorted_lmdb -b GTGGTCGCAACGCTTA-1
 ```
+
+
 
 ## Examples to run in R
 
