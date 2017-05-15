@@ -44,8 +44,8 @@ bxbam HCC1143_BL_phased_possorted.bam GTGGTCGCAACGCTTA-1
 Query Bam File and Return Headered bam
 --------------------------------------
 ```bash
-bxbam -bh bam_file query_string
-bxbam -bh HCC1143_BL_phased_possorted.bam GTGGTCGCAACGCTTA-1
+bxbam -h bam_file query_string
+bxbam -h HCC1143_BL_phased_possorted.bam GTGGTCGCAACGCTTA-1
 ```
 
 Examples to run in R
