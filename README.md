@@ -7,7 +7,7 @@ indexed file format for barcoded BAMs with API for converting and accessing alig
   * [Index Generation](#index-generation)
   * [Query Bam File and Return Headerless .sam](#query-bam-file-and-return-headerless-sam)
   * [Query Bam File and Return Headered .bam](#query-bam-file-and-return-headered-bam)
-* [Examples to run in R](#examples-to-run-in-R)
+* [Examples to run in R](#examples-to-run-in-r)
 
 ## Installation
 
