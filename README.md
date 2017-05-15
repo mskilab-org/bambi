@@ -4,6 +4,8 @@ indexed file format for barcoded BAMs with API for converting and accessing alig
 ## Table of contents
 * [Installation](#installation)
 * [Examples to run in command line](#examples-to-run-from-the-command-line)
+  * [Index Generation](#index-generation)
+  * [Query Bam File](#query-bam-file)
 * [Examples to run in R](#examples-to-run-in-R)
 
 ## Installation
@@ -18,11 +20,14 @@ install_github("mskilab/bxBam", auth_token="your_auth_token")
 ```bash
 git clone git@github.com:mskilab/bxBam.git
 make
+cd bamdb/bin/
 ```
 
-```bash
-cd bamdb/bin/
+Index Generation
+----------------
+
 ./bxbam
+
 ```
 
 
