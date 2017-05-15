@@ -5,8 +5,8 @@ indexed file format for barcoded BAMs with API for converting and accessing alig
 * [Installation](#installation)
 * [Examples to run in command line](#examples-to-run-from-the-command-line)
   * [Index Generation](#index-generation)
-  * [Query Bam File and Return Headerless .sam](#query-bam-file-and-return-headerless-.sam)
-  * [Query Bam File and Return Headered .bam](#query-bam_file-and-return-headered-.bam)
+  * [Query Bam File and Return Headerless .sam](#query-bam-file-and-return-headerless-sam)
+  * [Query Bam File and Return Headered .bam](#query-bam-file-and-return-headered-bam)
 * [Examples to run in R](#examples-to-run-in-R)
 
 ## Installation
@@ -33,7 +33,7 @@ bxbam -t "lmdb" -f path_to_bam_file
 bxbam -t "lmdb" -f HCC1143_BL_phased_possorted.bam
 ```
 
-Query Bam File and Return Headerless .sam
+Query Bam File and Return Headerless sam
 -----------------------------------------
 ```bash
 bxbam bam_file query_string
@@ -41,7 +41,7 @@ bxbam bam_file query_string
 bxbam HCC1143_BL_phased_possorted.bam GTGGTCGCAACGCTTA-1
 ```
 
-Query Bam File and Return Headered .bam)
+Query Bam File and Return Headered bam
 --------------------------------------
 ```bash
 bxbam -bh bam_file query_string
