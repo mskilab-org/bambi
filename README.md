@@ -6,7 +6,6 @@ indexed file format for barcoded BAMs with API for converting and accessing alig
 * [Examples to run in command line](#examples-to-run-from-the-command-line)
   * [Index Generation](#index-generation)
   * [Query Bam File](#query-bam-file)
-  * [](#)
 * [Examples to run in R](#examples-to-run-in-R)
 
 ## Installation
