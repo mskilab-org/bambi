@@ -28,7 +28,7 @@ Index Generation
 ----------------
 ```bash
 bxbam -t "lmdb" -f path_to_bam_file
-for example:
+## for example:
 bxbam -t "lmdb" -f HCC1143_BL_phased_possorted.bam
 ```
 
