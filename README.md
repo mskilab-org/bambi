@@ -21,7 +21,6 @@ install_github("mskilab/bxBam")
 ```bash
 git clone git@github.com:mskilab/bxBam.git
 make
-cd bamdb/bin/
 ## LD_LIBRARY_PATH may have to be set to point to lmdb, htslib, and ck.
 ```
 
