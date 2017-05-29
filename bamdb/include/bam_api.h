@@ -14,6 +14,8 @@ char *bam_seq_str(const bam1_t *row, char *work_buffer);
 char *bam_qual_str(const bam1_t *row, char *work_buffer);
 
 char *bam_bx_str(const bam1_t *row, char *work_buffer);
+/* TODO: the intention with this is to create some sort of representation
+ * that we can load into something like a pandas data frame */
 
 typedef struct bam_sequence_row {
 	char *qname;
@@ -51,6 +53,8 @@ void print_sequence_row(bam_sequence_row_t *row);
 void destroy_bam_sequence_row(bam_sequence_row_t *row);
 void free_row_set(bam_row_set_t *row_set);
 
+/* Return 0 on success */
+int write_row_set_to_file(bam_row_set_t *row_set, bam_hdr_t *header, char *out_filename);
 
 #define bam_row_size(b) (sizeof(bam1_t) + b->l_data * sizeof(uint8_t))
 #define bam_row_max_size(b) (sizeof(bam1_t) + b->m_data * sizeof(uint8_t))
