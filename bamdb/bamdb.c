@@ -250,6 +250,62 @@ exit:
 	return rc;
 }
 
+int
+write_row_subset(char *input_file_name, offset_list_t *offset_list, char *out_filename)
+{
+  int rc = 0;
+  int64_t src = 0;
+  bam1_t *bam_row;
+  offset_node_t *offset_node;
+  bam_hdr_t *new_header = NULL;
+  bam_hdr_t *header = NULL;
+  BGZF *fp = bgzf_open(out_filename, "w");
+  samFile *input_file = 0;
+
+  if ((input_file = sam_open(input_file_name, "r")) == 0) {
+    fprintf(stderr, "Unable to open file %s\n", input_file_name);
+    return 1;
+  }
+
+  header = sam_hdr_read(input_file);
+  if (header == NULL) {
+    fprintf(stderr, "Unable to read the header from %s\n", input_file->fn);
+    rc = 1;
+    return 1;
+  }
+
+
+  new_header = bam_hdr_dup(header);
+  rc = bam_hdr_write(fp, new_header);
+  if (rc != 0) {
+    fprintf(stderr, "Unable to write header for %s\n", out_filename);
+    return rc;
+  }
+
+  bam_row = bam_init1();
+  if (offset_list != NULL) {
+    offset_node = offset_list->head;
+    while (offset_node != NULL) {
+      src = bgzf_seek(input_file->fp.bgzf, offset_node->offset, SEEK_SET);
+      if (src != 0) {
+	fprintf(stderr, "Error seeking to file offset\n");
+	return 1;
+      }
+
+      rc = sam_read1(input_file, header, bam_row);
+      rc = bam_write1(fp, bam_row);
+      if (rc < 0) {
+	fprintf(stderr, "Error writing row to file %s\n", out_filename);
+	return rc;
+      }
+
+      offset_node = offset_node->next;
+    }
+  }
+
+  return rc;
+}
+
 
 int 
 generate_index_file (char *input_file_name)
@@ -274,8 +330,9 @@ main(int argc, char *argv[]) {
 
 	bam_args.index_file_name = NULL;
 	bam_args.bx = NULL;
+	bam_args.output_file_name = NULL;
 	bam_args.convert_to = BAMDB_CONVERT_TO_TEXT;
-	while ((c = getopt(argc, argv, "t:f:n:i:q:h")) != -1) {
+	while ((c = getopt(argc, argv, "t:f:n:o:i:q:h")) != -1) {
 			switch(c) {
 				case 't':
 					if (strcmp(optarg, "lmdb") == 0) {
@@ -292,6 +349,9 @@ main(int argc, char *argv[]) {
 					break;
 				case 'n':
 					max_rows = atoi(optarg);
+					break;
+			        case 'o':
+				        bam_args.output_file_name = strdup(optarg);
 					break;
 				case 'i':
 					bam_args.index_file_name = strdup(optarg);
@@ -399,11 +459,25 @@ main(int argc, char *argv[]) {
 	
 	if (bam_args.bx != NULL && bam_args.index_file_name != NULL) {
 	  
-	  bam_row_set_t *row_set = get_bx_rows(bam_args.input_file_name, bam_args.index_file_name, bam_args.bx); 
-	  for (int j = 0; j < row_set->n_entries; ++j) {
-			print_sequence_row(row_set->rows[j]);
-		}
-		free_row_set(row_set);	
+	  //bam_row_set_t *row_set = get_bx_rows(bam_args.input_file_name, bam_args.index_file_name, bam_args.bx); 
+	  //for (int j = 0; j < row_set->n_entries; ++j) {
+	  //	print_sequence_row(row_set->rows[j]);
+	  //	}
+	  if (bam_args.output_file_name != NULL) {
+	    /* Write resulting rows to file */
+	    offset_list_t *offset_list = calloc(1, sizeof(offset_list_t));
+
+	    rc = get_offsets(offset_list, bam_args.index_file_name, bam_args.bx);
+	    rc = write_row_subset(bam_args.input_file_name, offset_list, bam_args.output_file_name);
+	    free(offset_list);
+	  } else {
+	    /* Print rows in tab delim format */
+	    bam_row_set_t *row_set = get_bx_rows(bam_args.input_file_name, bam_args.index_file_name, bam_args.bx);
+	    for (size_t j = 0; j < row_set->n_entries; ++j) {
+	      print_sequence_row(row_set->rows[j]);
+	    }
+	    free_row_set(row_set);	
+	  }
 	}
 	
 	if (bam_args.convert_to == BAMDB_CONVERT_TO_LMDB) {
