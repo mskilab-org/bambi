@@ -364,6 +364,11 @@ main(int argc, char *argv[]) {
 					break;
 			        case 'h':
 				  {
+
+				        // setting output file name
+				        char *output_file_name = "headered.bam";
+				        bam_args.output_file_name = strdup(output_file_name);
+				         
 				        // get the barcode, should be the fourth CLI argument.
 				        bam_args.bx = strdup(argv[3]);
 					// set the bam file name.
