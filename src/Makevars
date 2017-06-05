@@ -1,0 +1,7 @@
+PKG_BASE = $(shell pwd)/../
+LIB_BASE = -Wl,-rpath,$(PKG_BASE) -fPIC
+
+PKG_CPPFLAGS = -I$(PKG_BASE)/bamdb/ -I$(PKG_BASE)/bamdb/include/ -I$(PKG_BASE)htslib/ -std=c++11 -fPIC -I$(PKG_BASE)/sqlite3/ -I$(PKG_BASE)/lmdb/libraries/liblmdb/
+PKG_CXXFLAGS = -I$(PKG_BASE)/bamdb/ -I$(PKG_BASE)/bamdb/include/ -I$(PKG_BASE)htslib/ -std=c++11 -fPIC -I$(PKG_BASE)/sqlite3/ -I$(PKG_BASE)lmdb/libraries/liblmdb/
+
+PKG_LIBS = -L$(PKG_BASE)/ -L$(PKG_BASE)/src/ -L$(PKG_BASE)/bamdb/bin/ -L$(PKG_BASE)htslib/ -L$(PKG_BASE)sqlite3/ -L$(PKG_BASE)lmdb/libraries/liblmdb/ -lbamdb -lhts -lsqlite3 -llmdb

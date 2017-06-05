@@ -1,0 +1,10 @@
+CC=/usr/bin/cc
+MAKE=make
+SRC_DIR=/gpfs/commons/home/knagdimov/temp/git/ck
+BUILD_DIR=/gpfs/commons/home/knagdimov/temp/git/ck
+CFLAGS+=-D_XOPEN_SOURCE=600 -D_BSD_SOURCE -D_DEFAULT_SOURCE -std=gnu99 -pedantic -Wall -W -Wundef -Wendif-labels -Wshadow -Wpointer-arith -Wcast-align -Wcast-qual -Wwrite-strings -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs -Winline -Wdisabled-optimization -fstrict-aliasing -O2 -pipe -Wno-parentheses  -fPIC -I$(SRC_DIR)/include -I$(BUILD_DIR)/include
+LDFLAGS+=-Wl,-soname,libck.so.0 -m64  -shared -fPIC
+ALL_LIBS=libck.so libck.a
+LD=/usr/bin/cc
+
+include $(BUILD_DIR)/build/ck.build.x86_64

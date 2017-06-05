@@ -1,5 +1,0 @@
-pandas
-numpy 
-numexpr
-cython
-tables

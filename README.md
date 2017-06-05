@@ -1,34 +1,72 @@
 # bxBam
 indexed file format for barcoded BAMs with API for converting and accessing alignment records
 
-# dependencies
+## Table of contents
+* [Installation](#installation)
+* [Examples to run in command line](#examples-to-run-from-the-command-line)
+  * [Index Generation](#index-generation)
+  * [Query Bam File and Return Headerless .sam](#query-bam-file-and-return-headerless-sam)
+  * [Query Bam File and Return Headered .bam](#query-bam-file-and-return-headered-bam)
+* [Examples to run in R](#examples-to-run-in-r)
 
-Python >= 2.7 or Python 3.x
+## Installation
 
-HDF5 >= 1.8.4 (recommend >=1.8.15 , HDF5 v1.10 not supported)
+```R
+## install packages via devtools::install_github().
+library(devtools)
+install_github("mskilab/bxBam")
+```
 
-PyTables (https://github.com/PyTables/PyTables)
+## Examples to run from the command line
+```bash
+git clone git@github.com:mskilab/bxBam.git
+make
+## LD_LIBRARY_PATH may have to be set to point to lmdb, htslib, and ck.
+```
 
-NumPy >= 1.8.1
+Index Generation
+----------------
+```bash
+bxbam -t "lmdb" -f path_to_bam_file
+## for example:
+bxbam -t "lmdb" -f HCC1143_BL_phased_possorted.bam
+```
 
-Numexpr >= 2.5.2
+Query Bam File and Return Headerless sam
+-----------------------------------------
+```bash
+bxbam bam_file query_string
+## for example:
+bxbam HCC1143_BL_phased_possorted.bam GTGGTCGCAACGCTTA-1
+```
 
-Cython >= 0.21
+Query Bam File and Return Headered bam
+--------------------------------------
+```bash
+bxbam -h bam_file query_string
+## for example:
+bxbam -h HCC1143_BL_phased_possorted.bam GTGGTCGCAACGCTTA-1
+## the results will be in a file called headered.bam
+```
 
-Samtools https://github.com/samtools/samtools
+Examples to run in R
+--------------------
 
-Users install Python dependencies with `pip install -r requirements.txt`
+```R
+## via functions available in package.
+library(bxBam)
+ls.str('package:bxBam')
+```
 
-# Rough API: 
+```R
+## to generate db file specify bam file generated from 10x Genomics. Use generate_bxi()
+generate_bxi(system.file("extdata", "shortened_HCC1143_BL_phased_possorted.bam", package="bxBam")
+```
 
-(1) Given a 10x bam file, create bxBam file with `python create_bxbam.py`. First at the path to your bam in the script, as well as the bxbam name. Users can chose which fields to index---the default is on `BX` and `QUAL` to query bmates against qmates. There exists a flag `--MD` to include the `MD` tag, if this is included (e.g. if user has generated MD tags with `samtools calmd <bam-file>`). Otherwise, the default will include 12 fields: the 11 mandatory bam fields and BX. 
+```R
+## using that index file, query the bam file for records that match a given BX barcode.
+## barcodedReads(bam_file, index_file, barcode)
 
-     python indexing_issues_bxbam.py --input="/pathname/path/file.bam" --output "pathname/bxbam.h5" --index_fields="QNAME","BX" 
-
-Optional column is --MD
-
-(2) Run
-    
-    install.packages("devtools")
-    library(devtools)
-    install_github("mskilab/bxBam")
+barcodedReads(system.file("extdata", "shortened_HCC1143_BL_phased_possorted.bam", package="bxBam"),
+system.file("extdata", "shortened_HCC1143_BL_phased_possorted.db", package="bxBam"), 'CGGAGCTAGTAAGTAC-1')
+```
