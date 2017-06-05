@@ -23,7 +23,7 @@
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##############################################################################
 
-#' @import rPython
+## @import rPython
 #' @import data.table
 #' @import Rsamtools
 #' @import GenomicRanges
@@ -77,25 +77,26 @@ countCigar <- function(cigar) {
 #'
 #' Class \code{bxbam} object to load bxbam and query GRanges
 #'
-#' @import rPython
+## @import rPython
 #' @import data.table
 #' @import Rsamtools
 #' @import GenomicRanges
 #' @import GenomicAlignments
 #' @exportClass bxBam
 #' @author Evan Biederstedt
-setClass("bxBam", representation(.bxbamfile = 'character', .bamfile = 'BamFile', .sessionId = 'character', .sqllite = 'logical'))
+setClass("bxBam", representation(.bxbamfile = 'character', .bamfile = 'BamFile', .sessionId = 'character', .type = 'character', .tags = 'character'))
 
 setMethod('initialize', 'bxBam', function(.Object, bxbamfile = '', bamfile = '', tags = NULL, index_on = NULL, chunksize = 1e6, verbose = TRUE, overwrite = FALSE, nlimit = NULL, mc.cores = 1)
 {
     sqllite = FALSE
+    bamdb = FALSE
     .Object@.sessionId <- paste0('session', runif(1))
     message(.Object@.bxbamfile)
 
     if (!file.exists(bamfile)) # will try and guess the bamfile name from the bxbam
     {
         if (!file.exists(bxbamfile))
-            stop('Either bam or bxbam (.sqllite, .h5) file must be provided')
+            stop('Either bam or bxbam (.db, .sqllite, .h5) file must be provided')
         
         bamfile = gsub('bxbamfile', 'bxbam', bxbamfile)
         if (!file.exists(bamfile))
@@ -117,12 +118,19 @@ setMethod('initialize', 'bxBam', function(.Object, bxbamfile = '', bamfile = '',
         sqllite = TRUE           
     }
     else
+    {
+        bamdb =  grepl('.db$', bxbamfile)
         sqllite = grepl('.sqllite$', bxbamfile)
+    }
     
     .Object@.bxbamfile = bxbamfile
+    tags = union(c('MD', 'BX'), tags)
     
     if (!sqllite)
-        python.exec(sprintf("sessions['%s'] = tables.open_file('%s').get_node('/bam_table/bam_fields')", .Object@.sessionId, .Object@.bxbamfile))
+        {
+            if (!bamdb)                
+                python.exec(sprintf("sessions['%s'] = tables.open_file('%s').get_node('/bam_table/bam_fields')", .Object@.sessionId, .Object@.bxbamfile))
+        }
     else
     {
         if (!file.exists(bxbamfile) | overwrite)
@@ -133,16 +141,58 @@ setMethod('initialize', 'bxBam', function(.Object, bxbamfile = '', bamfile = '',
                     Sys.sleep(1)
                 }
             message('Creating .sqllite from .bam file')
-            tags = union(c('MD', 'BX'), tags)
             index_on = union(c('qname', 'BX', 'rname', 'rnext'), index_on)                    
             bam2sqllite(.Object@.bxbamfile, Rsamtools::path(.Object@.bamfile), tags = tags, index_on = index_on, chunksize = chunksize, verbose = verbose, nlimit = nlimit, mc.cores = mc.cores)
         }
     }
+
+    .Object@.tags = as.character(tags)
+    if (sqllite)
+        .Object@.type = 'sqllite'
+    else if (bamdb)
+        .Object@.type = 'bamdb'
+    else
+        .Object@.type = 'hdf5'
         
-    .Object@.sqllite = sqllite
     return(.Object)
 })
 
+
+#' @name seqinfo
+#' @title seqinfo
+#' @description
+#'
+#' returns Seqinfo of bxBam object
+#' Usage:
+#' seqinfo(gt)
+#' @docType methods
+#' @param x \code{bxBam} object
+#' @return \code{seqinfo}
+#' @importFrom GenomicRanges seqinfo
+#' @export
+#' @author Marcin Imielinski
+setMethod("seqinfo", signature(x = "bxBam"), function(x)
+{
+  return(seqinfo(x@.bamfile))
+})
+
+#' @name seqlengths
+#' @title seqlengths
+#' @description
+#'
+#' returns Seqinfo of bxBam object
+#' Usage:
+#' seqlengths(gt)
+#' @docType methods
+#' @param x \code{bxBam} object
+#' @return \code{seqinfo}
+#' @importFrom GenomicRanges seqinfo
+#' @export
+#' @author Marcin Imielinski
+setMethod("seqlengths", signature(x = "bxBam"), function(x)
+{
+  return(seqlengths(x@.bamfile))
+})
 
 #' @name bxBam
 #' @title bxBam
@@ -268,6 +318,8 @@ CREATE TABLE reads (
                    
 }
 
+
+
 ## process chunk of lines, used by bam2sqllite
 .proclines = function(lines, fields, tags, verbose = FALSE)
 {
@@ -276,12 +328,23 @@ CREATE TABLE reads (
     linesp = strsplit(lines, '\t')
     chunk = as.data.table(do.call(rbind, lapply(linesp, function(x) x[1:11])))[, line := 1:length(V1)]
     m = munlist(lapply(linesp, function(x) x[-c(1:11)]))
-    tagchunk = fread(paste(m[,3], collapse = '\n'), sep = ':')
-    tagchunk[, line := as.numeric(m[,1])]
-    tagchunk = dcast.data.table(tagchunk[V1 %in% tags, ], line ~ V1, value.var = 'V3')
-    chunk = merge(chunk, tagchunk, by = 'line')[, -1, with = FALSE]
+
+
+    if (length(tags)>0)
+        {
+            tagchunk = tryCatch(fread(paste(m[,3], collapse = '\n'), sep = ':'),
+                                error = function(e) NULL)
+            if (is.null(tagchunk)) ## slower but only option if m[,3] is ragged
+                tagchunk = as.data.table(do.call(rbind, lapply(strsplit(m[,3], ':'), function(x) x[1:3])))
+            tagchunk[, line := as.numeric(m[,1])]
+            tagchunk = dcast.data.table(tagchunk[V1 %in% tags, ], line ~ V1, value.var = 'V3')
+            chunk = merge(chunk, tagchunk, by = 'line')[, -1, with = FALSE]
+        }
+    else
+        chunk = chunk[, -1, with = FALSE]
     setnames(chunk, 1:11, fields)
-    chunk = chunk[, c(fields, tags), with = FALSE]
+    fn = intersect(c(fields, tags), names(chunk))
+    chunk = chunk[, fn, with = FALSE]
     if (verbose)
         cat("|")
     return(chunk)    
@@ -296,16 +359,36 @@ CREATE TABLE reads (
 #' @author Marcin Imielinski
 setMethod('head', 'bxBam', function(x, n = 5)
 {
-    if (!.hasSlot(x, '.sqllite')) ## check for older version of sqllite
-        sqllite = FALSE
+    if (!.hasSlot(x, '.type')) ## check for older version of sqllite
+        type = 'hdf5'
     else
-        sqllite = x@.sqllite
+        type = x@.type
 
-    if (sqllite)
+    if (!.hasSlot(x, '.tags')) ## check for older version of sqllite
+        tags = c("BX", "MD")
+    else
+        tags = x@.tags
+
+    if (type == 'sqllite')
     {
         mydb <- RSQLite::dbConnect(RSQLite::SQLite(), x@.bxbamfile)
         return( RSQLite::dbGetQuery(mydb, sprintf('SELECT * FROM reads LIMIT %s', n)))
     }
+    else if (type == 'bamdb')
+    {
+        p = pipe(paste('samtools view', path(x@.bamfile)))
+        fields = c('qname', 'flag', 'rname', 'pos', 'mapq', 'cigar', 'rnext', 'pnext', 'tlen', 'seq', 'qual')
+        
+        begin = Sys.time()
+        
+        ## this DBI dbWithTransaction statement should cause the dbWriteTable
+        ## statements to be inside a transaction
+        lines <- readLines(p, n = n)
+        close(p)
+        out = .proclines(lines, fields = fields, tags = tags, verbose = TRUE)
+        
+        return(out)        
+    }    
 })
 
 
@@ -349,35 +432,37 @@ setMethod('show', 'bxBam', function(object)
 setGeneric('get_bmates', function(.Object, query, ...) standardGeneric('get_bmates'))
 setMethod("get_bmates", "bxBam", function(.Object, query, verbose = FALSE, mc.cores = 1){
     
-    if (!.hasSlot(.Object, '.sqllite')) ## check for older version of bxbam
-        sqllite = FALSE
+    if (!.hasSlot(.Object, '.type')) ## check for older version of bxbam
+        type = 'hdf5'
     else
-        sqllite = .Object@.sqllite
-    
+        type = .Object@.type 
+  
     if (inherits(query, 'GRanges') | inherits(query, 'data.frame'))
     {
         if (is.null(query$BX))
         {            
             if (verbose)
                 {
-                    message("BX field not found, will use read.bam to pull reads under query GRanges from bam file and find their bmates")
+                    message("Using read.bam to pull reads under GRanges query from bam file and find their bmates")
                     if (verbose)
                         now = Sys.time()
                 }
             query = read.bam(.Object@.bamfile, gr = query, tag = c('BX', 'MD'), pairs.grl = FALSE)
             if (verbose)
                 {
-                    message('Retrieved reads:')
+                    message(sprintf('Retrieved %s reads with %s unique barcodes:', length(query), length(unique(query$BX))))
                     print(Sys.time()-now)
                 }
         }    
         query = query$BX            
     }
 
+    query = setdiff(query, NA)
+    
     if (verbose)
         now = Sys.time()
     
-    if (sqllite)
+    if (type == 'sqllite')
     {
 
         if (mc.cores == 1)
@@ -395,6 +480,39 @@ setMethod("get_bmates", "bxBam", function(.Object, query, verbose = FALSE, mc.co
             queryl = split(query, rep(1:mc.cores, ceiling(length(query)/mc.cores))[1:length(query)])
             return(do.call('c', mclapply(queryl, get_bmates, .Object = .Object, verbose = verbose, mc.cores = mc.cores)))
         }
+    }
+    else if (type == 'bamdb')
+    {
+        bamdb_str = sprintf("
+              export LD_LIBRARY_PATH=/gpfs/commons/groups/imielinski_lab/Software/sqlite3:/gpfs/commons/groups/imielinski_lab/git/lmdb/libraries/liblmdb/:/gpfs/commons/groups/imielinski_lab/git/htslib:$LD_LIBRARY_PATH;
+              /gpfs/commons/groups/imielinski_lab/git/bamdb/bin/bamdb -i %s -f %s -b",
+              .Object@.bxbamfile,
+              path(.Object@.bamfile))
+
+        bamdb_cmd = paste(bamdb_str, query)
+
+        out = rbindlist(mclapply(bamdb_cmd, function(cmd)
+        {
+            if (verbose)
+                cat('.')
+            p = pipe(cmd)
+            dat = fread(paste(readLines(p), collapse = '\n'))[V2 != "TAGs", ]
+            close(p)
+            out = dcast.data.table(dat, V1 ~ V2, value.var = "V3")[, -1, with = FALSE]
+            setnames(out, names(out), ifelse(names(out)=="BX", names(out), tolower(names(out))))
+            if (verbose)
+                cat('|')
+            return(out)            
+        }, mc.cores = mc.cores))
+
+        if (verbose)
+            cat('\n')
+        
+        if (nrow(out)>0)
+            {
+                out$pos = as.numeric(out$pos)
+                out$mapq = as.integer(out$mapq)
+            }                
     }
     else
         {            
@@ -495,10 +613,10 @@ setMethod("get_bmates", "bxBam", function(.Object, query, verbose = FALSE, mc.co
 setGeneric('get_qmates', function(.Object, query, ...) standardGeneric('get_qmates'))
 setMethod("get_qmates", "bxBam", function(.Object, query, verbose = FALSE, mc.cores = 1){
 
-    if (!.hasSlot(.Object, '.sqllite')) ## check for older version of bxbam
-        sqllite = FALSE
+    if (!.hasSlot(.Object, '.type')) ## check for older version of bxbam
+        type = 'hdf5'
     else
-        sqllite = .Object@.sqllite
+        type = .Object@.type
     
     if (inherits(query, 'GRanges') | inherits(query, 'data.frame'))
     {
@@ -506,7 +624,7 @@ setMethod("get_qmates", "bxBam", function(.Object, query, verbose = FALSE, mc.co
         {            
             if (verbose)
             {
-                message("BX field not found, will use read.bam to pull reads under query GRanges from bam file and find their bmates")
+                message("Using read.bam to pull reads under GRanges query from bam file and find their bmates")
                 if (verbose)
                     now = Sys.time()
             }
@@ -523,7 +641,7 @@ setMethod("get_qmates", "bxBam", function(.Object, query, verbose = FALSE, mc.co
     if (verbose)
         now = Sys.time()
     
-    if (sqllite)
+    if (type == 'sqllite')
     {
         if (mc.cores == 1)
             {

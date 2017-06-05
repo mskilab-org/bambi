@@ -9,7 +9,6 @@ Depends:
     GenomicRanges (>= 1.8),
     bamUtils,
     DBI,
-    rPython,
     RSQLite,
     Rsamtools
 Imports:
