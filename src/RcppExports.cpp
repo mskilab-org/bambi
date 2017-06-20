@@ -27,3 +27,14 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+
+static const R_CallMethodDef CallEntries[] = {
+    {"bxBam_barcodedReads", (DL_FUNC) &bxBam_barcodedReads, 3},
+    {"bxBam_generate_bxi", (DL_FUNC) &bxBam_generate_bxi, 1},
+    {NULL, NULL, 0}
+};
+
+RcppExport void R_init_bxBam(DllInfo *dll) {
+    R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
+    R_useDynamicSymbols(dll, FALSE);
+}
