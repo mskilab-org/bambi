@@ -22,7 +22,7 @@ BUILT_OBJECTS = $(patsubst src/%, $(BUILD_DIR)/%, $(OBJECTS))
 
 PKG_BASE = $(shell pwd)/../
 SOURCES	:= src/bam_api.c src/bam_lmdb.c
-LIB		:= -lhts -lm -llmdb -lpthread
+LIB		:= -lhts -lm -llmdb -lpthread -lz
 INC		:= -I include -I$(PKG_BASE)/ck/include/ -I$(PKG_BASE)htslib/ -I$(PKG_BASE)lmdb/libraries/liblmdb/
 
 all:
