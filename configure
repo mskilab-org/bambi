@@ -2,14 +2,13 @@
 
 export htslib="htslib";
 export lmdb="lmdb/libraries/liblmdb";
-export sqlite3="sqlite3";
 export bamdb="bamdb";
+export ck="ck";
 
 echo "Copying fPIC Makefile into $htslib/Makefile";
 cp Makefile.htslib.fPIC $htslib/Makefile;
 
 rm src/Rbamdb.so
-
 
 echo "entering htslib directory and compiling...";
 cd $htslib;
@@ -31,12 +30,10 @@ cd ../../../;
 
 echo "the current working directory is" $(pwd);
 
-echo "entering sqlite directory and compiling...";
-cd $sqlite3;
-touch Makefile.am Makefile.in aclocal.m4
+echo "entering ck directory and compiling...";
+cd $ck;
 make;
-ar sr libsqlite3.a sqlite3.o sqlite3-shell.o sqlite3-sqlite3.o
-echo "leaving ${sqlite3} directory";
+echo "leaving ${ck} directory";
 cd ..;
 
 echo "the current working directory is" $(pwd);
@@ -57,7 +54,7 @@ rm -f ./$htslib/libhts.so.2
 
 rm -f ./$lmdb/liblmdb.so
 
-rm -f ./$sqlite3/libsqlite3.so
+rm -f ./$ck/src/libck.so
 
 #echo "copppppppyyyyyyyyyyyying"
 #cp ./bamdb/bin/libbamdb.a ./
