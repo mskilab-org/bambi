@@ -5,18 +5,6 @@
 
 using namespace Rcpp;
 
-// barcodedReads
-void barcodedReads(std::string& bamFile, std::string& indexFile, std::string& barcode);
-RcppExport SEXP bxBam_barcodedReads(SEXP bamFileSEXP, SEXP indexFileSEXP, SEXP barcodeSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< std::string& >::type bamFile(bamFileSEXP);
-    Rcpp::traits::input_parameter< std::string& >::type indexFile(indexFileSEXP);
-    Rcpp::traits::input_parameter< std::string& >::type barcode(barcodeSEXP);
-    barcodedReads(bamFile, indexFile, barcode);
-    return R_NilValue;
-END_RCPP
-}
 // generate_bxi
 void generate_bxi(const std::string& bamFile);
 RcppExport SEXP bxBam_generate_bxi(SEXP bamFileSEXP) {
@@ -29,7 +17,6 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"bxBam_barcodedReads", (DL_FUNC) &bxBam_barcodedReads, 3},
     {"bxBam_generate_bxi", (DL_FUNC) &bxBam_generate_bxi, 1},
     {NULL, NULL, 0}
 };

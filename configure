@@ -54,7 +54,7 @@ rm -f ./$htslib/libhts.so
 rm -f ./$htslib/libhts.so.2
 rm -f ./$lmdb/liblmdb.so
 rm -f ./$ck/src/libck.so
-rm -f ./$bamdb/bamdb.a
+rm -f ./$bamdb/bamdb.so
 
 #echo "copppppppyyyyyyyyyyyying"
 #cp ./bamdb/bin/libbamdb.a ./

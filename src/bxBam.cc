@@ -28,41 +28,7 @@ barcodedReads('/gpfs/commons/groups/imielinski_lab/data/10X/bam3/HCC1143_BL_phas
 
 #define get_int_chars(i) ((i == 0) ? 1 : floor(log10(abs(i))) + 1)
 
-// [[Rcpp::export]]
-void barcodedReads(std::string& bamFile, std::string& indexFile, std::string& barcode){
 
-  int rc = 0;
-  samFile *input_file = 0;
-  bam_args_t bam_args;
-  int max_rows = 0;
-  offset_list_t *offset_list = NULL;
-
-  bam_args.index_file_name = NULL; // this is needed for the lmdb instance.
-  bam_args.bx = NULL; //this as well
-  bam_args.convert_to = BAMDB_CONVERT_TO_TEXT;
-  int c;
-
-  // change the values of the struct bam_args_t to those of the input values.
-  strcpy(bam_args.input_file_name, bamFile.c_str());
-  bam_args.index_file_name = strdup(indexFile.c_str()); // returns a pointer to a new string which is a duplicate of the input c-style string.
-  bam_args.bx = strdup(barcode.c_str());
-
-  input_file = sam_open(bam_args.input_file_name, "r");
-
-  if (bam_args.bx != NULL && bam_args.index_file_name != NULL) {
-    // allocate memory for an object of offset_list_t that has 1 element.
-    //offset_list = (offset_list_t *)calloc(1, sizeof(offset_list_t));
-    //int rc = get_offsets(offset_list, bam_args.index_file_name, bam_args.bx);
-    //free(offset_list);
-
-    bam_row_set_t *row_set = get_bx_rows(bam_args.input_file_name, bam_args.index_file_name, bam_args.bx);
-    for (size_t j = 0; j < row_set->n_entries; ++j) {
-      print_sequence_row(row_set->rows[j]);
-    }
-    free_row_set(row_set);
-  }
-  rc = read_file(input_file, offset_list);
-}
 
 // [[Rcpp::export]]
 void

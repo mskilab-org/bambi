@@ -19,21 +19,18 @@ HEADERS = $(wildcard $(INCLUDE_DIR)/*.h)
 
 BUILT_OBJECTS = $(patsubst src/%, $(BUILD_DIR)/%, $(OBJECTS))
 
-
 PKG_BASE = $(shell pwd)/../
 SOURCES	:= src/bam_api.c src/bam_lmdb.c
 LIB		:= -lhts -lm -llmdb -lpthread -lz
-INC		:= -I/ -I include -I$(PKG_BASE)/ck/include/ -I$(PKG_BASE)htslib/ -I$(PKG_BASE)lmdb/libraries/liblmdb/
+INC		:= -I/ -Iinclude -I$(PKG_BASE)/ck/include/ -I$(PKG_BASE)htslib/ -I$(PKG_BASE)lmdb/libraries/liblmdb/
 
 all:
 	@mkdir -p bin/
-	##need to create an archive file for bamdb b/c Rcpp needs to reference the code that way.
-	##need to create the object files
 	$(CC) -c bamdb.c $(INC) -o bin/bamdb.o
 	$(CC) -c src/bam_api.c $(INC) -o bin/bam_api.o
 	$(CC) -c src/bam_lmdb.c $(INC) -o bin/bam_lmdb.o
 
-	ar cr bin/libbamdb.a bin/bamdb.o bin/bam_api.o bin/bam_lmdb.o
+	ar cr bin/libbamdb.so bin/bamdb.o bin/bam_api.o bin/bam_lmdb.o
 
 	$(CC) $(CFLAGS) $(SOURCES) bamdb.c -L$(PKG_BASE)lmdb/libraries/liblmdb/ -L$(PKG_BASE)/htslib/ -L$(PKG_BASE)/ck/ -o $(PKG_BASE)/bxbam $(LIB) $(INC)
 
