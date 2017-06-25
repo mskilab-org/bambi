@@ -23,10 +23,13 @@ BUILT_OBJECTS = $(patsubst src/%, $(BUILD_DIR)/%, $(OBJECTS))
 PKG_BASE = $(shell pwd)/../
 SOURCES	:= src/bam_api.c src/bam_lmdb.c
 LIB		:= -lhts -lm -llmdb -lpthread -lz
-INC		:= -I include -I$(PKG_BASE)/ck/include/ -I$(PKG_BASE)htslib/ -I$(PKG_BASE)lmdb/libraries/liblmdb/
+INC		:= -I/ -I include -I$(PKG_BASE)/ck/include/ -I$(PKG_BASE)htslib/ -I$(PKG_BASE)lmdb/libraries/liblmdb/
 
 all:
 	@mkdir -p bin/
+	##create static library by creating compiling code into object files and then archive those object files
+	$(CC) -c $(SOURCES) bamdb.c -I$(INC)
+
 	$(CC) $(CFLAGS) $(SOURCES) bamdb.c -L$(PKG_BASE)lmdb/libraries/liblmdb/ -L$(PKG_BASE)/htslib/ -L$(PKG_BASE)/ck/ -o $(PKG_BASE)/bxbam $(LIB) $(INC)
 
 clean:
