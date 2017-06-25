@@ -42,7 +42,6 @@ echo "entering bamdb directory and compiling...";
 cd $bamdb;
 make clean;
 make;
-##echo "chmodddddddddddddddddddding"
 ##chmod 777 bin/libbamdb.a
 echo "leaving ${bamdb} directory";
 cd ..
@@ -51,10 +50,9 @@ echo "the current working directory is" $(pwd);
 
 rm -f ./$htslib/libhts.so
 rm -f ./$htslib/libhts.so.2
-
 rm -f ./$lmdb/liblmdb.so
-
 rm -f ./$ck/src/libck.so
+rm -f ./$bamdb/bamdb.a
 
 #echo "copppppppyyyyyyyyyyyying"
 #cp ./bamdb/bin/libbamdb.a ./

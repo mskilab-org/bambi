@@ -27,11 +27,16 @@ INC		:= -I/ -I include -I$(PKG_BASE)/ck/include/ -I$(PKG_BASE)htslib/ -I$(PKG_BA
 
 all:
 	@mkdir -p bin/
-	##create static library by creating compiling code into object files and then archive those object files
-	$(CC) -c $(SOURCES) bamdb.c -I$(INC)
+	##need to create an archive file for bamdb b/c Rcpp needs to reference the code that way.
+	##need to create the object files
+	$(CC) -c bamdb.c $(INC) -o bin/bamdb.o
+	$(CC) -c src/bam_api.c $(INC) -o bin/bam_api.o
+	$(CC) -c src/bam_lmdb.c $(INC) -o bin/bam_lmdb.o
+	#$(CC) -c $(SOURCES) bamdb.c -I$(INC)
 
 	$(CC) $(CFLAGS) $(SOURCES) bamdb.c -L$(PKG_BASE)lmdb/libraries/liblmdb/ -L$(PKG_BASE)/htslib/ -L$(PKG_BASE)/ck/ -o $(PKG_BASE)/bxbam $(LIB) $(INC)
 
 clean:
 	rm -f bin/bxbam
 	rm -f $(PKG_BASE)/bxbam
+	rm -f bin/bamdb.o
