@@ -1,6 +1,6 @@
 .PHONY: clean distribution
 
-include /gpfs/commons/home/knagdimov/temp/git/ck/build/ck.build
+include /gpfs/commons/home/knagdimov/temp/git/experimental/bxBam/ck/build/ck.build
 
 TARGET_DIR=$(BUILD_DIR)/src
 SDIR=$(SRC_DIR)/src

@@ -1,8 +1,8 @@
 .PHONY: all check clean dist distclean doc install install-headers regressions uninstall
 
-BUILD_DIR=/gpfs/commons/home/knagdimov/temp/git/ck
-SRC_DIR=/gpfs/commons/home/knagdimov/temp/git/ck
-CFLAGS=-D_XOPEN_SOURCE=600 -D_BSD_SOURCE -D_DEFAULT_SOURCE -std=gnu99 -pedantic -Wall -W -Wundef -Wendif-labels -Wshadow -Wpointer-arith -Wcast-align -Wcast-qual -Wwrite-strings -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs -Winline -Wdisabled-optimization -fstrict-aliasing -O2 -pipe -Wno-parentheses  -fPIC
+BUILD_DIR=/gpfs/commons/home/knagdimov/temp/git/experimental/bxBam/ck
+SRC_DIR=/gpfs/commons/home/knagdimov/temp/git/experimental/bxBam/ck
+CFLAGS=-D_XOPEN_SOURCE=600 -D_BSD_SOURCE -D_DEFAULT_SOURCE -std=gnu99 -pedantic -Wall -W -Wundef -Wendif-labels -Wshadow -Wpointer-arith -Wcast-align -Wcast-qual -Wwrite-strings -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs -Winline -Wdisabled-optimization -fstrict-aliasing -O2 -pipe -Wno-parentheses -UNDEBUG -Wall -pedantic -g -O0 -fPIC
 VERSION=1.0.0
 VERSION_MAJOR=0
 PREFIX=/usr/local

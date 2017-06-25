@@ -32,6 +32,8 @@ echo "the current working directory is" $(pwd);
 
 echo "entering ck directory and compiling...";
 cd $ck;
+make clean;
+./configure;
 make;
 echo "leaving ${ck} directory";
 cd ..;

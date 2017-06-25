@@ -60,6 +60,6 @@
 #endif /* CK_PR_ENABLE_DOUBLE */
 
 #define CK_VERSION "1.0.0"
-#define CK_GIT_SHA "0b83a85"
+#define CK_GIT_SHA "f50d781"
 
 #endif /* CK_MD_H */

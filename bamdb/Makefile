@@ -33,7 +33,7 @@ all:
 	$(CC) -c src/bam_api.c $(INC) -o bin/bam_api.o
 	$(CC) -c src/bam_lmdb.c $(INC) -o bin/bam_lmdb.o
 
-	ar cr lbamdb.a bin/bamdb.o bin/bam_api.o bin/bam_lmdb.o
+	ar cr bin/libbamdb.a bin/bamdb.o bin/bam_api.o bin/bam_lmdb.o
 
 	$(CC) $(CFLAGS) $(SOURCES) bamdb.c -L$(PKG_BASE)lmdb/libraries/liblmdb/ -L$(PKG_BASE)/htslib/ -L$(PKG_BASE)/ck/ -o $(PKG_BASE)/bxbam $(LIB) $(INC)
 
@@ -43,4 +43,4 @@ clean:
 	rm -f bin/bamdb.o
 	rm -f bin/bam_api.o
 	rm -f bin/bam_lmdb.o
-	rm -f binl/bamdb.a
+	rm -f bin/lbamdb.a

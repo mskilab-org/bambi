@@ -3,8 +3,8 @@
 MANDIR=/usr/local/share/man
 GZIP=/usr/bin/gzip -c
 GZIP_SUFFIX=.3.gz
-BUILD_DIR=/gpfs/commons/home/knagdimov/temp/git/ck
-SRC_DIR=/gpfs/commons/home/knagdimov/temp/git/ck
+BUILD_DIR=/gpfs/commons/home/knagdimov/temp/git/experimental/bxBam/ck
+SRC_DIR=/gpfs/commons/home/knagdimov/temp/git/experimental/bxBam/ck
 HTML_SUFFIX=.html
 
 OBJECTS=CK_ARRAY_FOREACH		\
