@@ -479,10 +479,17 @@ main(int argc, char *argv[]) {
 	  } else {
 	    /* Print rows in tab delim format */
 	    bam_row_set_t *row_set = get_bx_rows(bam_args.input_file_name, bam_args.index_file_name, bam_args.bx);
-	    for (size_t j = 0; j < row_set->n_entries; ++j) {
-	      print_sequence_row(row_set->rows[j]);
+	    // for (size_t j = 0; j < row_set->n_entries; ++j) {
+	    //print_sequence_row(row_set->rows[j]);
+	    //}
+	    //free_row_set(row_set);	
+
+	    if (row_set != NULL){
+	      for (size_t j = 0; j < row_set->n_entries; ++j){
+		print_sequence_row(row_set->rows[j]);
+	      }
+	      free_row_set(row_set);
 	    }
-	    free_row_set(row_set);	
 	  }
 	}
 	
