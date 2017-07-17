@@ -332,8 +332,8 @@ convert_to_lmdb(samFile *input_file, char *db_name)
 			usleep(100);
 		}
 
-		r = sam_read1(input_file, header, entry->bam_row);
 		entry->voffset = bgzf_tell(input_file->fp.bgzf);
+		r = sam_read1(input_file, header, entry->bam_row);
 		if (r >= 0) {
 			ck_fifo_mpmc_enqueue(deserialize_q, fifo_entry, entry);
 			ck_pr_inc_int(&deserialize_queue_size);
