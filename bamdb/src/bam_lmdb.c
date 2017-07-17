@@ -98,13 +98,14 @@ commit_transaction(MDB_txn *txn)
 static void *
 deserialize_func(void *arg)
 {
+  (void) arg;    
 	char *work_buffer = malloc(WORK_BUFFER_SIZE);
 	char *buffer_pos = work_buffer;
 
 	ck_fifo_mpmc_entry_t *garbage;
 	bam_data_t *deserialize_entry;
 
-	while (ck_pr_load_int(&reader_running)) {
+	while (ck_pr_load_int(&reader_running) || CK_FIFO_MPMC_ISEMPTY(deserialize_q) == false) {
 		while (ck_fifo_mpmc_trydequeue(deserialize_q, &deserialize_entry, &garbage) == true) {
 			buffer_pos = work_buffer;
 
@@ -174,7 +175,7 @@ writer_func(void *arg)
 		return NULL;
 	}
 
-	while (ck_pr_load_int(&deserialize_running)) {
+	while (ck_pr_load_int(&deserialize_running) || CK_FIFO_MPMC_ISEMPTY(deserialize_q) == false) {
 		while (ck_fifo_mpmc_trydequeue(write_q, &entry, &garbage) == true) {
 			free(garbage);
 
@@ -407,7 +408,8 @@ get_offsets(offset_list_t *offset_list, const char *lmdb_db_name, const char *bx
 
 		offset_list->head = new_node;
 		offset_list->tail = new_node;
-
+        rows++;
+		
 		while ((rc = mdb_cursor_get(cur, &key, &data, MDB_NEXT_DUP)) == 0) {
 			offset_node_t *new_node = calloc(1, sizeof(offset_node_t));
 			new_node->offset = *(int64_t *)data.mv_data;
