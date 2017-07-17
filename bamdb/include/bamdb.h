@@ -1,3 +1,5 @@
+#ifndef BAM_H
+#define BAM_H
 
 #define MAX_FILENAME 1024
 
@@ -16,3 +18,6 @@ typedef struct bamdb_args {
 } bam_args_t;
 
 int generate_index_file(char *input_file_name);
+void print_bam_rows(char *bx, char *bam_file_name, char *index_file);
+
+#endif
