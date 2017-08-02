@@ -496,7 +496,7 @@ setMethod("get_bmates", "bxBam", function(.Object, query, verbose = FALSE, mc.co
             if (verbose)
                 cat('.')
             p = pipe(cmd)
-            dat = fread(paste(readLines(p), collapse = '\n'))
+            dat = as.data.table(fread(paste(readLines(p), collapse = '\n')))
             close(p)
             out = dat        ###dcast.data.table(dat, V1 ~ V2, value.var = "V3")[, -1, with = FALSE]
             setnames(out, names(out), ifelse(names(out)=="BX", names(out), tolower(names(out))))
