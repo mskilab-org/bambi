@@ -568,36 +568,7 @@ setMethod("get_bmates", "bxBam", function(.Object, query, verbose = FALSE, mc.co
     if (nrow(out)==0)
         return(GRanges())
     
-    cigs <- countCigar(out$cigar)
-    out$pos2 <- out$pos + rowSums(cigs[, c("D", "M"), drop = FALSE], na.rm=T) - 1
-    
-    
-    out$qwidth = nchar(out$seq)
-    out$strand = bamflag(out$flag)[, "isMinusStrand"] == 1
-    out$strand = ifelse(out$strand, "-", "+")
-
-    
-    unmapped = bamflag(out$flag)[,"isUnmappedQuery"] == 1
-    if (any(unmapped))
-    {
-        out$pos[unmapped] = 1
-        out$pos2[unmapped] = 0
-        out$strand[unmapped] = "*"
-    }
-    
-    bf = out$flag
-    
-    newdt <- data.table(pos = out$pos, pos2 = out$pos2, strand = out$strand, rname = out$rname)   # create data.table of start, end, strand, seqnames
-    
-    rr <- IRanges(newdt$pos, newdt$pos2)
-    sf <- factor(newdt$strand, levels=c('+', '-', '*'))
-    ff <- factor(newdt$rname, levels=unique(newdt$rname))
-    gr.fields <- c("rname", "strand", "pos", "pos2")
-    grobj <- GRanges(seqnames=ff, ranges=rr, strand=sf)
-    
-    vals = out[, setdiff(names(out), gr.fields), with=FALSE]
-    values(grobj) <- vals
-    return(grobj)
+    saveRDS(out, "/gpfs/commons/home/biederstedte-934/query1.RDS")
 })
 
 
