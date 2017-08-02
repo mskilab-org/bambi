@@ -483,8 +483,9 @@ setMethod("get_bmates", "bxBam", function(.Object, query, verbose = FALSE, mc.co
     else if (type == 'bamdb')
     {
         bamdb_str = sprintf("
-              export LD_LIBRARY_PATH=/gpfs/commons/groups/imielinski_lab/Software/sqlite3:/gpfs/commons/groups/imielinski_lab/git/lmdb/libraries/liblmdb/:/gpfs/commons/groups/imielinski_lab/git/htslib:$LD_LIBRARY_PATH;
-              /gpfs/commons/groups/imielinski_lab/git/bamdb/bin/bamdb -i %s -f %s -b",
+              module load htslib/1.5;
+              export LD_LIBRARY_PATH=/usr/bin/:/nfs/sw/htslib/htslib-1.5/htslib:/gpfs/commons/home/biederstedte-934/evan_projects/bamdb_sqlite/bamdb_sourcecode-master/include/sqlite3:$LD_LIBRARY_PATH;
+              /gpfs/commons/home/biederstedte-934/evan_projects/bamdb_sqlite/bamdb_sourcecode-master/bin/bamdb -i %s -f %s -b",
               .Object@.bxbamfile,
               path(.Object@.bamfile))
 
