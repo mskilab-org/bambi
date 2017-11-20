@@ -1,3 +1,6 @@
+
+This is the bxBam source code, 20 Nov 2017
+
 # bxBam
 indexed file format for barcoded BAMs with API for converting and accessing alignment records
 
