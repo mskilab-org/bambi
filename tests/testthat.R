@@ -1,2 +1,4 @@
-library(testthat)
-library(bxBam)
+##library(testthat)
+##library(bxBam)
+
+##test_check('bxBam')
