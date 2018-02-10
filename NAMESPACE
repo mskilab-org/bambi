@@ -1,0 +1,3 @@
+useDynLib(bambi)
+exportPattern("^[[:alpha:]]+")
+importFrom(Rcpp, evalCpp)
