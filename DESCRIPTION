@@ -1,19 +1,13 @@
-Package: bxBam
-Title: retrieve BX tags
-Version: 0.0.0.9000
-Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))
-Description: R package for querying 10x WGS and single-cell BAMs
-Depends:
-    R (>= 3.1.0),
-    R6,
-    GenomicRanges (>= 1.18),
-    data.table (>= 1.9),
-    GenomicAlignments, 
-    Rsamtools (>= 1.18),
-    bamUtils
-Suggests:
-    testthat
-License: What license is it under?
-Encoding: UTF-8
-LazyData: true
-RoxygenNote: 6.0.1.9000
+Package: bambi
+Type: Package
+Title: What the Package Does in One 'Title Case' Line
+Version: 1.0
+Date: 2018-04-04
+Author: Your Name
+Maintainer: Your Name <your@email.com>
+Description: One paragraph description of what the package does as one
+        or more full sentences.
+License: GPL (>= 2)
+Imports: Rcpp (>= 0.12.16)
+LinkingTo: Rcpp
+RoxygenNote: 6.0.1
