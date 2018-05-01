@@ -28,6 +28,8 @@ query_bam_index(CharacterVector bam_file_name, CharacterVector bam_index_path,
     const char* c_key_val = key_val_str.c_str();
 
     bam_rows = get_bam_rows(c_file_name, c_index_path, c_key_type, c_key_val);
+
+    NumericVector w = NumericVector::create(9,10);
     
     std::vector<std::string> qname;
     std::vector<int> flag;
@@ -81,3 +83,5 @@ query_bam_index(CharacterVector bam_file_name, CharacterVector bam_index_path,
 
     return ret;
 }
+
+
