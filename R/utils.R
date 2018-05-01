@@ -71,17 +71,17 @@ bamflag = function(reads){
 
 
 
-#' @name create_granges 
-#' @title jabba_stub
+#' @name parse_outputs
+#' @title parses output of BAM queries into GRanges with parsed CIGAR strings
 #' @description
 #'
 #' Internal function to parse CIGAR and output GRanges
 #'
-#' @param out Output from query_bam_index()
+#' @param out List output from query_bam_index()
 #' @return GRanges with parsed CIGAR 
 #' @importFrom IRanges IRanges
 #' @import data.table
-create_granges = function(out){
+parse_outputs = function(out){
 
     out = as.data.table(out)
     cigs = countCigar(out$cigar)

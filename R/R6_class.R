@@ -127,7 +127,7 @@ bxBam = R6Class('bxBam',
                 return(as.data.table(out)) ### check format
             } 
             else{
-                create_granges(out)
+                parse_outputs(out)
             }
         }, 
         
@@ -195,7 +195,7 @@ bxBam = R6Class('bxBam',
             if (data.table == TRUE){
                 return(as.data.table(out)) ### check format
             } else{
-                create_granges(out)
+                parse_outputs(out)
             }
         }, 
 
@@ -265,7 +265,7 @@ bxBam = R6Class('bxBam',
                 return(as.data.table(out)) ### check format
             } 
             else{
-                create_granges(out) 
+                parse_outputs(out) 
             }
         },
 
@@ -322,7 +322,7 @@ bxBam = R6Class('bxBam',
                 return(as.data.table(out)) ### check format
             } 
             else{
-                create_granges(out)
+                parse_outputs(out)
             }
         }
     )
