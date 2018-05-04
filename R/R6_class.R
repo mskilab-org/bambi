@@ -28,10 +28,20 @@
 #'
 #' @section Details:
 #' \code{$grab_bx()} grab BX tags (if exist)
+#' 
+#' grab_bx = function(query, data.table = FALSE, verbose = FALSE, mc.cores = 1)
 #'
 #' \code{$grab_cb()} grab CB tags (if exist)
 #'
+#' grab_cb = function(query, data.table = FALSE, verbose = FALSE, mc.cores = 1)
+#'
 #' \code{$grab_ub()} grab CB tags (if exist)
+#'
+#' grab_ub = function(query, data.table = FALSE, verbose = FALSE, mc.cores = 1)
+#'
+#' \code{$fetch_by_tag()} grab CB tags (if exist)
+#'
+#' fetch_by_tag = function(tag, query, data.table = FALSE, verbose = FALSE, mc.cores = 1)
 #'
 #'
 #' @importFrom R6 R6Class
