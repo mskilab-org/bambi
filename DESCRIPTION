@@ -24,6 +24,7 @@ Imports:
     bamUtils
 Suggests:
     testthat
+LinkingTo: Rcpp
 License: GPL-2
 BugReports: http://github.com/mskilab/bambi/issues
 LazyData: true
