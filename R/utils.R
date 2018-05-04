@@ -85,7 +85,7 @@ bamflag = function(reads){
 #' @import data.table
 parse_outputs = function(out){
 
-    out = as.data.table(out)
+    out = as.data.table(out)    ### this should already be the case in the source; however, query_bam_index() outputs an R list
     cigs = countCigar(out$cigar)
     out[, pos2 := out$pos + rowSums(cigs[, c('D', 'M'), drop = FALSE], na.rm = TRUE) - 1]
     

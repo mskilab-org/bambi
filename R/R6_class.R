@@ -279,7 +279,7 @@ bambi = R6Class('bambi',
             }
 
             ## currently there's no infrastructure for multiple queries of a different type
-            if (length(unique(tag))) != 1){
+            if (length(unique(tag)) != 1){
                 stop("Invalid tag. Currently, only one unique type of tag at a time supported. ")
             }
 
