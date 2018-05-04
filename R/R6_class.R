@@ -85,56 +85,63 @@ bambi = R6::R6Class('bambi',
         },
 
 
-        grab_bx = function(query, data.table = FALSE, verbose = FALSE, mc.cores = 1){     
+        grab_bx = function(barcodes, query=NULL, data.table = FALSE, verbose = FALSE, mc.cores = 1){     
 
-            if (inherits(query, 'GRanges')){
-
-                if (is.null(query$BX)){
-
-                    if (verbose){
-                        message('Using read.bam to pull reads under GRanges query from BAM file and find their BX tags.')
-                        now = Sys.time()
-                    }
-
-                    query = read.bam(bam,  gr = query, tag = c('MD'), pairs.grl = FALSE)   ### what if there are no MD tags? Use RSamtools to check for MD tags?
-
-                    if (verbose){
-                        message(sprintf('Retrieved %s reads with %s unique barcodes:', length(query), length(unique(query$BX))))
-                        print(Sys.time() - now)
-                    }
-                } 
-
-                query = query$BX  ## vector of BX's 
-
-            } else if(inherits(query, 'data.frame') | inherits(query, 'data.table')){
-             
-                if (is.null(query$BX)){
-
-                    if (verbose){
-                        message('Using read.bam to pull reads under data.table/data.frame query from BAM file and find their BX tags.')
-                        now = Sys.time()
-                    }
-
-                    query = read.bam(bam,  gr = dt2gr(query), tag = c('MD'), pairs.grl = FALSE)   ### what if there are no MD tags? Use RSamtools to check for MD tags?
-
-                    if (verbose){
-                        message(sprintf('Retrieved %s reads with %s unique barcodes:', length(query), length(unique(query$CB))))
-                        print(Sys.time() - now)
-                    }
-                } 
-
-                query = query$BX  ## vector of BX's 
-
-            } else{
-                stop("Invalid query. Input 'query' must be a data.table, data.frame or GRanges.")
+            if (!inherits(barcodes, "character")){
+                stop("Invalid barcodes. Input 'barcodes' must be a character vector. Must provide barcode with input BAM.")
             }
 
-            query = setdiff(query, NA)
+            if (!is.null(query)){
+                if (inherits(query, 'GRanges')){
 
-            out = query_bam_index(self$bam_file, self$bamdb_path, "BX", query)
+                    if (is.null(query$BX)){
+
+                        if (verbose){
+                            message('Using read.bam to pull reads under GRanges query from BAM file and find their BX tags.')
+                            now = Sys.time()
+                        }
+
+                        query = read.bam(bam,  gr = query, tag = c('MD'), pairs.grl = FALSE)   ### what if there are no MD tags? Use RSamtools to check for MD tags?
+
+                        if (verbose){
+                            message(sprintf('Retrieved %s reads with %s unique barcodes:', length(query), length(unique(query$BX))))
+                            print(Sys.time() - now)
+                        }
+                    } 
+    
+                    barcodes = query$BX  ## vector of BX's 
+    
+                } else if(inherits(query, 'data.frame') | inherits(query, 'data.table')){
+             
+                    if (is.null(query$BX)){
+
+                        if (verbose){
+                            message('Using read.bam to pull reads under data.table/data.frame query from BAM file and find their BX tags.')
+                            now = Sys.time()
+                        }
+
+                        query = read.bam(bam,  gr = dt2gr(query), tag = c('MD'), pairs.grl = FALSE)   ### what if there are no MD tags? Use RSamtools to check for MD tags?
+
+                        if (verbose){
+                            message(sprintf('Retrieved %s reads with %s unique barcodes:', length(query), length(unique(query$CB))))
+                            print(Sys.time() - now)
+                        }
+                    } 
+
+                    barcodes = query$BX  ## vector of BX's 
+
+                } else{
+                    stop("Invalid query. Input 'query' must be a data.table, data.frame or GRanges.")
+                }
+            
+            }
+            
+            barcodes = as.character(barcodes)
+
+            out = query_bam_index(self$bam_file, self$bamdb_path, "BX", barcodes)
 
             out = as.data.table(out)
-            out[, BX := query]
+            out[, BX := barcodes]  ## for one
         
             if (any(nnix <<- out$cigar=='*')){
                 out$cigar[nnix] = NA
@@ -147,119 +154,64 @@ bambi = R6::R6Class('bambi',
             }
         }, 
 
-        grab_cb = function(query, data.table = FALSE, verbose = FALSE, mc.cores = 1){     
+        grab_cb = function(barcodes, query=NULL, data.table = FALSE, verbose = FALSE, mc.cores = 1){     
 
-            if (inherits(query, 'GRanges')){
+            if (!inherits(barcodes, "character")){
+                stop("Invalid barcodes. Input 'barcodes' must be a character vector. Must provide barcode with input BAM.")
+            }
 
-                if (is.null(query$CB)){
+            if (!is.null(query)){
+                if (inherits(query, 'GRanges')){
 
-                    if (verbose){
-                        message('Using read.bam to pull reads under GRanges query from BAM file and find their CB tags.')
-                        now = Sys.time()
-                    }
+                    if (is.null(query$CB)){
 
-                    query = read.bam(bam,  gr = query, tag = c('MD'), pairs.grl = FALSE)   ### what if there are no MD tags? Use RSamtools to check for MD tags?
+                        if (verbose){
+                            message('Using read.bam to pull reads under GRanges query from BAM file and find their BX tags.')
+                            now = Sys.time()
+                        }
 
-                    if (verbose){
-                        message(sprintf('Retrieved %s reads with %s unique barcodes:', length(query), length(unique(query$CB))))
-                        print(Sys.time() - now)
-                    }
-                } 
+                        query = read.bam(bam,  gr = query, tag = c('MD'), pairs.grl = FALSE)   ### what if there are no MD tags? Use RSamtools to check for MD tags?
 
-                query = query$CB  ## vector of CB's 
-
-            } else if(inherits(query, 'data.frame') | inherits(query, 'data.table')){
+                        if (verbose){
+                            message(sprintf('Retrieved %s reads with %s unique barcodes:', length(query), length(unique(query$BX))))
+                            print(Sys.time() - now)
+                        }
+                    } 
+    
+                    barcodes = query$CB  ## vector of CB's 
+    
+                } else if(inherits(query, 'data.frame') | inherits(query, 'data.table')){
              
-                if (is.null(query$CB)){
+                    if (is.null(query$UB)){
 
-                    if (verbose){
-                        message('Using read.bam to pull reads under data.table/data.frame query from BAM file and find their CB tags.')
-                        now = Sys.time()
-                    }
+                        if (verbose){
+                            message('Using read.bam to pull reads under data.table/data.frame query from BAM file and find their BX tags.')
+                            now = Sys.time()
+                        }
 
-                    query = read.bam(bam,  gr = dt2gr(query), tag = c('MD'), pairs.grl = FALSE)   ### what if there are no MD tags? Use RSamtools to check for MD tags?
+                        query = read.bam(bam,  gr = dt2gr(query), tag = c('MD'), pairs.grl = FALSE)   ### what if there are no MD tags? Use RSamtools to check for MD tags?
 
-                    if (verbose){
-                        message(sprintf('Retrieved %s reads with %s unique barcodes:', length(query), length(unique(query$CB))))
-                        print(Sys.time() - now)
-                    }
-                } 
+                        if (verbose){
+                            message(sprintf('Retrieved %s reads with %s unique barcodes:', length(query), length(unique(query$CB))))
+                            print(Sys.time() - now)
+                        }
+                    } 
 
-                query = query$CB  ## vector of CB's 
+                    barcodes = query$CB ## vector of CB's 
 
-            } else{
-                stop("Invalid query. Input 'query' must be a data.table, data.frame or GRanges.")
+                } else{
+                    stop("Invalid query. Input 'query' must be a data.table, data.frame or GRanges.")
+                }
+            
             }
+            
+            barcodes = as.character(barcodes)
 
-            query = setdiff(query, NA)
-
-            out = query_bam_index(self$bam_file, self$bamdb_path, "CB", query)
-        
-            if (any(nnix <<- out$cigar=='*')){
-                out$cigar[nnix] = NA
-            }
+            out = query_bam_index(self$bam_file, self$bamdb_path, "CB", barcodes)
 
             out = as.data.table(out)
-            out[, CB := query]
-
-            if (data.table == TRUE){
-                return(as.data.table(out)) ### check format
-            } else{
-                parse_outputs(out)
-            }
-        }, 
- 
-        grab_ub = function(query, data.table = FALSE, verbose = FALSE, mc.cores = 1){     
-
-            if (inherits(query, 'GRanges')){
-
-                if (is.null(query$UB)){
-
-                    if (verbose){
-                        message('Using read.bam to pull reads under GRanges query from BAM file and find their UB tags.')
-                        now = Sys.time()
-                    }
-
-                    query = read.bam(bam,  gr = query, tag = c('MD'), pairs.grl = FALSE)   ### what if there are no MD tags? Use RSamtools to check for MD tags?
-
-                    if (verbose){
-                        message(sprintf('Retrieved %s reads with %s unique barcodes:', length(query), length(unique(query$CB))))
-                        print(Sys.time() - now)
-                    }
-                } 
-
-                query = query$UB  ## vector of UB's 
-
-            } else if(inherits(query, 'data.frame') | inherits(query, 'data.table')){
-             
-                if (is.null(query$UB)){
-
-                    if (verbose){
-                        message('Using read.bam to pull reads under data.table/data.frame query from BAM file and find their UB tags.')
-                        now = Sys.time()
-                    }
-
-                    query = read.bam(bam,  gr = dt2gr(query), tag = c('MD'), pairs.grl = FALSE)   ### what if there are no MD tags? Use RSamtools to check for MD tags?
-
-                    if (verbose){
-                        message(sprintf('Retrieved %s reads with %s unique barcodes:', length(query), length(unique(query$UB))))
-                        print(Sys.time() - now)
-                    }
-                } 
-
-                query = query$UB  ## vector of UB's 
-
-            } else{
-                stop("Invalid query. Input 'query' must be a data.table, data.frame or GRanges.")
-            }
-
-            query = setdiff(query, NA)
-
-            out = query_bam_index(self$bam_file, self$bamdb_path, "UB", query)
+            out[, BX := barcodes]  ## for one
         
-            out = as.data.table(out)
-            out[, UB := query]
-
             if (any(nnix <<- out$cigar=='*')){
                 out$cigar[nnix] = NA
             }
@@ -271,10 +223,84 @@ bambi = R6::R6Class('bambi',
             }
         }, 
 
-        fetch_by_tag = function(tag, query, data.table = FALSE, verbose = FALSE, mc.cores = 1){     
+        grab_ub = function(barcodes, query=NULL, data.table = FALSE, verbose = FALSE, mc.cores = 1){     
+
+            if (!inherits(barcodes, "character")){
+                stop("Invalid barcodes. Input 'barcodes' must be a character vector. Must provide barcode with input BAM.")
+            }
+
+            if (!is.null(query)){
+                if (inherits(query, 'GRanges')){
+
+                    if (is.null(query$UB)){
+
+                        if (verbose){
+                            message('Using read.bam to pull reads under GRanges query from BAM file and find their BX tags.')
+                            now = Sys.time()
+                        }
+
+                        query = read.bam(bam,  gr = query, tag = c('MD'), pairs.grl = FALSE)   ### what if there are no MD tags? Use RSamtools to check for MD tags?
+
+                        if (verbose){
+                            message(sprintf('Retrieved %s reads with %s unique barcodes:', length(query), length(unique(query$BX))))
+                            print(Sys.time() - now)
+                        }
+                    } 
+    
+                    barcodes = query$UB  ## vector of UB's 
+    
+                } else if(inherits(query, 'data.frame') | inherits(query, 'data.table')){
+             
+                    if (is.null(query$UB)){
+
+                        if (verbose){
+                            message('Using read.bam to pull reads under data.table/data.frame query from BAM file and find their BX tags.')
+                            now = Sys.time()
+                        }
+
+                        query = read.bam(bam,  gr = dt2gr(query), tag = c('MD'), pairs.grl = FALSE)   ### what if there are no MD tags? Use RSamtools to check for MD tags?
+
+                        if (verbose){
+                            message(sprintf('Retrieved %s reads with %s unique barcodes:', length(query), length(unique(query$CB))))
+                            print(Sys.time() - now)
+                        }
+                    } 
+
+                    barcodes = query$UB ## vector of UB's 
+
+                } else{
+                    stop("Invalid query. Input 'query' must be a data.table, data.frame or GRanges.")
+                }
+            
+            }
+            
+            barcodes = as.character(barcodes)
+
+            out = query_bam_index(self$bam_file, self$bamdb_path, "UB", barcodes)
+
+            out = as.data.table(out)
+            out[, BX := barcodes]  ## for one
+        
+            if (any(nnix <<- out$cigar=='*')){
+                out$cigar[nnix] = NA
+            }
+
+            if (data.table == TRUE){
+                return(as.data.table(out)) ### check format
+            } else{
+                parse_outputs(out)
+            }
+        }, 
+
+
+        fetch_by_tag = function(tag, tag_queries, query=NULL, data.table = FALSE, verbose = FALSE, mc.cores = 1){     
 
             if (!inherits(tag, "character")){
                 stop("Invalid tag. Input 'tag' must be a character vector. Must provide valid BAM field.")
+            }
+
+            if (!inherits(tag_queries, "character")){
+                stop("Invalid tag_queries. Input 'tag_queries' must be a character vector. Must provide valid BAM queries by BAM field 'tag'.")
             }
 
             ## currently there's no infrastructure for multiple queries of a different type
@@ -282,56 +308,57 @@ bambi = R6::R6Class('bambi',
                 stop("Invalid tag. Currently, only one unique type of tag at a time supported. ")
             }
 
-            tag = as.character(unique(tag))   ### checks for e.g. `c("BX", "BX")`
+            if (!is.null(query)){
+                if (inherits(query, 'GRanges')){
 
-            if (inherits(query, 'GRanges')){
+                    if (is.null(query$BX)){
 
-                if (is.null(query$tag)){
+                        if (verbose){
+                            message('Using read.bam to pull reads under GRanges query from BAM file and find their BX tags.')
+                            now = Sys.time()
+                        }
 
-                    if (verbose){
-                        message('Using read.bam to pull reads under GRanges query from BAM file and find their associate tags.')
-                        now = Sys.time()
-                    }
+                        query = read.bam(bam,  gr = query, tag = c('MD'), pairs.grl = FALSE)   ### what if there are no MD tags? Use RSamtools to check for MD tags?
 
-                    query = read.bam(bam,  gr = query, tag = c('MD'), pairs.grl = FALSE)   ### what if there are no MD tags? Use RSamtools to check for MD tags?
-
-                    if (verbose){
-                        message(sprintf('Retrieved %s reads with %s unique barcodes:', length(query), length(unique(query$tag))))
-                        print(Sys.time() - now)
-                    }
-                } 
-
-                query = query$tag  ## vector of BAM fields 
-
-            } else if(inherits(query, 'data.frame') | inherits(query, 'data.table')){
+                        if (verbose){
+                            message(sprintf('Retrieved %s reads with %s unique barcodes:', length(query), length(unique(query$BX))))
+                            print(Sys.time() - now)
+                        }
+                    } 
+    
+                    tag_queries = query$tag  ## vector of tag_queries by BAM field 'tag'
+    
+                } else if(inherits(query, 'data.frame') | inherits(query, 'data.table')){
              
-                if (is.null(query$UB)){
+                    if (is.null(query$BX)){
 
-                    if (verbose){
-                        message('Using read.bam to pull reads under data.table/data.frame query from BAM file and find their UB tags.')
-                        now = Sys.time()
-                    }
+                        if (verbose){
+                            message('Using read.bam to pull reads under data.table/data.frame query from BAM file and find their BX tags.')
+                            now = Sys.time()
+                        }
 
-                    query = read.bam(bam,  gr = dt2gr(query), tag = c('MD'), pairs.grl = FALSE)   ### what if there are no MD tags? Use RSamtools to check for MD tags?
+                        query = read.bam(bam,  gr = dt2gr(query), tag = c('MD'), pairs.grl = FALSE)   ### what if there are no MD tags? Use RSamtools to check for MD tags?
 
-                    if (verbose){
-                        message(sprintf('Retrieved %s reads with %s unique barcodes:', length(query), length(unique(query$tag))))
-                        print(Sys.time() - now)
-                    }
-                } 
+                        if (verbose){
+                            message(sprintf('Retrieved %s reads with %s unique barcodes:', length(query), length(unique(query$CB))))
+                            print(Sys.time() - now)
+                        }
+                    } 
 
-                query = query$tag  ## vector of BAM fields
+                    tag_queries = query$tag  ## vector of tag_queries by BAM field 'tag'
 
-            } else{
-                stop("Invalid query. Input 'query' must be a data.table, data.frame or GRanges.")
+                } else{
+                    stop("Invalid query. Input 'query' must be a data.table, data.frame or GRanges.")
+                }
+            
             }
+            
+            tag_queries = as.character(tag_queries)
 
-            query = setdiff(query, NA)
-
-            out = query_bam_index(self$bam_file, self$bamdb_path, tag, query)
+            out = query_bam_index(self$bam_file, self$bamdb_path, tag, tag_queries)
 
             out = as.data.table(out)
-            out[, tag := query]
+            out[, tag := tag_queries]  ## for one
         
             if (any(nnix <<- out$cigar=='*')){
                 out$cigar[nnix] = NA
