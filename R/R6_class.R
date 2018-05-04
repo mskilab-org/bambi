@@ -66,7 +66,7 @@ bambi = R6::R6Class('bambi',
             }
 
             check_valid_bam = readChar(gzfile(bam_file, 'r'), 4)
-            if (!identical(check_valid, 'BAM\1')){
+            if (!identical(check_valid_bam, 'BAM\1')){
                 stop("Cannot open BAM. A valid BAM for 'bam_file' must be provided.")
             }
 
