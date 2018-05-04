@@ -133,6 +133,9 @@ bambi = R6Class('bambi',
             query = setdiff(query, NA)
 
             out = query_bam_index(self$bam_file, self$bamdb_path, "BX", query)
+
+            out = as.data.table(out)
+            out[, BX := query]
         
             if (any(nnix <<- out$cigar=='*')){
                 out$cigar[nnix] = NA
@@ -197,6 +200,9 @@ bambi = R6Class('bambi',
                 out$cigar[nnix] = NA
             }
 
+            out = as.data.table(out)
+            out[, CB := query]
+
             if (data.table == TRUE){
                 return(as.data.table(out)) ### check format
             } else{
@@ -252,6 +258,9 @@ bambi = R6Class('bambi',
 
             out = query_bam_index(self$bam_file, self$bamdb_path, "UB", query)
         
+            out = as.data.table(out)
+            out[, UB := query]
+
             if (any(nnix <<- out$cigar=='*')){
                 out$cigar[nnix] = NA
             }
@@ -321,6 +330,9 @@ bambi = R6Class('bambi',
             query = setdiff(query, NA)
 
             out = query_bam_index(self$bam_file, self$bamdb_path, tag, query)
+
+            out = as.data.table(out)
+            out[, tag := query]
         
             if (any(nnix <<- out$cigar=='*')){
                 out$cigar[nnix] = NA
