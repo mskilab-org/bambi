@@ -17,6 +17,8 @@
 #' @return a 4-column, length(cigar)-row matrix with the total counts for each type
 countCigar = function(cigar) {
     
+    cigar = as.character(cigar)
+
     cigar.vals = unlist(strsplit(cigar, "\\d+"))
     cigar.lens = strsplit(cigar, "[A-Z]")
     lens = nchar(gsub('\\d+', '', cigar))
@@ -27,16 +29,16 @@ countCigar = function(cigar) {
     repr = rep(seq_along(cigar), lens)
     dt  = data.table(val=cigar.vals, lens=cigar.lens, group=repr, key="val")
     
-    smr.d = dt["D",][, sum(lens), by=group]
-    smr.i = dt["I",][, sum(lens), by=group]
-    smr.m = dt["M",][, sum(lens), by=group]
-    smr.s = dt["S",][, sum(lens), by=group]
+    smr.d = dt["D", ][, sum(lens), by=group]
+    smr.i = dt["I", ][, sum(lens), by=group]
+    smr.m = dt["M", ][, sum(lens), by=group]
+    smr.s = dt["S", ][, sum(lens), by=group]
     
     out = matrix(nrow=length(cigar), ncol=4, 0)
-    out[smr.d$group,1] = smr.d$V1
-    out[smr.i$group,2] = smr.i$V1
-    out[smr.m$group,3] = smr.m$V1
-    out[smr.s$group,4] = smr.s$V1
+    out[smr.d$group, 1] = smr.d$V1
+    out[smr.i$group, 2] = smr.i$V1
+    out[smr.m$group, 3] = smr.m$V1
+    out[smr.s$group, 4] = smr.s$V1
     colnames(out) = c('D','I','M','S')
     
     return(out)
@@ -56,7 +58,7 @@ countCigar = function(cigar) {
 bamflag = function(reads){
 
     ## should only be type 'data.table'
-    if (inherits(reads, 'data.frame')){  
+    if (inherits(reads, 'data.table')){  
         bf = reads$flag
     } else{
         bf = reads
@@ -85,9 +87,9 @@ parse_outputs = function(out){
 
     out = as.data.table(out)
     cigs = countCigar(out$cigar)
-    out$pos2 = out$pos + rowSums(cigs[, c('D', 'M'), drop = FALSE], na.rm = TRUE) - 1
+    out[, pos2 := out$pos + rowSums(cigs[, c('D', 'M'), drop = FALSE], na.rm = TRUE) - 1]
     
-    out$qwidth = nchar(out$seq)
+    out$qwidth = nchar(as.character(out$seq))
     out$strand = bamflag(out$flag)[, 'isMinusStrand'] == 1
     out$strand = ifelse(out$strand, '-', '+')
     
@@ -113,7 +115,6 @@ parse_outputs = function(out){
     vals = out[, setdiff(names(out), gr.fields), with=FALSE]   
     values(grobj) = vals
     return(grobj)
-
 }
 
 

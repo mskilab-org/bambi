@@ -80,14 +80,35 @@ test_that('bamflag', {
 
 test_that('parse_outputs', {
 
+    ## generate an example output from query_bam_index()
     foo = read.bam(example_bam, all=TRUE)
     gr2 = foo[[2]]
     dt2 = gr2dt(gr2)
- 
+    ## correct how scanBam() names BAM fields
+    dt2$rnext = dt2$mrnm
+    dt2$pnext = dt2$mpos
+    dt2$tlen = dt2$isize
+    dt2$rname = dt2$seqnames
+    dt2$mrnm = NULL
+    dt2$mpos = NULL
+    dt2$isize = NULL  
+    dt2$MD = NULL
+    dt2$MQ = NULL  
+    dt2$seqnames = NULL
+    dt2$pos = dt2$start
+    dt2$start = NULL
+    dt2$end = NULL
+    dt2$strand = NULL
+    dt2$width = NULL
+    dt2$qwidth = NULL
+    output_list = as.list(dt2)  ## list with 11 mandatory BAM fields
+    ## > names(output_list)
+    ## [1] "qname"  "flag"   "qwidth" "mapq"   "cigar"  "seq"    "qual"   "rnext" 
+    ## [9] "pnext"  "tlen"   "rname"  "pos"  
+    expect_equal( width(parse_outputs(output_list))[1], 127)
+    expect_equal(width(parse_outputs(output_list))[2], 150)
 
 })
-
-
 
 
 
