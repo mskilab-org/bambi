@@ -21,10 +21,6 @@ https://github.com/mskilab/cbambi
 
 Instantiate a bambi object:
 
-```{r}
-hcc1143_subset = bambi$new(bam_file = "subsetHCC1143_phased_possorted0001.bam", bamdb_path="subsetHCC1143_phased_possorted0001_lmdb")
-```
-
 Methods:
 
 * grab_bx()
@@ -43,6 +39,48 @@ Methods:
     * remove
     * the only downside is that `fetch_by_tag()` might take a performance hit....
 
+## Demo
+
+* Instantiate a `bambi` object
+
+```{r}
+library(bambi)
+
+> hcc1143_subset = bambi$new(bam_file = "subsetHCC1143_phased_possorted0001.bam", bamdb_path="subsetHCC1143_phased_possorted0001_lmdb")
+```
+
+* Call methods
+
+```{r}
+> hcc1143_subset$grab_bx('CGACGTGTCCTCTAGC-1')
+GRanges object with 2 ranges and 11 metadata columns:
+      seqnames                 ranges strand |
+         <Rle>              <IRanges>  <Rle> |
+  [1]     chr1 [147975454, 147975580]      + |
+  [2]     chr1 [147975675, 147975824]      - |
+                                         qname      flag      mapq       cigar
+                                   <character> <numeric> <numeric> <character>
+  [1] ST-K00126:3:H5TL3BBXX:2:2109:25926:37800        99        16        127M
+  [2] ST-K00126:3:H5TL3BBXX:2:2109:25926:37800       147        16        150M
+            rnext     pnext      tlen
+      <character> <numeric> <numeric>
+  [1]           = 147975676       371
+  [2]           = 147975455      -371
+                                                                                                                                                         seq
+                                                                                                                                                 <character>
+  [1]                        ATGTCTTCTTCCTCATTATCTGGCACTGGTTAGGAAGCACTCATCTCCATGAAGTCATCTTTTGTTAATTCCTCTGGTGTGGTGTGTATTAGCTCTTAAATTCCTCCAAGATCCATATCTTGCAACC
+  [2] ATCTGGACACAAATTGTACTTTTGTCCAGCACGAATTTATTGTTTTGAGTTTCATGGTTTTCTATATCAACTGATGACATCTTGAAAGGTGTAAGCCTTCCAGACTTCCATGATGTTCTCTCTATTGGGTTTCTCTTTTGCAATGTTGAC
+                                                                                                                                                        qual
+                                                                                                                                                 <character>
+  [1]                        JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJFJJJJJJJJJJJAJFJJJJJJJJJFJJJJJJJJJJFJJJJFFFJJJFJJJJJJAAJFJJJFAFAFFFJAA<7F<
+  [2] A<7FFFJFFFAJJAAAJJF<F<7A-<AA-<<<AFFJJJJJJJJFFJAFFAAFJFJJJAFFJJJJJJJJJJFJFAJJJJJJFJJJJJJ<FFJJJFJJJFJJJJJJJJJJJJJFJJJJFFJ7JJJJF<JJJJJJJJJJJJJJJJJJJFFAA<
+                      BX    qwidth
+             <character> <integer>
+  [1] CGACGTGTCCTCTAGC-1       127
+  [2] CGACGTGTCCTCTAGC-1       150
+  -------
+  seqinfo: 1 sequence from an unspecified genome; no seqlengths
+  ```
 
 
 
