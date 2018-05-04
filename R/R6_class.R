@@ -95,7 +95,7 @@ bambi = R6Class('bambi',
                     }
                 } 
 
-                query = query$BX  ## vector of CB's 
+                query = query$BX  ## vector of BX's 
 
             } else if(inherits(query, 'data.frame') | inherits(query, 'data.table')){
              
@@ -114,7 +114,7 @@ bambi = R6Class('bambi',
                     }
                 } 
 
-                query = query$BX  ## vector of CB's 
+                query = query$BX  ## vector of BX's 
 
             } else{
                 stop("Invalid query. Input 'query' must be a data.table, data.frame or GRanges.")
@@ -227,12 +227,12 @@ bambi = R6Class('bambi',
                     query = read.bam(bam,  gr = dt2gr(query), tag = c('MD'), pairs.grl = FALSE)   ### what if there are no MD tags? Use RSamtools to check for MD tags?
 
                     if (verbose){
-                        message(sprintf('Retrieved %s reads with %s unique barcodes:', length(query), length(unique(query$CB))))
+                        message(sprintf('Retrieved %s reads with %s unique barcodes:', length(query), length(unique(query$UB))))
                         print(Sys.time() - now)
                     }
                 } 
 
-                query = query$CB  ## vector of CB's 
+                query = query$UB  ## vector of UB's 
 
             } else{
                 stop("Invalid query. Input 'query' must be a data.table, data.frame or GRanges.")
@@ -240,7 +240,7 @@ bambi = R6Class('bambi',
 
             query = setdiff(query, NA)
 
-            out = query_bam_index(self$bam_file, self$bamdb_path, "CB", query)
+            out = query_bam_index(self$bam_file, self$bamdb_path, "UB", query)
         
             if (any(nnix <<- out$cigar=='*')){
                 out$cigar[nnix] = NA

@@ -81,6 +81,7 @@ test_that('bamflag', {
 test_that('parse_outputs', {
 
     ## generate an example output from query_bam_index()
+    ## should output a DataFrame with columns "qname", "flag", "rname", "pos", "mapq", "cigar", "rnext", "pnext", "tlen", "seq", "qual"
     foo = read.bam(example_bam, all=TRUE)
     gr2 = foo[[2]]
     dt2 = gr2dt(gr2)
