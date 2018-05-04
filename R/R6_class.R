@@ -210,7 +210,7 @@ bambi = R6::R6Class('bambi',
             out = query_bam_index(self$bam_file, self$bamdb_path, "CB", barcodes)
 
             out = as.data.table(out)
-            out[, BX := barcodes]  ## for one
+            out[, CB := barcodes]  ## for one
         
             if (any(nnix <<- out$cigar=='*')){
                 out$cigar[nnix] = NA
@@ -279,7 +279,7 @@ bambi = R6::R6Class('bambi',
             out = query_bam_index(self$bam_file, self$bamdb_path, "UB", barcodes)
 
             out = as.data.table(out)
-            out[, BX := barcodes]  ## for one
+            out[, UB := barcodes]  ## for one
         
             if (any(nnix <<- out$cigar=='*')){
                 out$cigar[nnix] = NA

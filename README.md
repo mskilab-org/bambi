@@ -24,16 +24,16 @@ Instantiate a bambi object:
 Methods:
 
 * grab_bx()
-    * grab_bx(barcodes, query=NULL, data.table = FALSE, verbose = FALSE, mc.cores = 1)
+    * `grab_bx(barcodes, query=NULL, data.table = FALSE, verbose = FALSE, mc.cores = 1)`
 
 * grab_cb()
-    * grab_cb(barcodes, query=NULL, data.table = FALSE, verbose = FALSE, mc.cores = 1)
+    * `grab_cb(barcodes, query=NULL, data.table = FALSE, verbose = FALSE, mc.cores = 1)`
 
 * grab_ub()
-    * grab_ub(barcodes, query=NULL, data.table = FALSE, verbose = FALSE, mc.cores = 1)
+    * `grab_ub(barcodes, query=NULL, data.table = FALSE, verbose = FALSE, mc.cores = 1)`
 
 * fetch_by_tag()
-    * fetch_by_tag(tag, tag_queries, query=NULL, data.table = FALSE, verbose = FALSE, mc.cores = 1)
+    * `fetch_by_tag(tag, tag_queries, query=NULL, data.table = FALSE, verbose = FALSE, mc.cores = 1)`
 
 * fetch_by_multiple_tag()? 
     * remove
