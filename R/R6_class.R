@@ -43,9 +43,8 @@
 #'
 #' fetch_by_tag = function(tag, query, data.table = FALSE, verbose = FALSE, mc.cores = 1)
 #'
-#'
+#' @import R6
 #' @importFrom R6 R6Class
-#' @import Rsamtools
 #' @import gUtils
 #' @name bambi
 #'
@@ -53,7 +52,7 @@ NULL
 
 #' @export
 
-bambi = R6Class('bambi',
+bambi = R6::R6Class('bambi',
 
     public = list(
 
