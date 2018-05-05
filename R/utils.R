@@ -118,3 +118,24 @@ parse_outputs = function(out){
 }
 
 
+
+#' @name check_index
+#' @title checks the LMDB indices to check whether these exist
+#' @description
+#'
+#' Checks the LMDB indices to check whether these exist
+#'
+#' @param lmdb_path List output from query_bam_index()
+#' @param index character string LMDB index to check if exists
+#' @return boolean TRUE if LMDB has index 
+check_index = function(lmdb_path, index){
+    ## the subdirectories in the LMDB path should be the index names
+    indices = gsub(".*/", "", list.dirs(path=lmdb_path, recursive=FALSE))  ## re-format list.dirs() outputs
+    return(as.logical(is.element(index, indices)))
+}
+
+
+
+
+
+
