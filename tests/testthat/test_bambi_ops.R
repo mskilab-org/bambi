@@ -4,6 +4,8 @@ library(bambi)
 library(bamUtils)
 library(gUtils)
 
+
+
 example_bam = 'subsetHCC1143_phased_possorted0001.bam'   ### all tests below are specific to this BAM, and will fail otherwise 
 example_bai = 'subsetHCC1143_phased_possorted0001.bam.bai' 
 example_lmdb = 'subsetHCC1143_phased_possorted0001_lmdb'
@@ -49,15 +51,23 @@ test_that('bambi test method grab_bx()', {
     ## if (check_index(self$bamdb_path, 'BX') != TRUE)
     ## wrong = bambi$new(bam_file = example_bam)
     ##
-    ## if ((!is.null(barcodes)) & (!is.null(query))){
+    ## if ((is.null(barcodes)) & (is.null(query))){
     expect_equal(foo$grab_bx(), GRanges())
     expect_equal(foo$grab_bx(data.table=TRUE), data.table())
+    ## if ((!is.null(barcodes)) & (!is.null(query))){
+    ## Error in foo$grab_bx(barcodes = "CGACGTGTCCTCTAGC-1", query = data.table()) : 
+    ##   Both 'barcodes' and 'query' parameters cannot be used. Use method 'grab_bx()' by a character vector of BX barcodes, or a GRanges/data.table of a genomic region. Please see documentation for details.
+    expect_error(foo$grab_bx(barcodes='CGACGTGTCCTCTAGC-1', query=data.table()))
     ## if (!inherits(barcodes, "character"))
     ## foo$grab_bx(barcodes = "2")
-    ## one barcode
+    ## multiple barcodes
+    expect_equal(length(foo$grab_bx(barcodes=c('CGACGTGTCCTCTAGC-1', 'ACCTTCGCATGCGCAC-1', 'TACTCATCACACGCAC-1'), mc.cores=2), 6)
+    expect_equal(dim(foo$grab_bx(barcodes=c('CGACGTGTCCTCTAGC-1', 'ACCTTCGCATGCGCAC-1', 'TACTCATCACACGCAC-1'), data.table=TRUE, mc.cores=2))[1], 6)
+    expect_equal(dim(foo$grab_bx(barcodes=c('CGACGTGTCCTCTAGC-1', 'ACCTTCGCATGCGCAC-1', 'TACTCATCACACGCAC-1'), data.table=TRUE, mc.cores=2))[2], 12)
 
 
 })
+
 
 
 

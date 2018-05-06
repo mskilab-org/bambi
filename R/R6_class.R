@@ -159,7 +159,7 @@ bambi = R6::R6Class('bambi',
                             now = Sys.time()
                         }
 
-                        query = read.bam(bam,  gr = query, tag = c('MD'), pairs.grl = FALSE)   ### if no MD tag, bamUtils::read.bam() outputs an NA for this column
+                        query = read.bam(self$bam_file,  gr = query, tag = c('MD'), pairs.grl = FALSE)   ### if no MD tag, bamUtils::read.bam() outputs an NA for this column
 
                         if (verbose){
                             message(sprintf('Retrieved %s reads with %s unique barcodes:', length(query), length(unique(query$BX))))
@@ -178,7 +178,7 @@ bambi = R6::R6Class('bambi',
                             now = Sys.time()
                         }
 
-                        query = read.bam(bam,  gr = dt2gr(query), tag = c('MD'), pairs.grl = FALSE)   ### if no MD tag, bamUtils::read.bam() outputs an NA for this column
+                        query = read.bam(self$bam_file,  gr = dt2gr(query), tag = c('MD'), pairs.grl = FALSE)   ### if no MD tag, bamUtils::read.bam() outputs an NA for this column
 
                         if (verbose){
                             message(sprintf('Retrieved %s reads with %s unique barcodes:', length(query), length(unique(query$CB))))
@@ -289,7 +289,7 @@ bambi = R6::R6Class('bambi',
                             now = Sys.time()
                         }
 
-                        query = read.bam(bam,  gr = query, tag = c('MD'), pairs.grl = FALSE)   ### if no MD tag, bamUtils::read.bam() outputs an NA for this column
+                        query = read.bam(self$bam_file,  gr = query, tag = c('MD'), pairs.grl = FALSE)   ### if no MD tag, bamUtils::read.bam() outputs an NA for this column
 
                         if (verbose){
                             message(sprintf('Retrieved %s reads with %s unique barcodes:', length(query), length(unique(query$CB))))
@@ -308,7 +308,7 @@ bambi = R6::R6Class('bambi',
                             now = Sys.time()
                         }
 
-                        query = read.bam(bam, gr = dt2gr(query), tag = c('MD'), pairs.grl = FALSE)   ### if no MD tag, bamUtils::read.bam() outputs an NA for this column
+                        query = read.bam(self$bam_file, gr = dt2gr(query), tag = c('MD'), pairs.grl = FALSE)   ### if no MD tag, bamUtils::read.bam() outputs an NA for this column
 
                         if (verbose){
                             message(sprintf('Retrieved %s reads with %s unique barcodes:', length(query), length(unique(query$CB))))
@@ -418,7 +418,7 @@ bambi = R6::R6Class('bambi',
                             now = Sys.time()
                         }
 
-                        query = read.bam(bam,  gr = query, tag = c('MD'), pairs.grl = FALSE)   ### if no MD tag, bamUtils::read.bam() outputs an NA for this column
+                        query = read.bam(self$bam_file,  gr = query, tag = c('MD'), pairs.grl = FALSE)   ### if no MD tag, bamUtils::read.bam() outputs an NA for this column
 
                         if (verbose){
                             message(sprintf('Retrieved %s reads with %s unique barcodes:', length(query), length(unique(query$UB))))
@@ -437,7 +437,7 @@ bambi = R6::R6Class('bambi',
                             now = Sys.time()
                         }
 
-                        query = read.bam(bam,  gr = dt2gr(query), tag = c('MD'), pairs.grl = FALSE)   ### if no MD tag, bamUtils::read.bam() outputs an NA for this column
+                        query = read.bam(self$bam_file,  gr = dt2gr(query), tag = c('MD'), pairs.grl = FALSE)   ### if no MD tag, bamUtils::read.bam() outputs an NA for this column
 
                         if (verbose){
                             message(sprintf('Retrieved %s reads with %s unique barcodes:', length(query), length(unique(query$UB))))
@@ -565,7 +565,7 @@ bambi = R6::R6Class('bambi',
                             now = Sys.time()
                         }
 
-                        query = read.bam(bam,  gr = query, tag = c('MD'), pairs.grl = FALSE)   ### if no MD tag, bamUtils::read.bam() outputs an NA for this column
+                        query = read.bam(self$bam_file,  gr = query, tag = c('MD'), pairs.grl = FALSE)   ### if no MD tag, bamUtils::read.bam() outputs an NA for this column
 
                         if (verbose){
                             message(sprintf('Retrieved %s reads with %s unique tags:', length(query), length(unique(query$tag))))
@@ -584,7 +584,7 @@ bambi = R6::R6Class('bambi',
                             now = Sys.time()
                         }
 
-                        query = read.bam(bam,  gr = dt2gr(query), tag = c('MD'), pairs.grl = FALSE)   ### if no MD tag, bamUtils::read.bam() outputs an NA for this column
+                        query = read.bam(self$bam_file,  gr = dt2gr(query), tag = c('MD'), pairs.grl = FALSE)   ### if no MD tag, bamUtils::read.bam() outputs an NA for this column
 
                         if (verbose){
                             message(sprintf('Retrieved %s reads with %s unique tags:', length(query), length(unique(query$UB))))
