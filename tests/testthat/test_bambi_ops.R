@@ -10,8 +10,7 @@ example_bai = 'subsetHCC1143_phased_possorted0001.bam.bai'
 example_lmdb = 'subsetHCC1143_phased_possorted0001_lmdb'
 
 
-
-#### utils.R
+######## utils.R
 
 
 test_that('countCigar', {
@@ -35,42 +34,46 @@ test_that('countCigar', {
 
 test_that('bamflag', {
 
-    ## isPaired  1 0
-    expect_equal(as.data.frame(bamflag(read.bam(example_bam, all=TRUE, intervals = GRanges('1:10075-10100'))[[1]]))$isPaired[1], 1)
-    expect_equal(as.data.frame(bamflag(read.bam(example_bam, all=TRUE, intervals = GRanges('1:10075-10100'))[[1]]))$isPaired[2], 0)
-    ## isProperPair  1 0 
-    expect_equal(as.data.frame(bamflag(read.bam(example_bam, all=TRUE, intervals = GRanges('1:10075-10100'))[[1]]))$isProperPair[1], 1)
-    expect_equal(as.data.frame(bamflag(read.bam(example_bam, all=TRUE, intervals = GRanges('1:10075-10100'))[[1]]))$isProperPair[2], 0)
+    gr_example = read.bam(example_bam, all=TRUE)[[42]]  ## random GRanges
+    exdt = as.data.table(gr2dt(gr_example))
+    ## isPaired  1 1
+    expect_equal(as.data.frame(bamflag(exdt))$isPaired[1], 1)
+    expect_equal(as.data.frame(bamflag(exdt))$isPaired[2], 1)
+    expect_equal(as.data.frame(bamflag(gr_example))$isPaired[1], 1)
+    expect_equal(as.data.frame(bamflag(gr_example))$isPaired[2], 1)
+    ## isProperPair  1 1
+    expect_equal(as.data.frame(bamflag(exdt))$isProperPair[1], 1)
+    expect_equal(as.data.frame(bamflag(exdt))$isProperPair[2], 1)  
     ## isUnmappedQuery  0 0 
-    expect_equal(as.data.frame(bamflag(read.bam(example_bam, all=TRUE, intervals = GRanges('1:10075-10100'))[[1]]))$isUnmappedQuery[1], 0)
-    expect_equal(as.data.frame(bamflag(read.bam(example_bam, all=TRUE, intervals = GRanges('1:10075-10100'))[[1]]))$isUnmappedQuery[2], 0)
+    expect_equal(as.data.frame(bamflag(exdt))$isUnmappedQuery[1], 0)
+    expect_equal(as.data.frame(bamflag(exdt))$isUnmappedQuery[2], 0) 
     ## hasUnmappedMate  0 0 
-    expect_equal(as.data.frame(bamflag(read.bam(example_bam, all=TRUE, intervals = GRanges('1:10075-10100'))[[1]]))$hasUnmappedMate[1], 0)
-    expect_equal(as.data.frame(bamflag(read.bam(example_bam, all=TRUE, intervals = GRanges('1:10075-10100'))[[1]]))$hasUnmappedMate[2], 0)
-    ## isMinusStrand  1 1 
-    expect_equal(as.data.frame(bamflag(read.bam(example_bam, all=TRUE, intervals = GRanges('1:10075-10100'))[[1]]))$isMinusStrand[1], 0)
-    expect_equal(as.data.frame(bamflag(read.bam(example_bam, all=TRUE, intervals = GRanges('1:10075-10100'))[[1]]))$isMinusStrand[2], 0)
+    expect_equal(as.data.frame(bamflag(gr_example))$hasUnmappedMate[1], 0)
+    expect_equal(as.data.frame(bamflag(gr_example))$hasUnmappedMate[2], 0) 
+    ## isMinusStrand  0 1 
+    expect_equal(as.data.frame(bamflag(gr_example))$isMinusStrand[1], 0)
+    expect_equal(as.data.frame(bamflag(gr_example))$isMinusStrand[2], 1) 
     ## isMateMinusStrand  1 0 
-    expect_equal(as.data.frame(bamflag(read.bam(example_bam, all=TRUE, intervals = GRanges('1:10075-10100'))[[1]]))$isMateMinusStrand[1], 1)
-    expect_equal(as.data.frame(bamflag(read.bam(example_bam, all=TRUE, intervals = GRanges('1:10075-10100'))[[1]]))$isMateMinusStrand[2], 0)
-    ## isFirstMateRead  0 0 
-    expect_equal(as.data.frame(bamflag(read.bam(example_bam, all=TRUE, intervals = GRanges('1:10075-10100'))[[1]]))$isFirstMateRead[1], 0)
-    expect_equal(as.data.frame(bamflag(read.bam(example_bam, all=TRUE, intervals = GRanges('1:10075-10100'))[[1]]))$isFirstMateRead[2], 0)
-    ## isSecondMateRead  1 0 
-    expect_equal(as.data.frame(bamflag(read.bam(example_bam, all=TRUE, intervals = GRanges('1:10075-10100'))[[1]]))$isSecondMateRead[1], 1)
-    expect_equal(as.data.frame(bamflag(read.bam(example_bam, all=TRUE, intervals = GRanges('1:10075-10100'))[[1]]))$isSecondMateRead[2], 0)
+    expect_equal(as.data.frame(bamflag(gr_example))$isMateMinusStrand[1], 1)
+    expect_equal(as.data.frame(bamflag(gr_example))$isMateMinusStrand[2], 0) 
+    ## isFirstMateRead  1 0 
+    expect_equal(as.data.frame(bamflag(gr_example))$isFirstMateRead[1], 1)
+    expect_equal(as.data.frame(bamflag(gr_example))$isFirstMateRead[2], 0) 
+    ## isSecondMateRead  0 1
+    expect_equal(as.data.frame(bamflag(gr_example))$isSecondMateRead[1], 0)
+    expect_equal(as.data.frame(bamflag(gr_example))$isSecondMateRead[2], 1) 
     ## isNotPrimaryRead  0 0
-    expect_equal(as.data.frame(bamflag(read.bam(example_bam, all=TRUE, intervals = GRanges('1:10075-10100'))[[1]]))$isNotPrimaryRead[1], 0)
-    expect_equal(as.data.frame(bamflag(read.bam(example_bam, all=TRUE, intervals = GRanges('1:10075-10100'))[[1]]))$isNotPrimaryRead[2], 0)
+    expect_equal(as.data.frame(bamflag(gr_example))$isNotPrimaryRead[1], 0)
+    expect_equal(as.data.frame(bamflag(gr_example))$isNotPrimaryRead[2], 0) 
     ## isNotPassingQualityControls  0 0 
-    expect_equal(as.data.frame(bamflag(read.bam(example_bam, all=TRUE, intervals = GRanges('1:10075-10100'))[[1]]))$isNotPassingQualityControls[1], 0)
-    expect_equal(as.data.frame(bamflag(read.bam(example_bam, all=TRUE, intervals = GRanges('1:10075-10100'))[[1]]))$isNotPassingQualityControls[2], 0)
+    expect_equal(as.data.frame(bamflag(gr_example))$isNotPassingQualityControls[1], 0)
+    expect_equal(as.data.frame(bamflag(gr_example))$isNotPassingQualityControls[2], 0) 
     ## isDuplicate  0 0 
-    expect_equal(as.data.frame(bamflag(read.bam(example_bam, all=TRUE, intervals = GRanges('1:10075-10100'))[[1]]))$isDuplicate[1], 0)
-    expect_equal(as.data.frame(bamflag(read.bam(example_bam, all=TRUE, intervals = GRanges('1:10075-10100'))[[1]]))$isDuplicate[2], 0)
+    expect_equal(as.data.frame(bamflag(gr_example))$isDuplicate[1], 0)
+    expect_equal(as.data.frame(bamflag(gr_example))$isDuplicate[2], 0) 
     ## isSupplementary  0 0
-    expect_equal(as.data.frame(bamflag(read.bam(example_bam, all=TRUE, intervals = GRanges('1:10075-10100'))[[1]]))$isSupplementary[1], 0)
-    expect_equal(as.data.frame(bamflag(read.bam(example_bam, all=TRUE, intervals = GRanges('1:10075-10100'))[[1]]))$isSupplementary[2], 0)
+    expect_equal(as.data.frame(bamflag(gr_example))$isSupplementary[1], 0)
+    expect_equal(as.data.frame(bamflag(gr_example))$isSupplementary[2], 0) 
 
 })
 
@@ -106,10 +109,39 @@ test_that('parse_outputs', {
     ## > names(output_list)
     ## [1] "qname"  "flag"   "qwidth" "mapq"   "cigar"  "seq"    "qual"   "rnext" 
     ## [9] "pnext"  "tlen"   "rname"  "pos"  
-    expect_equal( width(parse_outputs(output_list))[1], 127)
+    expect_equal(width(parse_outputs(output_list))[1], 127)
     expect_equal(width(parse_outputs(output_list))[2], 150)
+    expect_match(as.character(seqnames(parse_outputs(output_list))[1]), "chr5")
+    expect_match(as.character(seqnames(parse_outputs(output_list))[2]), "chr5")
 
 })
+
+
+
+## check_index 
+test_that('check_index', {
+
+    expect_true(check_index(example_lmdb, "BX"))
+    expect_true(check_index(example_lmdb, "QNAME"))
+    expect_false(check_index(example_lmdb, "BZ"))
+
+})
+
+
+######## R6_class.R
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
