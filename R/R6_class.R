@@ -130,7 +130,7 @@ bambi = R6::R6Class('bambi',
                     query_list = NULL
                     multiple_barcodes = mclapply(1:length(barcodes), 
                         function(x){
-                        out = query_bam_index(self$bam_file, self$bamdb_path, "BX", barcodes[x])
+                        output = query_bam_index(self$bam_file, self$bamdb_path, "BX", barcodes[x])
                         query_list = rbind(query_list, output)     ## create huge list of data.table'
                     }, mc.cores=mc.cores)
 
@@ -260,7 +260,7 @@ bambi = R6::R6Class('bambi',
                     query_list = NULL
                     multiple_barcodes = mclapply(1:length(barcodes), 
                         function(x){
-                        out = query_bam_index(self$bam_file, self$bamdb_path, "CB", barcodes[x])
+                        output = query_bam_index(self$bam_file, self$bamdb_path, "CB", barcodes[x])
                         query_list = rbind(query_list, output)     ## create huge list of data.table'
                     }, mc.cores=mc.cores)
 
@@ -389,7 +389,7 @@ bambi = R6::R6Class('bambi',
                     query_list = NULL
                     multiple_barcodes = mclapply(1:length(barcodes), 
                         function(x){
-                        out = query_bam_index(self$bam_file, self$bamdb_path, "UB", barcodes[x])
+                        output = query_bam_index(self$bam_file, self$bamdb_path, "UB", barcodes[x])
                         query_list = rbind(query_list, output)     ## create huge list of data.table'
                     }, mc.cores=mc.cores)
 
@@ -536,7 +536,7 @@ bambi = R6::R6Class('bambi',
                     query_list = NULL
                     multiple_barcodes = mclapply(1:length(tag_queries), 
                         function(x){
-                        out = query_bam_index(self$bam_file, self$bamdb_path, tag, tag_queries[x])
+                        output = query_bam_index(self$bam_file, self$bamdb_path, tag, tag_queries[x])
                         query_list = rbind(query_list, output)     ## create huge list of data.table'
                     }, mc.cores=mc.cores)
 

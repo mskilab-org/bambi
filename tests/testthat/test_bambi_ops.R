@@ -4,10 +4,63 @@ library(bambi)
 library(bamUtils)
 library(gUtils)
 
-
 example_bam = 'subsetHCC1143_phased_possorted0001.bam'   ### all tests below are specific to this BAM, and will fail otherwise 
 example_bai = 'subsetHCC1143_phased_possorted0001.bam.bai' 
 example_lmdb = 'subsetHCC1143_phased_possorted0001_lmdb'
+
+
+
+
+######## R6_class.R
+
+
+
+test_that('bambi class constructor', {
+ 
+    ## Error in .subset2(public_bind_env, "initialize")(...) : 
+    ##   BAM file not found. A valid BAM for 'bam_file' must be provided.
+    expect_error(bambi$new(bam_file = 'foobar'))
+    ## Error in .subset2(public_bind_env, "initialize")(...) : 
+    ##   Cannot open BAM. A valid BAM for 'bam_file' must be provided.
+    expect_error(bambi$new(bam_file = 'fake_bam.txt'))
+    ## if (is.null(bamdb_path))
+    ## Error in .subset2(public_bind_env, "initialize")(...) : 
+    ##   Error: Pathname to bamdb LMDB subdirectory must be provided
+    expect_error(bambi$new(bam_file ='bam_with_no_lmdb.bam'))
+    ## valid
+    foo = bambi$new(bam_file = example_bam)
+    expect_match(foo$bam_file, 'subsetHCC1143_phased_possorted0001.bam')
+    expect_match(foo$bamdb_path, 'subsetHCC1143_phased_possorted0001_lmdb')
+
+})
+
+
+
+test_that('bambi test method grab_bx()', {
+ 
+    ## check works
+    foo = bambi$new(bam_file = example_bam)
+    expect_equal(foo$grab_bx('TACTCATCACACGCAC-1')$flag[1], 99)
+    expect_equal(foo$grab_bx('TACTCATCACACGCAC-1')$flag[2], 147)
+    expect_equal(foo$grab_bx('TACTCATCACACGCAC-1')$mapq[1], 60)
+    expect_equal(foo$grab_bx('TACTCATCACACGCAC-1')$mapq[2], 60)
+    expect_match(foo$grab_bx('TACTCATCACACGCAC-1')$cigar[1], "127M")
+    expect_match(foo$grab_bx('TACTCATCACACGCAC-1')$cigar[2], "150M")
+    ## if (check_index(self$bamdb_path, 'BX') != TRUE)
+    ## wrong = bambi$new(bam_file = example_bam)
+    ##
+    ## if ((!is.null(barcodes)) & (!is.null(query))){
+    expect_equal(foo$grab_bx(), GRanges())
+    expect_equal(foo$grab_bx(data.table=TRUE), data.table())
+    ## if (!inherits(barcodes, "character"))
+    ## foo$grab_bx(barcodes = "2")
+    ## one barcode
+
+
+})
+
+
+
 
 
 ######## utils.R
@@ -126,14 +179,6 @@ test_that('check_index', {
     expect_false(check_index(example_lmdb, "BZ"))
 
 })
-
-
-######## R6_class.R
-
-
-
-
-
 
 
 
