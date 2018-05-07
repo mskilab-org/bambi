@@ -1,0 +1,12 @@
+#!/bin/sh
+
+export CFLAGS=" -fPIC";
+export CPPFLAGS=" -fPIC";
+export BAMDB="src/bamdb";
+
+
+cd $BAMDB
+mkdir build;
+cd build;
+cmake ..;
+make
