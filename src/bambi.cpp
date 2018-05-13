@@ -13,25 +13,25 @@ using namespace Rcpp;
 
 class StringAux {
  public:
-  StringAux(const char* key1, int num_elm) {
+  StringAux(const char* key1, const int num_elm) {
     data = StringVector(num_elm);
     key[0] = key1[0];
     key[1] = key1[1];
     key[2] = 0;
   }
 
-  void add_aux(const char* val, int index) {
-    data[index] = std::string(val);
+  void add_aux(const char* val, const size_t size, const int index) {
+    data[index] = std::string(val, size);
   }
 
   void add_na(int index) { data[index] = NA_STRING; }
 
-  StringVector getVector() { return data; }
+  StringVector get_vector() { return data; }
 
-  char *getKey() { return key; }
+  char* get_key() { return key; }
 
   bool compare_key(const char* key1) const {
-    return key1[0] == key[0] && key1[1] == key1[1];
+    return (key1[0] == key[0] && key[1] == key1[1]);
   }
 
  private:
@@ -41,49 +41,57 @@ class StringAux {
 
 class NumericAux {
  public:
-  NumericAux(const char* key1, int num_elm) {
+  NumericAux(const char* key1, const char type1, const int num_elm) {
     data = NumericVector(num_elm);
     key[0] = key1[0];
     key[1] = key1[1];
     key[2] = 0;
+    type = type1;
   }
 
-  void add_aux(double val, int index) { data[index] = val; }
+  void add_aux(const double val, const int index) { data[index] = val; }
 
-  NumericVector getVector() { return data; }
+  NumericVector get_vector() { return data; }
 
-  char *getKey() { return key; }
+  char* get_key() { return key; }
+
+  char get_type() { return type; }
 
   bool compare_key(const char* key1) const {
-    return key1[0] == key[0] && key1[1] == key1[1];
+    return (key1[0] == key[0] && key[1] == key1[1]);
   }
 
  private:
   char key[3];
+  char type;
   NumericVector data;
 };
 
 class IntAux {
  public:
-  IntAux(const char* key1, int num_elm) {
+  IntAux(const char* key1, const char type1, const int num_elm) {
     data = IntegerVector(num_elm);
     key[0] = key1[0];
     key[1] = key1[1];
     key[2] = 0;
+    type = type1;
   }
 
-  void add_aux(int val, int index) { data[index] = val; }
+  void add_aux(const int val, const int index) { data[index] = val; }
 
-  IntegerVector getVector() { return data; }
+  IntegerVector get_vector() { return data; }
 
-  char *getKey() { return key; }
+  char* get_key() { return key; }
+
+  char get_type() { return type; }
 
   bool compare_key(const char* key1) const {
-    return key1[0] == key[0] && key1[1] == key1[1];
+    return (key1[0] == key[0] && key[1] == key1[1]);
   }
 
  private:
   char key[3];
+  char type;
   IntegerVector data;
 };
 
@@ -119,7 +127,9 @@ DataFrame query_bam_index(CharacterVector bam_file_name,
       case 's':
       case 'I':
       case 'i':
-        intAuxes.push_back(IntAux(avail_aux_tag->key.key, bam_rows->n_entries));
+        intAuxes.push_back(IntAux(avail_aux_tag->key.key,
+                                  avail_aux_tag->key.type,
+                                  bam_rows->n_entries));
         break;
       case 'A':
       case 'Z':
@@ -129,8 +139,9 @@ DataFrame query_bam_index(CharacterVector bam_file_name,
         break;
       case 'd':
       case 'f':
-        numericAuxes.push_back(
-            NumericAux(avail_aux_tag->key.key, bam_rows->n_entries));
+        numericAuxes.push_back(NumericAux(avail_aux_tag->key.key,
+                                          avail_aux_tag->key.type,
+                                          bam_rows->n_entries));
         break;
     }
 
@@ -170,7 +181,28 @@ DataFrame query_bam_index(CharacterVector bam_file_name,
       while (aux_tag) {
         if (it.compare_key(aux_tag->key.key)) {
           is_present = true;
-          it.add_aux(*((int*)aux_tag->val), i);
+          switch (it.get_type()) {
+            case 'C':
+              it.add_aux(*static_cast<const uint8_t*>(aux_tag->val), i);
+              break;
+            case 'c':
+              it.add_aux(*static_cast<const int8_t*>(aux_tag->val), i);
+              break;
+            case 'S':
+              it.add_aux(*static_cast<const uint16_t*>(aux_tag->val), i);
+              break;
+            case 's':
+              it.add_aux(*static_cast<const int16_t*>(aux_tag->val), i);
+              break;
+            case 'I':
+              it.add_aux(*static_cast<const uint32_t*>(aux_tag->val), i);
+              break;
+            case 'i':
+              it.add_aux(*static_cast<const int32_t*>(aux_tag->val), i);
+              break;
+            default:
+              it.add_aux(*static_cast<const int*>(aux_tag->val), i);
+          }
         }
 
         aux_tag = aux_tag->next;
@@ -188,7 +220,8 @@ DataFrame query_bam_index(CharacterVector bam_file_name,
       while (aux_tag) {
         if (it.compare_key(aux_tag->key.key)) {
           is_present = true;
-          it.add_aux((char*)aux_tag->val, i);
+          it.add_aux(static_cast<const char*>(aux_tag->val), aux_tag->val_size,
+                     i);
         }
 
         aux_tag = aux_tag->next;
@@ -206,7 +239,11 @@ DataFrame query_bam_index(CharacterVector bam_file_name,
       while (aux_tag) {
         if (it.compare_key(aux_tag->key.key)) {
           is_present = true;
-          it.add_aux(*((double*)aux_tag->val), i);
+          if (it.get_type() == 'd') {
+            it.add_aux(*static_cast<const double*>(aux_tag->val), i);
+          } else {
+            it.add_aux(*static_cast<const float*>(aux_tag->val), i);
+          }
         }
 
         aux_tag = aux_tag->next;
@@ -245,25 +282,26 @@ DataFrame query_bam_index(CharacterVector bam_file_name,
 
   int j = 11;
   for (auto& it : intAuxes) {
-    colList[j] = it.getVector();
-    col_names.push_back(it.getKey());
+    colList[j] = it.get_vector();
+    col_names.push_back(it.get_key());
     j++;
   }
 
   for (auto& it : numericAuxes) {
-    colList[j] = it.getVector();
-    col_names.push_back(it.getKey());
+    colList[j] = it.get_vector();
+    col_names.push_back(it.get_key());
     j++;
   }
 
   for (auto& it : stringAuxes) {
-    colList[j] = it.getVector();
-    col_names.push_back(it.getKey());
+    colList[j] = it.get_vector();
+    col_names.push_back(it.get_key());
     j++;
   }
 
   colList.attr("names") = wrap(col_names);
   colList.attr("class") = "data.frame";
-  colList.attr("row.names") = IntegerVector::create(NA_INTEGER, bam_rows->n_entries);
+  colList.attr("row.names") =
+      IntegerVector::create(NA_INTEGER, bam_rows->n_entries);
   return colList;
 }
