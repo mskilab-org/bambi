@@ -4,6 +4,31 @@ export CFLAGS=" -fPIC";
 export CPPFLAGS=" -fPIC";
 export BAMDB="src/bamdb";
 
+export ZLIB_LOC="src/zlib";                        ### libz.so, libz.a, libz.so.1; zconf.h, zlib.h
+export CK_LOC="src/ck";                            ### libck.so, libck.a, include/*.h
+export LMDB_LOC="src/lmdb/libraries/liblmdb";      ### liblmdb.so, liblmdb.a, lmdb.h
+export HTSLIB_LOC="src/htslib";                    ### libhts.a, libhts.so, libhts.so.2
+
+
+
+cd $ZLIB_LOC
+mkdir build;
+cd build;
+cmake ..;
+make
+
+cd $CK_LOC    
+./configure;
+make;
+
+
+cd $HTSLIB_LOC
+make; 
+
+
+
+
+
 
 cd $BAMDB
 mkdir build;

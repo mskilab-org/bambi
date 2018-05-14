@@ -85,3 +85,12 @@ GRanges object with 2 ranges and 11 metadata columns:
 
 
 
+
+repos:
+https://github.com/madler/zlib
+https://github.com/concurrencykit/ck 
+https://github.com/LMDB/lmdb
+https://github.com/samtools/htslib
+
+
+
