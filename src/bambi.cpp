@@ -5,8 +5,6 @@
 
 extern "C" {
 #include "bam_lmdb.h"
-bam_row_set_t* get_bam_rows(const char* input_file_name, const char* db_path,
-                            const char* key_type, const char* key_value);
 }
 
 using namespace Rcpp;
@@ -115,8 +113,9 @@ DataFrame query_bam_index(CharacterVector bam_file_name,
   std::list<NumericAux> numericAuxes;
   std::list<IntAux> intAuxes;
   int n_cols = 11;
+  int rc = 0;
 
-  bam_rows = get_bam_rows(c_file_name, c_index_path, c_key_type, c_key_val);
+  rc = get_bam_rows(&bam_rows, c_file_name, c_index_path, c_key_type, c_key_val);
   avail_aux_tag = bam_rows->aux_tags.head;
   while (avail_aux_tag) {
     n_cols++;
@@ -129,40 +128,40 @@ DataFrame query_bam_index(CharacterVector bam_file_name,
       case 'i':
         intAuxes.push_back(IntAux(avail_aux_tag->key.key,
                                   avail_aux_tag->key.type,
-                                  bam_rows->n_entries));
+                                  bam_rows->num_entries));
         break;
       case 'A':
       case 'Z':
       case 'H':
         stringAuxes.push_back(
-            StringAux(avail_aux_tag->key.key, bam_rows->n_entries));
+            StringAux(avail_aux_tag->key.key, bam_rows->num_entries));
         break;
       case 'd':
       case 'f':
         numericAuxes.push_back(NumericAux(avail_aux_tag->key.key,
                                           avail_aux_tag->key.type,
-                                          bam_rows->n_entries));
+                                          bam_rows->num_entries));
         break;
     }
 
     avail_aux_tag = avail_aux_tag->next;
   }
 
-  StringVector qname(bam_rows->n_entries);
-  NumericVector flag(bam_rows->n_entries);
-  StringVector rname(bam_rows->n_entries);
-  NumericVector pos(bam_rows->n_entries);
-  NumericVector mapq(bam_rows->n_entries);
-  StringVector cigar(bam_rows->n_entries);
-  StringVector rnext(bam_rows->n_entries);
-  NumericVector pnext(bam_rows->n_entries);
-  NumericVector tlen(bam_rows->n_entries);
-  StringVector seq(bam_rows->n_entries);
-  StringVector qual(bam_rows->n_entries);
+  StringVector qname(bam_rows->num_entries);
+  NumericVector flag(bam_rows->num_entries);
+  StringVector rname(bam_rows->num_entries);
+  NumericVector pos(bam_rows->num_entries);
+  NumericVector mapq(bam_rows->num_entries);
+  StringVector cigar(bam_rows->num_entries);
+  StringVector rnext(bam_rows->num_entries);
+  NumericVector pnext(bam_rows->num_entries);
+  NumericVector tlen(bam_rows->num_entries);
+  StringVector seq(bam_rows->num_entries);
+  StringVector qual(bam_rows->num_entries);
 
   aux_elm_t* aux_tag = NULL;
 
-  for (size_t i = 0; i < bam_rows->n_entries; i++) {
+  for (size_t i = 0; i < bam_rows->num_entries; i++) {
     qname[i] = std::string(bam_rows->rows[i]->qname);
     flag[i] = bam_rows->rows[i]->flag;
     rname[i] = std::string(bam_rows->rows[i]->rname);
@@ -302,6 +301,8 @@ DataFrame query_bam_index(CharacterVector bam_file_name,
   colList.attr("names") = wrap(col_names);
   colList.attr("class") = "data.frame";
   colList.attr("row.names") =
-      IntegerVector::create(NA_INTEGER, bam_rows->n_entries);
+      IntegerVector::create(NA_INTEGER, bam_rows->num_entries);
+
+  free(bam_rows);
   return colList;
 }
