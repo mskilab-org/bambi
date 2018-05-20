@@ -9,6 +9,6 @@ Description: A library for accessing indexed bam sequence data
   This package provides an interface that allows users to query sequence files
   that have indexed using the bamdb <https://github.com/D-Lo/bamdb> library and
   receive a data frame containing the matching records.
-License: GPL (>= 2)
+License: GPL (>= 3)
 Imports: Rcpp (>= 0.12.3)
 LinkingTo: Rcpp
