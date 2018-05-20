@@ -3,31 +3,23 @@
 \alias{bambi}
 \docType{package}
 \title{
-  A short title line describing what the package does
+  An R interface for querying indexed binary sequence data
 }
 \description{
-  A more detailed description of what the package does. A length
-  of about one to five lines is recommended.
-}
-\details{
-  This section should provide a more detailed overview of how to use the
-  package, including the most important functions.
+  This package provides functions to query binary alignment
+  \url{https://samtools.github.io/hts-specs/SAMv1.pdf} files that have been
+  indexed with the bamdb software package.
 }
 \author{
-Your Name, email optional.
-
-Maintainer: Your Name <your@email.com>
+Maintainer: Aaron Dornbrand-Lo
 }
-\references{
-  This optional section can contain literature or other references for
-  background information.
-}
-% Optionally other standard keywords, one per line,
-% from the file KEYWORDS in the R documentation.
 \keyword{ package }
+\keyword{ interface }
 \seealso{
-  Optional links to other man pages
+  The bamdb library that this package extends currently lives at \url{https://github.com/D-Lo/bamdb}.
 }
 \examples{
-  # Optional simple examples of the most important functions
+  \dontrun{
+  results = query_bam_index("sample_bam_file.bam", "/home/adornbrandlo/sample_bam_index", "BX", "CCGATAAGTGATGTGG-1")
+  }
 }

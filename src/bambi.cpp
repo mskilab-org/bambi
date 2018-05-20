@@ -5,6 +5,7 @@
 
 extern "C" {
 #include "bam_lmdb.h"
+#include "bamdb_status.h"
 }
 
 using namespace Rcpp;
@@ -96,17 +97,17 @@ class IntAux {
 // [[Rcpp::export]]
 DataFrame query_bam_index(CharacterVector bam_file_name,
                           CharacterVector bam_index_path,
-                          CharacterVector key_type, CharacterVector key_value) {
+                          CharacterVector index_name, CharacterVector key) {
   bam_row_set_t* bam_rows = NULL;
 
   /* Series of casts get from R strings to C strings */
   std::string file_name_str = Rcpp::as<std::string>(bam_file_name);
   std::string index_path_str = Rcpp::as<std::string>(bam_index_path);
-  std::string key_type_str = Rcpp::as<std::string>(key_type);
-  std::string key_val_str = Rcpp::as<std::string>(key_value);
+  std::string index_name_str = Rcpp::as<std::string>(index_name);
+  std::string key_val_str = Rcpp::as<std::string>(key);
   const char* c_file_name = file_name_str.c_str();
   const char* c_index_path = index_path_str.c_str();
-  const char* c_key_type = key_type_str.c_str();
+  const char* c_index_name = index_name_str.c_str();
   const char* c_key_val = key_val_str.c_str();
   bam_aux_header_t* avail_aux_tag = NULL;
   std::list<StringAux> stringAuxes;
@@ -115,7 +116,13 @@ DataFrame query_bam_index(CharacterVector bam_file_name,
   int n_cols = 11;
   int rc = 0;
 
-  rc = get_bam_rows(&bam_rows, c_file_name, c_index_path, c_key_type, c_key_val);
+  rc = get_bam_rows(&bam_rows, c_file_name, c_index_path, c_index_name, c_key_val);
+  if (rc != BAMDB_SUCCESS) {
+    Rcpp::Rcout << "Error fetching rows from indexed file" << std::endl;
+    free_bamdb_row_set(bam_rows);
+    return R_NilValue;
+  }
+
   avail_aux_tag = bam_rows->aux_tags.head;
   while (avail_aux_tag) {
     n_cols++;
@@ -303,6 +310,6 @@ DataFrame query_bam_index(CharacterVector bam_file_name,
   colList.attr("row.names") =
       IntegerVector::create(NA_INTEGER, bam_rows->num_entries);
 
-  free(bam_rows);
+  free_bamdb_row_set(bam_rows);
   return colList;
 }
