@@ -12,3 +12,5 @@ Description: A library for accessing indexed bam sequence data
 License: GPL (>= 3)
 Imports: Rcpp (>= 0.12.3)
 LinkingTo: Rcpp
+NeedsCompilation: yes
+Packaged: 2018-05-21 18:35:26 UTC; adornbrandlo
