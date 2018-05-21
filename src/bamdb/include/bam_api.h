@@ -2,7 +2,9 @@
 #ifndef BAMAPI_H
 #define BAMAPI_H
 
-#include "htslib/sam.h"
+/* HTSlib */
+#include "bgzf.h"
+#include "sam.h"
 
 const char *bam_get_rname(const bam1_t *row, const bam_hdr_t *header);
 const char *bam_get_rnext(const bam1_t *row, const bam_hdr_t *header);

@@ -5,7 +5,11 @@
 #include <stdbool.h>
 
 #include "bam_api.h"
-#include "htslib/sam.h"
+
+/* HTSLib */
+#include "bgzf.h"
+#include "hts.h"
+#include "sam.h"
 
 typedef struct indices {
   bool includes_qname;

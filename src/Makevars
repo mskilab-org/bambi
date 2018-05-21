@@ -1,6 +1,6 @@
 
 CXX_STD = CXX11
 
-PKG_CPPFLAGS += -I../inst/include/ -Ick/include/ -Ilmdb/libraries/liblmdb/ -Ihtslib/ -I-Lzlib/ -Izlib/build -I -Ibamdb/
+PKG_CPPFLAGS += -I../inst/include/ -Ick/include/ -Ilmdb/libraries/liblmdb/ -Ihtslib/ -I-Lzlib/ -Izlib/build -Ibamdb/
 PKG_LIBS= -lbamdb -llmdb -lhts -lz -Lbamdb/build -Llmdb/libraries/liblmdb -Lhtslib -Lzlib/build 
 

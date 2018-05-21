@@ -7,9 +7,6 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "htslib/bgzf.h"
-#include "htslib/sam.h"
-
 #include "bam_api.h"
 #include "bam_lmdb.h"
 #include "bamdb.h"

@@ -5,9 +5,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "htslib/bgzf.h"
-#include "htslib/sam.h"
-
 #include "bam_api.h"
 #include "bamdb_status.h"
 

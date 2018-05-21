@@ -21,6 +21,13 @@ set(LIBS
 include_directories(include)
 file(GLOB SOURCES "src/*.c")
 
+# Include dependency headers
+include_directories(
+  ${CK_INCLUDE_DIRS}
+  ${HTSlib_INCLUDE_DIRS}
+  ${LMDB_INCLUDE_DIRS}
+)
+
 # Create bamdb executable
 add_executable(bamdb ${SOURCES})
 target_link_libraries(bamdb ${LIBS})

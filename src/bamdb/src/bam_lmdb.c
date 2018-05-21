@@ -15,9 +15,6 @@
 #include "bam_lmdb.h"
 #include "bamdb_status.h"
 
-#include "htslib/bgzf.h"
-#include "htslib/hts.h"
-
 #define LMDB_POSTFIX "_lmdb"
 #define LMDB_COMMIT_FREQ 500000
 #define WORK_BUFFER_SIZE 65536
