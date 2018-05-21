@@ -7,6 +7,6 @@ LIB_BASE = -Wl,-rpath,$(PKG_BASE)
 echo "make VARSSS"
 echo $PKG_BASE
 
-PKG_CPPFLAGS += -I../inst/include/ -I$(PKG_BASE)ck/include/ -I$(PKG_BASE)lmdb/libraries/liblmdb/ -I$(PKG_BASE)htslib/ -I$(PKG_BASE)zlib/ -I$(PKG_BASE)zlib/build -Ibamdb/
+PKG_CPPFLAGS += -I../inst/include/ -I$(PKG_BASE)ck/include/ -I$(PKG_BASE)lmdb/libraries/liblmdb/ -I$(PKG_BASE)htslib/ -I$(PKG_BASE)zlib/ -I$(PKG_BASE)zlib/build -I$(PKG_BASE)bamdb/
 PKG_LIBS= -lbamdb -llmdb -lhts -lz -L$(PKG_BASE)bamdb/build -L$(PKG_BASE)lmdb/libraries/liblmdb -L$(PKG_BASE)htslib -L$(PKG_BASE)zlib/build 
 

@@ -1,0 +1,11 @@
+/Users/ebiederstedt/bambi/src/zlib/build/CMakeFiles/rebuild_cache.dir
+/Users/ebiederstedt/bambi/src/zlib/build/CMakeFiles/edit_cache.dir
+/Users/ebiederstedt/bambi/src/zlib/build/CMakeFiles/zlibstatic.dir
+/Users/ebiederstedt/bambi/src/zlib/build/CMakeFiles/example.dir
+/Users/ebiederstedt/bambi/src/zlib/build/CMakeFiles/list_install_components.dir
+/Users/ebiederstedt/bambi/src/zlib/build/CMakeFiles/minigzip.dir
+/Users/ebiederstedt/bambi/src/zlib/build/CMakeFiles/install/local.dir
+/Users/ebiederstedt/bambi/src/zlib/build/CMakeFiles/test.dir
+/Users/ebiederstedt/bambi/src/zlib/build/CMakeFiles/install/strip.dir
+/Users/ebiederstedt/bambi/src/zlib/build/CMakeFiles/install.dir
+/Users/ebiederstedt/bambi/src/zlib/build/CMakeFiles/zlib.dir

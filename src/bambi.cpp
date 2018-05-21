@@ -6,6 +6,7 @@
 extern "C" {
 #include "bam_lmdb.h"
 #include "bamdb_status.h"
+void free_row_set(bam_row_set_t *row_set);
 }
 
 using namespace Rcpp;
@@ -119,7 +120,7 @@ DataFrame query_bam_index(CharacterVector bam_file_name,
   rc = get_bam_rows(&bam_rows, c_file_name, c_index_path, c_index_name, c_key_val);
   if (rc != BAMDB_SUCCESS) {
     Rcpp::Rcout << "Error fetching rows from indexed file" << std::endl;
-    free_bamdb_row_set(bam_rows);
+    free_row_set(bam_rows);
     return R_NilValue;
   }
 
@@ -310,6 +311,6 @@ DataFrame query_bam_index(CharacterVector bam_file_name,
   colList.attr("row.names") =
       IntegerVector::create(NA_INTEGER, bam_rows->num_entries);
 
-  free_bamdb_row_set(bam_rows);
+  free_row_set(bam_rows);
   return colList;
 }
