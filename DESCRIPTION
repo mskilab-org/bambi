@@ -12,6 +12,7 @@ Depends:
     GenomicRanges (>= 1.30),
     data.table (>= 1.10)
 Imports:
+    Rcpp,
     IRanges (>= 2.12),
     S4Vectors (>= 0.4),
     GenomeInfoDb (>= 1.13),
