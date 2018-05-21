@@ -90,7 +90,12 @@ int get_bam_row(bam_sequence_row_t **out, bam_aux_header_list_t *tag_list,
                 const int64_t offset, samFile *input_file, bam_hdr_t *header);
 void print_sequence_row(bam_sequence_row_t *row);
 void destroy_bam_sequence_row(bam_sequence_row_t *row);
-void free_row_set(bam_row_set_t *row_set);
+
+/** @brief Destroy a bamdb row set including all sub objects
+ *
+ * @param[in] row_set The row set to be destroyed
+ */
+void free_bamdb_row_set(bam_row_set_t *row_set);
 
 /* Return 0 on success */
 int write_row_set_to_file(bam_row_set_t *row_set, bam_hdr_t *header,

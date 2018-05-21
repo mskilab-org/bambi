@@ -384,7 +384,7 @@ int main(int argc, char *argv[]) {
         for (size_t j = 0; j < row_set->num_entries; ++j) {
           print_sequence_row(row_set->rows[j]);
         }
-        free_row_set(row_set);
+        free_bamdb_row_set(row_set);
       }
     }
   }

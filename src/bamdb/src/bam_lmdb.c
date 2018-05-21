@@ -513,6 +513,9 @@ int get_bam_rows(bam_row_set_t **output, const char *input_file_name,
   int rc = 0;
   int ret = BAMDB_SUCCESS;
 
+  /* Always create an object for the caller */
+  *output = calloc(1, sizeof(bam_row_set_t));
+
   if ((input_file = sam_open(input_file_name, "r")) == 0) {
     return BAMDB_SEQUENCE_FILE_ERROR;
   }
@@ -529,7 +532,6 @@ int get_bam_rows(bam_row_set_t **output, const char *input_file_name,
     return rc;
   }
 
-  *output = calloc(1, sizeof(bam_row_set_t));
   (*output)->num_entries = offsets->num_entries;
   (*output)->rows = malloc((*output)->num_entries * sizeof(bam_row_set_t));
 

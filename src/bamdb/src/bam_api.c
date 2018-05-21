@@ -423,7 +423,7 @@ void destroy_bam_sequence_row(bam_sequence_row_t *row) {
   free(row);
 }
 
-void free_row_set(bam_row_set_t *row_set) {
+void free_bamdb_row_set(bam_row_set_t *row_set) {
   for (int i = 0; i < row_set->num_entries; ++i) {
     free(row_set->rows[i]);
   }

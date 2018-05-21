@@ -37,7 +37,8 @@ bool is_index_present(const char *db_path, const char *index_name);
 /** @brief Find all rows matching a key in an indexed bam file
  *
  * This function will allocate space for the resulting rows; it is up to the
- * caller to free the results. Callers should NOT pass a preallocated or
+ * caller to free the results. In the event of an error we will return an
+ * empty row set object. Callers should NOT pass a preallocated or
  * existing row set to this function.
  *
  * @param[out] output Location to store the resulting records
