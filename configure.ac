@@ -28,7 +28,7 @@ $(
 AC_MSG_NOTICE([bamdb build complete])
 
 # TODO: Dynamically find htslib
-BAMDB_INCL_FLAGS="-I$base_dir/src/bamdb/include -I/usr/include/htslib/"
+BAMDB_INCL_FLAGS="-I$base_dir/src/bamdb/include -I/usr/include/htslib/ -I/usr/local/include/htslib/"
 BAMDB_LIB="$base_dir/src/bamdb/build/libbamdb.a"
 
 bamdb_include="${BAMDB_INCL_FLAGS}"
