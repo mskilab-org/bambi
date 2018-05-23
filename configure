@@ -3872,10 +3872,6 @@ PKG_CXXFLAGS="-std=c++11"
 
 base_dir=$(pwd)
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: Updating bamdb submodule" >&5
-$as_echo "$as_me: Updating bamdb submodule" >&6;}
-$(git submodule update --init)
-
 { $as_echo "$as_me:${as_lineno-$LINENO}: Building bamdb library" >&5
 $as_echo "$as_me: Building bamdb library" >&6;}
 $(

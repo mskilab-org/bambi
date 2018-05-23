@@ -13,9 +13,6 @@ AC_SUBST([PKG_CXXFLAGS],["-std=c++11"])
 
 base_dir=$(pwd)
 
-AC_MSG_NOTICE([Updating bamdb submodule])
-$(git submodule update --init)
-
 AC_MSG_NOTICE([Building bamdb library])
 $(
     cd "src/bamdb"; \
