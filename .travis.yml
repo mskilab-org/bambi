@@ -8,9 +8,13 @@ language: c
 sudo: required
 
 before_install:
+  - sudo apt-get -qq update
   - curl -OL http://raw.github.com/craigcitro/r-travis/master/scripts/travis-tool.sh
   - chmod 755 ./travis-tool.sh
   - ./travis-tool.sh bootstrap
+  - sudo apt-get install zlib
+  - sudo apt-get install lmdb
+  - sudo apt-get install ck
 
 install:
   - ./travis-tool.sh install_bioc_deps
