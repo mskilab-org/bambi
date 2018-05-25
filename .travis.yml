@@ -23,6 +23,11 @@ before_install:
   - pwd
   - cd /home/travis/build/mskilab/bambi
   - pwd
+    # Need to install htslib manually since the package is old
+  - wget https://github.com/samtools/htslib/releases/download/1.8/htslib-1.8.tar.bz2
+  - tar -vxjf htslib-1.8.tar.bz2
+  - pushd htslib-1.8 && ./configure --prefix=/usr && make && sudo make install && popd
+
 
 install:
   - pwd
