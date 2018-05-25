@@ -8,10 +8,8 @@ language: c
 sudo: required
 
 before_install:
-  - pwd
   - sudo apt-get -qq update
   - curl -OL http://raw.github.com/craigcitro/r-travis/master/scripts/travis-tool.sh
-  - pwd
   - chmod 755 ./travis-tool.sh
   - ./travis-tool.sh bootstrap
   - ./travis-tool.sh aptget_install zlib1g-dev 
@@ -20,17 +18,14 @@ before_install:
   - git clone https://github.com/concurrencykit/ck
   - cd ck
   - ./configure; make; sudo make install
-  - pwd
   - cd /home/travis/build/mskilab/bambi
-  - pwd
-    # Need to install htslib manually since the package is old
+  ## Need to install htslib manually since the package is old
   - wget https://github.com/samtools/htslib/releases/download/1.8/htslib-1.8.tar.bz2
   - tar -vxjf htslib-1.8.tar.bz2
   - pushd htslib-1.8 && ./configure --prefix=/usr && make && sudo make install && popd
-
+  - cd /home/travis/build/mskilab/bambi
 
 install:
-  - pwd
   - ./travis-tool.sh install_bioc_deps
   - ./travis-tool.sh install_deps
   - ./travis-tool.sh install_github r-lib/covr
