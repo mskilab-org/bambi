@@ -13,4 +13,5 @@ License: GPL (>= 3)
 Imports: Rcpp (>= 0.12.3)
 LinkingTo: Rcpp
 NeedsCompilation: yes
+SystemRequirements: C++11
 Packaged: 2018-05-21 18:35:26 UTC; adornbrandlo
