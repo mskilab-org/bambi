@@ -6,16 +6,16 @@
 using namespace Rcpp;
 
 // query_bam_index
-DataFrame query_bam_index(CharacterVector bam_file_name, CharacterVector bam_index_path, CharacterVector key_type, CharacterVector key_value);
-RcppExport SEXP _bambi_query_bam_index(SEXP bam_file_nameSEXP, SEXP bam_index_pathSEXP, SEXP key_typeSEXP, SEXP key_valueSEXP) {
+DataFrame query_bam_index(CharacterVector bam_file_name, CharacterVector bam_index_path, CharacterVector index_name, CharacterVector key);
+RcppExport SEXP _bambi_query_bam_index(SEXP bam_file_nameSEXP, SEXP bam_index_pathSEXP, SEXP index_nameSEXP, SEXP keySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< CharacterVector >::type bam_file_name(bam_file_nameSEXP);
     Rcpp::traits::input_parameter< CharacterVector >::type bam_index_path(bam_index_pathSEXP);
-    Rcpp::traits::input_parameter< CharacterVector >::type key_type(key_typeSEXP);
-    Rcpp::traits::input_parameter< CharacterVector >::type key_value(key_valueSEXP);
-    rcpp_result_gen = Rcpp::wrap(query_bam_index(bam_file_name, bam_index_path, key_type, key_value));
+    Rcpp::traits::input_parameter< CharacterVector >::type index_name(index_nameSEXP);
+    Rcpp::traits::input_parameter< CharacterVector >::type key(keySEXP);
+    rcpp_result_gen = Rcpp::wrap(query_bam_index(bam_file_name, bam_index_path, index_name, key));
     return rcpp_result_gen;
 END_RCPP
 }

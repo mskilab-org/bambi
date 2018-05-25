@@ -46,6 +46,7 @@
 #' @import R6
 #' @importFrom R6 R6Class
 #' @import gUtils
+#' @import data.table
 #' @name bambi
 #'
 NULL
@@ -65,10 +66,12 @@ bambi = R6::R6Class('bambi',
                 stop("BAM file not found. A valid BAM for 'bam_file' must be provided.")
             }
 
-            check_valid_bam = readChar(gzfile(bam_file, 'r'), 4)
+            check_gz = gzfile(bam_file, 'r')
+            check_valid_bam = readChar(check_gz, 4)
             if (!identical(check_valid_bam, 'BAM\1')){
                 stop("Cannot open BAM. A valid BAM for 'bam_file' must be provided.")
             }
+            on.exit(close(check_gz))
 
             if (is.null(bamdb_path)){
                 if (dir.exists(bamdb_path <- gsub('.bam$', '_lmdb', bam_file))){
@@ -113,18 +116,22 @@ bambi = R6::R6Class('bambi',
                     out = query_bam_index(self$bam_file, self$bamdb_path, "BX", barcodes)
 
                     out = as.data.table(out)
-                    out[, BX := barcodes]  ## for one
-        
-                    if (any(nnix <<- out$cigar=='*')){
-                        out$cigar[nnix] = NA
-                    }
-
-                    if (data.table == TRUE){
-                        return(as.data.table(out)) 
+ 
+                    if (as.integer(dim(out)[1]) == 0){   ## query has no results, no rows returned
+                        return(NA)
                     } else{
-                        return(parse_outputs(out))
+                        out[, BX := barcodes]  ## for one
+        
+                        if (any(nnix <<- out$cigar=='*')){
+                            out$cigar[nnix] = NA
+                        }
+ 
+                        if (data.table == TRUE){
+                            return(as.data.table(out)) 
+                        } else{
+                            return(parse_outputs(out))
+                        }
                     }
-
                 } else{
                     ## here use mclapply to loop through BX vector, and concatenate data.tables
                     query_list = NULL
@@ -135,7 +142,7 @@ bambi = R6::R6Class('bambi',
                     }, mc.cores=mc.cores)
 
                     out = rbindlist(multiple_barcodes, fill=TRUE)
-                    out[, BX := barcodes]  ## for one
+                    suppressWarnings(out[, BX := barcodes])  ## for one
         
                     if (any(nnix <<- out$cigar=='*')){
                         out$cigar[nnix] = NA
@@ -192,27 +199,32 @@ bambi = R6::R6Class('bambi',
                     stop("Invalid query. Input 'query' must be a data.table, data.frame or GRanges.")
                 }
 
-                barcodes = as.character(barcodes)
-
-                ## here use mclapply to loop through BX vector, and concatenate data.tables
-                query_list = NULL
-                multiple_barcodes = mclapply(1:length(barcodes), 
-                    function(x){
-                    output = query_bam_index(self$bam_file, self$bamdb_path, "BX", barcodes[x])
-                    query_list = rbind(query_list, output)     ## create huge list of data.table'
-                }, mc.cores=mc.cores)
-
-                out = rbindlist(multiple_barcodes, fill=TRUE)
-                out[, BX := barcodes]  ## for one
-        
-                if (any(nnix <<- out$cigar=='*')){
-                    out$cigar[nnix] = NA
-                }
-
-                if (data.table == TRUE){
-                    return(as.data.table(out)) 
+                if (length(query)==0){
+                    return(NA)
                 } else{
-                    return(parse_outputs(out))
+
+                    barcodes = as.character(barcodes)
+
+                    ## here use mclapply to loop through BX vector, and concatenate data.tables
+                    query_list = NULL
+                    multiple_barcodes = mclapply(1:length(barcodes), 
+                        function(x){
+                        output = query_bam_index(self$bam_file, self$bamdb_path, "BX", barcodes[x])
+                        query_list = rbind(query_list, output)     ## create huge list of data.table'
+                    }, mc.cores=mc.cores)
+    
+                    out = rbindlist(multiple_barcodes, fill=TRUE)
+                    suppressWarnings(out[, BX := barcodes])  ## for one
+        
+                    if (any(nnix <<- out$cigar=='*')){
+                        out$cigar[nnix] = NA
+                    }
+
+                    if (data.table == TRUE){
+                        return(as.data.table(out)) 
+                    } else{
+                        return(parse_outputs(out))
+                    }
                 }
             }
         }, 
@@ -248,18 +260,23 @@ bambi = R6::R6Class('bambi',
                     out = query_bam_index(self$bam_file, self$bamdb_path, "CB", barcodes)
 
                     out = as.data.table(out)
-                    out[, CB := barcodes]  ## for one
-        
-                    if (any(nnix <<- out$cigar=='*')){
-                        out$cigar[nnix] = NA
-                    }
 
-                    if (data.table == TRUE){
-                        return(as.data.table(out)) 
+                    if (as.integer(dim(out)[1]) == 0){   ## query has no results, no rows returned
+                        return(NA)
                     } else{
-                        return(parse_outputs(out))
-                    }
 
+                        out[, CB := barcodes]  ## for one
+        
+                        if (any(nnix <<- out$cigar=='*')){
+                            out$cigar[nnix] = NA
+                        }
+
+                        if (data.table == TRUE){
+                            return(as.data.table(out)) 
+                        } else{
+                            return(parse_outputs(out))
+                        }
+                    }
                 } else{
                     ## here use mclapply to loop through CB vector, and concatenate data.tables
                     query_list = NULL
@@ -270,7 +287,7 @@ bambi = R6::R6Class('bambi',
                     }, mc.cores=mc.cores)
 
                     out = rbindlist(multiple_barcodes, fill=TRUE)
-                    out[, CB := barcodes]  ## for one
+                    suppressWarnings(out[, CB := barcodes])  ## for one
         
                     if (any(nnix <<- out$cigar=='*')){
                         out$cigar[nnix] = NA
@@ -327,30 +344,33 @@ bambi = R6::R6Class('bambi',
                     stop("Invalid query. Input 'query' must be a data.table, data.frame or GRanges.")
                 }
 
-                barcodes = as.character(barcodes)
-
-                ## here use mclapply to loop through BX vector, and concatenate data.tables
-                query_list = NULL
-                multiple_barcodes = mclapply(1:length(barcodes), 
-                    function(x){
-                    output = query_bam_index(self$bam_file, self$bamdb_path, "CB", barcodes[x])
-                    query_list = rbind(query_list, output)     ## create huge list of data.table'
-                }, mc.cores=mc.cores)
-
-                out = rbindlist(multiple_barcodes, fill=TRUE)
-                out[, BX := barcodes]  ## for one
-        
-                if (any(nnix <<- out$cigar=='*')){
-                    out$cigar[nnix] = NA
-                }
-
-                if (data.table == TRUE){
-                    return(as.data.table(out)) 
+                if (length(query)==0){
+                    return(NA)
                 } else{
-                    return(parse_outputs(out))
+                    barcodes = as.character(barcodes)
+
+                    ## here use mclapply to loop through BX vector, and concatenate data.tables
+                    query_list = NULL
+                    multiple_barcodes = mclapply(1:length(barcodes), 
+                        function(x){
+                        output = query_bam_index(self$bam_file, self$bamdb_path, "CB", barcodes[x])
+                        query_list = rbind(query_list, output)     ## create huge list of data.table'
+                    }, mc.cores=mc.cores)
+
+                    out = rbindlist(multiple_barcodes, fill=TRUE)
+                    suppressWarnings(out[, BX := barcodes])  ## for one
+        
+                    if (any(nnix <<- out$cigar=='*')){
+                        out$cigar[nnix] = NA
+                    }
+
+                    if (data.table == TRUE){
+                        return(as.data.table(out)) 
+                    } else{
+                        return(parse_outputs(out))
+                    }
                 }
             }
-
         }, 
 
         grab_ub = function(barcodes=NULL, query=NULL, data.table=FALSE, verbose=FALSE, mc.cores=1){   
@@ -383,18 +403,23 @@ bambi = R6::R6Class('bambi',
                     out = query_bam_index(self$bam_file, self$bamdb_path, "UB", barcodes)
 
                     out = as.data.table(out)
-                    out[, UB := barcodes]  ## for one
-        
-                    if (any(nnix <<- out$cigar=='*')){
-                        out$cigar[nnix] = NA
-                    }
 
-                    if (data.table == TRUE){
-                        return(as.data.table(out)) 
+                    if (as.integer(dim(out)[1]) == 0){   ## query has no results, no rows returned
+                        return(NA)
                     } else{
-                        return(parse_outputs(out))
-                    }
 
+                        out[, UB := barcodes]  ## for one
+        
+                        if (any(nnix <<- out$cigar=='*')){
+                            out$cigar[nnix] = NA
+                        }
+
+                        if (data.table == TRUE){
+                            return(as.data.table(out)) 
+                        } else{
+                            return(parse_outputs(out))
+                        }
+                    }
                 } else{
                     ## here use mclapply to loop through UB vector, and concatenate data.tables
                     query_list = NULL
@@ -405,7 +430,7 @@ bambi = R6::R6Class('bambi',
                     }, mc.cores=mc.cores)
 
                     out = rbindlist(multiple_barcodes, fill=TRUE)
-                    out[, BX := barcodes]  ## for one
+                    suppressWarnings(out[, BX := barcodes])  ## for one
         
                     if (any(nnix <<- out$cigar=='*')){
                         out$cigar[nnix] = NA
@@ -462,30 +487,34 @@ bambi = R6::R6Class('bambi',
                     stop("Invalid query. Input 'query' must be a data.table, data.frame or GRanges.")
                 }
 
-                barcodes = as.character(barcodes)
-
-                ## here use mclapply to loop through UB vector, and concatenate data.tables
-                query_list = NULL
-                multiple_barcodes = mclapply(1:length(barcodes), 
-                    function(x){
-                    output = query_bam_index(self$bam_file, self$bamdb_path, "UB", barcodes[x])
-                    query_list = rbind(query_list, output)     ## create huge list of data.table'
-                }, mc.cores=mc.cores)
-
-                out = rbindlist(multiple_barcodes, fill=TRUE)
-                out[, BX := barcodes]  ## for one
-        
-                if (any(nnix <<- out$cigar=='*')){
-                    out$cigar[nnix] = NA
-                }
-
-                if (data.table == TRUE){
-                    return(as.data.table(out)) 
+                if (length(query)==0){
+                    return(NA)
                 } else{
-                    return(parse_outputs(out))
+
+                    barcodes = as.character(barcodes)
+
+                    ## here use mclapply to loop through UB vector, and concatenate data.tables
+                    query_list = NULL
+                    multiple_barcodes = mclapply(1:length(barcodes), 
+                        function(x){
+                        output = query_bam_index(self$bam_file, self$bamdb_path, "UB", barcodes[x])
+                        query_list = rbind(query_list, output)     ## create huge list of data.table'
+                    }, mc.cores=mc.cores)
+
+                    out = rbindlist(multiple_barcodes, fill=TRUE)
+                    suppressWarnings(out[, BX := barcodes])  ## for one
+        
+                    if (any(nnix <<- out$cigar=='*')){
+                        out$cigar[nnix] = NA
+                    }
+
+                    if (data.table == TRUE){
+                        return(as.data.table(out)) 
+                    } else{
+                        return(parse_outputs(out))
+                    }
                 }
             }
-
         }, 
 
         fetch_by_tag = function(tag, tag_queries=NULL, query=NULL, data.table=FALSE, verbose=FALSE, mc.cores=1){     
@@ -512,10 +541,6 @@ bambi = R6::R6Class('bambi',
                 stop("Both 'tag_queries' and 'query' parameters cannot be used. Use method 'fetch_by_tag()' by either a character vector of UB barcodes, or a GRanges/data.table of a genomic region. Please see documentation for details.")
             } 
 
-            if (!inherits(tag_queries, "character")){
-                stop("Invalid tag_queries. Input 'tag_queries' must be a character vector. Must provide valid BAM queries by BAM field 'tag'.")
-            }
-
 
             if ((is.null(tag_queries)) & (is.null(query))){
                 if (data.table==TRUE){
@@ -525,9 +550,11 @@ bambi = R6::R6Class('bambi',
                 }
             } else if ((!is.null(tag_queries)) & (is.null(query))){
 
-                if (!inherits(tag_queries, "character")){
-                    stop("Invalid tag_queries. Input 'tag_queries' must be a character vector of a BAM field. Must provide valid BAM field from input BAM.")
-                }
+                ## I think this is untrue...
+                ##
+                ## if (!inherits(tag_queries, "character")){
+                ##     stop("Invalid tag_queries. Input 'tag_queries' must be a character vector of a BAM field. Must provide valid BAM field from input BAM.")
+                ## }
 
                 tag_queries = as.character(tag_queries)
 
@@ -536,18 +563,22 @@ bambi = R6::R6Class('bambi',
                     out = query_bam_index(self$bam_file, self$bamdb_path, tag, tag_queries)
 
                     out = as.data.table(out)
-                    out[, tag := tag_queries]  ## for one
+
+                    if (as.integer(dim(out)[1]) == 0){   ## query has no results, no rows returned
+                        return(NA)
+                    } else{                    
+                        out[, tag := tag_queries]  ## for one
         
-                    if (any(nnix <<- out$cigar=='*')){
-                        out$cigar[nnix] = NA
-                    }
+                        if (any(nnix <<- out$cigar=='*')){
+                            out$cigar[nnix] = NA
+                        }
 
-                    if (data.table == TRUE){
-                        return(as.data.table(out)) 
-                    } else{
-                        return(parse_outputs(out))
+                        if (data.table == TRUE){
+                            return(as.data.table(out)) 
+                        } else{
+                            return(parse_outputs(out))
+                        }
                     }
-
                 } else{
                     ## here use mclapply to loop through UB vector, and concatenate data.tables
                     query_list = NULL
@@ -558,7 +589,7 @@ bambi = R6::R6Class('bambi',
                     }, mc.cores=mc.cores)
 
                     out = rbindlist(multiple_barcodes, fill=TRUE)
-                    out[, BX := barcodes]  ## for one
+                    suppressWarnings(out[, tag := tag_queries])  ## for one
         
                     if (any(nnix <<- out$cigar=='*')){
                         out$cigar[nnix] = NA
@@ -582,7 +613,7 @@ bambi = R6::R6Class('bambi',
                             now = Sys.time()
                         }
 
-                        query = read.bam(self$bam_file,  gr = query, tag = c('MD', as.character(tag)), pairs.grl = FALSE)   ### if no MD tag, bamUtils::read.bam() outputs an NA for this column
+                        query = read.bam(self$bam_file,  gr = query, tag = c('MD'), pairs.grl = FALSE)   ### if no MD tag, bamUtils::read.bam() outputs an NA for this column
 
                         if (verbose){
                             message(sprintf('Retrieved %s reads with %s unique tags:', length(query), length(unique(query$tag))))
@@ -591,6 +622,7 @@ bambi = R6::R6Class('bambi',
                     } 
     
                     barcodes = query$tag  ## vector of tag's 
+                    barcodes = 
     
                 } else if(inherits(query, 'data.frame') | inherits(query, 'data.table')){
              
@@ -601,7 +633,7 @@ bambi = R6::R6Class('bambi',
                             now = Sys.time()
                         }
 
-                        query = read.bam(self$bam_file,  gr = dt2gr(query), tag = c('MD', as.character(tag)), pairs.grl = FALSE)   ### if no MD tag, bamUtils::read.bam() outputs an NA for this column
+                        query = read.bam(self$bam_file, gr = dt2gr(query), tag = c('MD'), pairs.grl = FALSE)   ### if no MD tag, bamUtils::read.bam() outputs an NA for this column
 
                         if (verbose){
                             message(sprintf('Retrieved %s reads with %s unique tags:', length(query), length(unique(query$UB))))
@@ -615,29 +647,33 @@ bambi = R6::R6Class('bambi',
                     stop("Invalid query. Input 'query' must be a data.table, data.frame or GRanges.")
                 }
 
-                barcodes = as.character(barcodes)
-
-                ## here use mclapply to loop through tags, and concatenate data.tables
-                query_list = NULL
-                multiple_barcodes = mclapply(1:length(barcodes), 
-                    function(x){
-                    output = query_bam_index(self$bam_file, self$bamdb_path, tag, barcodes[x])
-                    query_list = rbind(query_list, output)     ## create huge list of data.table'
-                }, mc.cores=mc.cores)
-
-                out = rbindlist(multiple_barcodes, fill=TRUE)
-                out[, BX := barcodes]  ## for one
-        
-                if (any(nnix <<- out$cigar=='*')){
-                    out$cigar[nnix] = NA
-                }
-
-                if (data.table == TRUE){
-                    return(as.data.table(out)) 
+                if (length(query)==0){
+                    return(NA)
                 } else{
-                    return(parse_outputs(out))
-                }
 
+                    barcodes = as.character(barcodes)
+
+                    ## here use mclapply to loop through tags, and concatenate data.tables
+                    query_list = NULL
+                    multiple_barcodes = mclapply(1:length(barcodes), 
+                        function(x){
+                        output = query_bam_index(self$bam_file, self$bamdb_path, tag, barcodes[x])
+                        query_list = rbind(query_list, output)     ## create huge list of data.table'
+                    }, mc.cores=mc.cores)
+
+                    out = rbindlist(multiple_barcodes, fill=TRUE)
+                    suppressWarnings(out[, tag := barcodes])  ## for one
+        
+                    if (any(nnix <<- out$cigar=='*')){
+                        out$cigar[nnix] = NA
+                    }
+
+                    if (data.table == TRUE){
+                        return(as.data.table(out)) 
+                    } else{
+                        return(parse_outputs(out))
+                    }
+                }
             }
         }
     )
