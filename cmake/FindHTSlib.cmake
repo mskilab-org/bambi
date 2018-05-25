@@ -15,7 +15,7 @@ libfind_pkg_check_modules(HTSlib_PKGCONF HTSlib)
 
 # Locate include dir
 find_path(HTSlib_INCLUDE_DIR
-  NAMES hfile.h
+  NAMES hts.h sam.h
   PATHS ${HTSlib_PKGCONF_INCLUDE_DIRS}
   PATH_SUFFIXES include include/htslib
 )
