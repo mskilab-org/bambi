@@ -427,7 +427,7 @@ Copyright (C) 2012 Free Software Foundation, Inc.
 This config.status script is free software; the Free Software Foundation
 gives unlimited permission to copy, distribute and modify it."
 
-ac_pwd='/Users/ebiederstedt/bambi24May/bambi'
+ac_pwd='/Users/ebiederstedt/bambi'
 srcdir='.'
 test -n "$AWK" || AWK=awk
 # The default lists apply if the user does not specify any file.
@@ -583,9 +583,9 @@ echo 'BEGIN {' >"$ac_tmp/subs1.awk" &&
 cat >>"$ac_tmp/subs1.awk" <<\_ACAWK &&
 S["LTLIBOBJS"]=""
 S["LIBOBJS"]=""
-S["PKG_LIBS"]=" /Users/ebiederstedt/bambi24May/bambi/src/bamdb/build/libbamdb.a -llmdb -lhts"
-S["PKG_CFLAGS"]=" -I/Users/ebiederstedt/bambi24May/bambi/src/bamdb/include -I/usr/include/htslib/ -I/usr/local/include/htslib/"
-S["PKG_CXXFLAGS"]="-std=c++11 -I/Users/ebiederstedt/bambi24May/bambi/src/bamdb/include -I/usr/include/htslib/ -I/usr/local/include/htslib/"
+S["PKG_LIBS"]=" /Users/ebiederstedt/bambi/src/bamdb/build/libbamdb.a -llmdb -lhts"
+S["PKG_CFLAGS"]=" -I/Users/ebiederstedt/bambi/src/bamdb/include -I/usr/include/htslib/ -I/usr/local/include/htslib/"
+S["PKG_CXXFLAGS"]="-std=c++11 -I/Users/ebiederstedt/bambi/src/bamdb/include -I/usr/include/htslib/ -I/usr/local/include/htslib/"
 S["HAVE_CXX11"]="1"
 S["EGREP"]="/usr/local/bin/ggrep -E"
 S["GREP"]="/usr/local/bin/ggrep"

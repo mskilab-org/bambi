@@ -1,3 +1,3 @@
-PKG_CFLAGS= -I/Users/ebiederstedt/bambi24May/bambi/src/bamdb/include -I/usr/include/htslib/ -I/usr/local/include/htslib/
-PKG_CXXFLAGS=-std=c++11 -I/Users/ebiederstedt/bambi24May/bambi/src/bamdb/include -I/usr/include/htslib/ -I/usr/local/include/htslib/
-PKG_LIBS= /Users/ebiederstedt/bambi24May/bambi/src/bamdb/build/libbamdb.a -llmdb -lhts
+PKG_CFLAGS= -I/Users/ebiederstedt/bambi/src/bamdb/include -I/usr/include/htslib/ -I/usr/local/include/htslib/
+PKG_CXXFLAGS=-std=c++11 -I/Users/ebiederstedt/bambi/src/bamdb/include -I/usr/include/htslib/ -I/usr/local/include/htslib/
+PKG_LIBS= /Users/ebiederstedt/bambi/src/bamdb/build/libbamdb.a -llmdb -lhts

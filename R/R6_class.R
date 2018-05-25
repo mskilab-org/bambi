@@ -602,7 +602,7 @@ bambi = R6::R6Class('bambi',
                     }
                 }
 
-            } else if ((is.null(tag_queries)) & (!is.null(query))){
+            } else if((is.null(tag_queries)) & (!is.null(query))){
 
                 if (inherits(query, 'GRanges')){
 
@@ -622,7 +622,6 @@ bambi = R6::R6Class('bambi',
                     } 
     
                     barcodes = query$tag  ## vector of tag's 
-                    barcodes = 
     
                 } else if(inherits(query, 'data.frame') | inherits(query, 'data.table')){
              
