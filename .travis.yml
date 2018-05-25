@@ -16,7 +16,7 @@ before_install:
   - ./travis-tool.sh bootstrap
   - ./travis-tool.sh aptget_install zlib1g-dev 
   - ./travis-tool.sh aptget_install liblmdb-dev
-  - ./travis-tool.sh aptget_install libhts-dev
+  ## - ./travis-tool.sh aptget_install libhts-dev
   - git clone https://github.com/concurrencykit/ck
   - cd ck
   - ./configure; make; sudo make install
