@@ -15,8 +15,10 @@ before_install:
   - sudo apt-get update
   - sudo apt-get install zlib1g-dev 
   - sudo apt-get install liblmdb-dev
-  - sudo apt-get install libck-dev
   - sudo apt-get install libhts-dev
+  - git clone https://github.com/concurrencykit/ck
+  - cd ck
+  - ./configure; make; sudo make install
 
 install:
   - ./travis-tool.sh install_bioc_deps
