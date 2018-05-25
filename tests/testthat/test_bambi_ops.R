@@ -217,9 +217,9 @@ test_that('bambi test method grab_ub()', {
     expect_equal(dim(fooub$grab_ub(barcodes=c('ATACAAGCGG', 'CGGAGGACGT', 'CATAGCGTTT'), data.table=TRUE, mc.cores=2))[2], 29)
     ## 
     ## If there are "empty row" queries, I currently return nothing
-    expect_equal(length(fooub$grab_ub(barcodes=c('ATACAAGCGG', 'CGGAGGACGT', 'CATAGCGTTT', 'foo', 'foobar', '2'), mc.cores=2)), 11)
-    expect_equal(dim(fooub$grab_ub(barcodes=c('ATACAAGCGG', 'CGGAGGACGT', 'CATAGCGTTT', 'foo', 'foobar', '2'), data.table=TRUE, mc.cores=2))[1], 11)
-    expect_equal(dim(fooub$grab_ub(barcodes=c('ATACAAGCGG', 'CGGAGGACGT', 'CATAGCGTTT', 'foo', 'foobar', '2'), data.table=TRUE, mc.cores=2))[2], 26)
+    expect_equal(length(fooub$grab_ub(barcodes=c('ATACAAGCGG', 'CGGAGGACGT', 'CATAGCGTTT', 'foo', 'foobar', '2'), mc.cores=2)), 3)
+    expect_equal(dim(fooub$grab_ub(barcodes=c('ATACAAGCGG', 'CGGAGGACGT', 'CATAGCGTTT', 'foo', 'foobar', '2'), data.table=TRUE, mc.cores=2))[1], 3)
+    expect_equal(dim(fooub$grab_ub(barcodes=c('ATACAAGCGG', 'CGGAGGACGT', 'CATAGCGTTT', 'foo', 'foobar', '2'), data.table=TRUE, mc.cores=2))[2], 29)
     ##     
     ## if (!inherits(barcodes, "character")) 
     ##  Invalid barcodes. Input 'barcodes' must be a character vector. Must provide barcode with input BAM.
