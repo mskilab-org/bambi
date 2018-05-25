@@ -14,10 +14,9 @@ before_install:
   - ./travis-tool.sh bootstrap
   - sudo apt-get update
   - sudo apt-get install zlib1g-dev 
-  - sudo apt-get install lmdb
-  - sudo apt-get install ck
-  - git clone https://github.com/samtools/htslib.git
-  - cd htslib; make; sudo make install 
+  - sudo apt-get install liblmdb-dev
+  - sudo apt-get install libck-dev
+  - sudo apt-get install libhts-dev
 
 install:
   - ./travis-tool.sh install_bioc_deps
