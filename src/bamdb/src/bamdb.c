@@ -1,15 +1,15 @@
-#define _GNU_SOURCE
-
 #include <inttypes.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
+
+#include "sam.h"
 
 #include "bam_api.h"
 #include "bam_lmdb.h"
 #include "bamdb.h"
+#include "bamdb_index_writer.h"
 
 // Return number of characters an unsigned int takes when represented in base 10
 #define get_int_chars(i) ((i == 0) ? 1 : floor(log10(i)) + 1)
@@ -296,95 +296,16 @@ int write_row_subset(char *input_file_name, offset_list_t *offset_list,
   return rc;
 }
 
-int generate_index_file(char *input_file_name, char *output_file_name) {
+int generate_index_file(char *input_file_name, char *output_file_name,
+                        indices_t *target_indices) {
   samFile *input_file = 0;
-  indices_t target_indices = {.includes_qname = true,
-                              .num_key_indices = 1,
-                              .key_indices = malloc(sizeof(char *))};
-
-  target_indices.key_indices[0] = malloc(3);
-  strncpy(target_indices.key_indices[0], "BX", 2);
 
   if ((input_file = sam_open(input_file_name, "r")) == 0) {
     fprintf(stderr, "Unable to open file %s\n", input_file_name);
     return 1;
   }
 
-  return convert_to_lmdb(input_file, output_file_name, &target_indices);
-}
-
-int main(int argc, char *argv[]) {
-  int rc = 0;
-  int c;
-  bam_args_t bam_args;
-  int max_rows = 0;
-
-  bam_args.index_file_name = NULL;
-  bam_args.bx = NULL;
-  bam_args.output_file_name = NULL;
-  bam_args.convert_to = BAMDB_CONVERT_TO_TEXT;
-  while ((c = getopt(argc, argv, "t:f:n:i:b:o:")) != -1) {
-    switch (c) {
-      case 't':
-        if (strcmp(optarg, "lmdb") == 0) {
-          bam_args.convert_to = BAMDB_CONVERT_TO_LMDB;
-        } else if (strcmp(optarg, "text") == 0) {
-          bam_args.convert_to = BAMDB_CONVERT_TO_TEXT;
-        } else {
-          fprintf(stderr, "Invalid output format %s\n", optarg);
-          return 1;
-        }
-        break;
-      case 'f':
-        strcpy(bam_args.input_file_name, optarg);
-        break;
-      case 'n':
-        max_rows = atoi(optarg);
-        break;
-      case 'i':
-        bam_args.index_file_name = strdup(optarg);
-        break;
-      case 'b':
-        bam_args.bx = strdup(optarg);
-        break;
-      case 'o':
-        bam_args.output_file_name = strdup(optarg);
-        break;
-      default:
-        fprintf(stderr, "Unknown argument\n");
-        return 1;
-    }
-  }
-
-  /* Get filename from first non option argument */
-  if (optind < argc) {
-    strcpy(bam_args.input_file_name, argv[optind]);
-  }
-
-  if (bam_args.bx != NULL && bam_args.index_file_name != NULL) {
-    if (bam_args.output_file_name != NULL) {
-      /* Write resulting rows to file */
-      offset_list_t *offset_list = calloc(1, sizeof(offset_list_t));
-
-      rc = get_offsets_lmdb(offset_list, bam_args.index_file_name, "BX",
-                            bam_args.bx);
-      rc = write_row_subset(bam_args.input_file_name, offset_list,
-                            bam_args.output_file_name);
-      free(offset_list);
-    } else {
-      /* Print rows in tab delim format */
-      bam_row_set_t *row_set = NULL;
-      rc = get_bam_rows(&row_set, bam_args.input_file_name,
-                        bam_args.index_file_name, "BX", bam_args.bx);
-
-      if (row_set != NULL) {
-        for (size_t j = 0; j < row_set->num_entries; ++j) {
-          print_sequence_row(row_set->rows[j]);
-        }
-        free_bamdb_row_set(row_set);
-      }
-    }
-  }
+  return generate_lmdb_index(input_file, output_file_name, target_indices);
 }
 
 void print_bx_rows(char **input_file_name, char **db_path, char **bx) {

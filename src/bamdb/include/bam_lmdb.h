@@ -1,24 +1,23 @@
 #ifndef BAMLMDB_H
 #define BAMLMDB_H
 
-#include <lmdb.h>
 #include <stdbool.h>
 
+#include <lmdb.h>
+
 #include "bam_api.h"
+#include "bamdb.h"
 
 /* HTSLib */
 #include "bgzf.h"
 #include "hts.h"
 #include "sam.h"
 
-typedef struct indices {
-  bool includes_qname;
-  size_t num_key_indices;  // Does not include qname index
-  char **key_indices;
-} indices_t;
+char *get_default_dbname(const char *filename);
 
-int convert_to_lmdb(samFile *input_file, char *db_path,
-                    indices_t *target_indices);
+int get_lmdb_env(MDB_env **env, const char *full_db_path, bool read_only);
+
+int commit_lmdb_transaction(MDB_txn *txn);
 
 /** @brief Return matching bam offsets from an LMDB based index
  *

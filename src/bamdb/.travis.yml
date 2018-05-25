@@ -1,0 +1,31 @@
+dist: trusty
+sudo: required
+language: c
+
+compiler:
+  - clang
+
+before_install:
+  - sudo apt-get -qq update
+  - sudo apt-get install -y liblmdb-dev
+
+
+before_script:
+  # Install CK
+  - wget http://concurrencykit.org/releases/ck-0.6.0.tar.gz
+  - tar -xzvf ck-0.6.0.tar.gz
+  - pushd ck-0.6.0 && ./configure --prefix=/usr && make && sudo make install && popd
+
+  # Need to install htslib manually since the package is old
+  - wget https://github.com/samtools/htslib/releases/download/1.2.1/htslib-1.2.1.tar.bz2
+  - tar -vxjf htslib-1.2.1.tar.bz2
+  - pushd htslib-1.2.1 && ./configure --prefix=/usr && make && sudo make install && popd
+
+  # Set up for cmake build
+  - mkdir build
+  - cd build
+  - cmake --version
+  - cmake ..
+
+script:
+  - make

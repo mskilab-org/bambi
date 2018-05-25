@@ -8,6 +8,8 @@
 /** Error deserializing a sequence record */
 #define BAMDB_DESERIALIZE_ERROR -16002
 /** Error at the database level */
-#define BAMDB_DB_ERROR -16102
+#define BAMDB_DB_ERROR -16100
+/** Inernal bamdb error */
+#define BAMDB_INTERNAL_ERROR -16300
 
 #endif
