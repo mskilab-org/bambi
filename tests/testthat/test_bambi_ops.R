@@ -57,10 +57,10 @@ test_that('bambi test method grab_bx()', {
     ## UB is not contained as an LMDB key in 'bamdb_path'. Please see documentation for details.
     expect_error(foo$grab_ub())   
     ###
-    expect_equal(foo$grab_bx('CGGCTAGGTAGAATAC-1')$flag[1], 97)
-    expect_equal(foo$grab_bx('CGGCTAGGTAGAATAC-1')$flag[2], 145)
-    expect_equal(foo$grab_bx('CGGCTAGGTAGAATAC-1')$mapq[1], 60)
-    expect_equal(foo$grab_bx('CGGCTAGGTAGAATAC-1')$mapq[2], 60)
+    expect_equal(foo$grab_bx('CGGCTAGGTAGAATAC-1', verbose=TRUE)$flag[1], 97)
+    expect_equal(foo$grab_bx('CGGCTAGGTAGAATAC-1', verbose=TRUE)$flag[2], 145)
+    expect_equal(foo$grab_bx('CGGCTAGGTAGAATAC-1', verbose=TRUE)$mapq[1], 60)
+    expect_equal(foo$grab_bx('CGGCTAGGTAGAATAC-1', verbose=TRUE)$mapq[2], 60)
     expect_match(foo$grab_bx('CGGCTAGGTAGAATAC-1')$cigar[1], "80M47S")
     expect_match(foo$grab_bx('CGGCTAGGTAGAATAC-1')$cigar[2], "37S113M")
     ##
@@ -71,16 +71,16 @@ test_that('bambi test method grab_bx()', {
     ## if ((!is.null(barcodes)) & (!is.null(query))){
     ## Error in foo$grab_bx(barcodes = "CGACGTGTCCTCTAGC-1", query = data.table()) : 
     ##   Both 'barcodes' and 'query' parameters cannot be used. Use method 'grab_bx()' by a character vector of BX barcodes, or a GRanges/data.table of a genomic region. Please see documentation for details.
-    expect_error(foo$grab_bx(barcodes='CGACGTGTCCTCTAGC-1', query=data.table()))
-    expect_error(foo$grab_bx(barcodes='CGACGTGTCCTCTAGC-1', query=GRanges("chr5:1053000-1253655")))
+    expect_error(foo$grab_bx(barcodes='CGACGTGTCCTCTAGC-1', query=data.table(), verbose=TRUE))
+    expect_error(foo$grab_bx(barcodes='CGACGTGTCCTCTAGC-1', query=GRanges("chr5:1053000-1253655", verbose=TRUE)))
     ##
     ## empty query: R standard is NULL for error, NA for no rows returned
     expect_equal(foo$grab_bx(barcodes='2'), NA)
     expect_equal(foo$grab_bx(barcodes='foobar'), NA)
     ## multiple barcodes
-    expect_equal(length(foo$grab_bx(barcodes=c('CGGCTAGGTAGAATAC-1', 'AGCTTCCCACTTCACC-1', 'GGCGTTGAGAGCTGGT-1'), mc.cores=2)), 8)
-    expect_equal(dim(foo$grab_bx(barcodes=c('CGGCTAGGTAGAATAC-1', 'AGCTTCCCACTTCACC-1', 'GGCGTTGAGAGCTGGT-1'), data.table=TRUE, mc.cores=2))[1], 8)
-    expect_equal(dim(foo$grab_bx(barcodes=c('CGGCTAGGTAGAATAC-1', 'AGCTTCCCACTTCACC-1', 'GGCGTTGAGAGCTGGT-1'), data.table=TRUE, mc.cores=2))[2], 22)
+    expect_equal(length(foo$grab_bx(barcodes=c('CGGCTAGGTAGAATAC-1', 'AGCTTCCCACTTCACC-1', 'GGCGTTGAGAGCTGGT-1'), mc.cores=2, verbose=TRUE)), 8)
+    expect_equal(dim(foo$grab_bx(barcodes=c('CGGCTAGGTAGAATAC-1', 'AGCTTCCCACTTCACC-1', 'GGCGTTGAGAGCTGGT-1'), data.table=TRUE, mc.cores=2, verbose=TRUE))[1], 8)
+    expect_equal(dim(foo$grab_bx(barcodes=c('CGGCTAGGTAGAATAC-1', 'AGCTTCCCACTTCACC-1', 'GGCGTTGAGAGCTGGT-1'), data.table=TRUE, mc.cores=2, verbose=TRUE))[2], 22)
     ## 
     ## If there are "empty row" queries, I currently return nothing
     expect_equal(length(foo$grab_bx(barcodes=c('CGGCTAGGTAGAATAC-1', 'AGCTTCCCACTTCACC-1', 'GGCGTTGAGAGCTGGT-1', 'foo', 'foobar', '2'), mc.cores=2)), 8)
@@ -97,11 +97,11 @@ test_that('bambi test method grab_bx()', {
     expect_error(foo$grab_bx(query=c('foo')))
     ## 
     ## if (length(query)==0){
-    expect_equal(foo$grab_bx(query=GRanges('chr5:10-15')), NA)
+    expect_equal(foo$grab_bx(query=GRanges('chr5:10-15'), verbose=TRUE), NA)
     expect_equal(foo$grab_bx(query=GRanges("chr5:1053000-1253655")), NA)
     ##
     ## else
-    expect_equal(length(foo$grab_bx(query=GRanges('chr19:27842400-27842700'))), 4)
+    expect_equal(length(foo$grab_bx(query=GRanges('chr19:27842400-27842700'), verbose=TRUE)), 4)
     ##
 })
 
@@ -124,7 +124,7 @@ test_that('bambi test method grab_cb()', {
     ## UB is not contained as an LMDB key in 'bamdb_path'. Please see documentation for details.
     expect_error(foocb$grab_ub())   
     ###
-    expect_equal(foocb$grab_cb('GTAGTCATCTGGGCCA-1')$flag[1], 16)
+    expect_equal(foocb$grab_cb('GTAGTCATCTGGGCCA-1', verbose=TRUE)$flag[1], 16)
     expect_equal(as.logical(foocb$grab_cb('GTAGTCATCTGGGCCA-1')$flag[2]), NA)
     expect_equal(foocb$grab_cb('GTAGTCATCTGGGCCA-1')$mapq[1], 255)
     expect_equal(as.logical(foocb$grab_cb('GTAGTCATCTGGGCCA-1')$mapq[2]), NA)
@@ -137,16 +137,16 @@ test_that('bambi test method grab_cb()', {
     ## if ((!is.null(barcodes)) & (!is.null(query))){
     ## Error in foo$grab_bx(barcodes = "CGACGTGTCCTCTAGC-1", query = data.table()) : 
     ##   Both 'barcodes' and 'query' parameters cannot be used. Use method 'grab_bx()' by a character vector of BX barcodes, or a GRanges/data.table of a genomic region. Please see documentation for details.
-    expect_error(foocb$grab_cb(barcodes='GTAGTCATCTGGGCCA-1', query=data.table()))
-    expect_error(foocb$grab_cb(barcodes='GTAGTCATCTGGGCCA-1', query=GRanges("chr5:1053000-1253655")))
+    expect_error(foocb$grab_cb(barcodes='GTAGTCATCTGGGCCA-1', query=data.table(), verbose=TRUE))
+    expect_error(foocb$grab_cb(barcodes='GTAGTCATCTGGGCCA-1', query=GRanges("chr5:1053000-1253655"), verbose=TRUE))
     ##
     ## empty query: R standard is NULL for error, NA for no rows returned
     expect_equal(foocb$grab_cb(barcodes='2'), NA)
     expect_equal(foocb$grab_cb(barcodes='foobar'), NA)
     ##
     ## multiple barcodes
-    expect_equal(length(foocb$grab_cb(barcodes=c('GTAGTCATCTGGGCCA-1', 'TCCCGATCACCAGTTA-1', 'AGGTCCGAGGTACTCT-1'), mc.cores=2)), 11)
-    expect_equal(dim(foocb$grab_cb(barcodes=c('GTAGTCATCTGGGCCA-1', 'TCCCGATCACCAGTTA-1', 'AGGTCCGAGGTACTCT-1'), data.table=TRUE, mc.cores=2))[1], 11)
+    expect_equal(length(foocb$grab_cb(barcodes=c('GTAGTCATCTGGGCCA-1', 'TCCCGATCACCAGTTA-1', 'AGGTCCGAGGTACTCT-1'), mc.cores=2, verbose=TRUE)), 11)
+    expect_equal(dim(foocb$grab_cb(barcodes=c('GTAGTCATCTGGGCCA-1', 'TCCCGATCACCAGTTA-1', 'AGGTCCGAGGTACTCT-1'), data.table=TRUE, mc.cores=2, verbose=TRUE))[1], 11)
     expect_equal(dim(foocb$grab_cb(barcodes=c('GTAGTCATCTGGGCCA-1', 'TCCCGATCACCAGTTA-1', 'AGGTCCGAGGTACTCT-1'), data.table=TRUE, mc.cores=2))[2], 26)
     ## 
     ## If there are "empty row" queries, I currently return nothing
@@ -163,11 +163,11 @@ test_that('bambi test method grab_cb()', {
     expect_error(foocb$grab_cb(query=c('foo')))
     ## 
     ## if (length(query)==0){
-    expect_equal(foocb$grab_cb(query=GRanges('5:10-15')), NA)
-    expect_equal(foocb$grab_cb(query=GRanges("5:1053000-1253655")), NA)
+    expect_equal(foocb$grab_cb(query=GRanges('5:10-15'), verbose=TRUE), NA)
+    expect_equal(foocb$grab_cb(query=GRanges("5:1053000-1253655"), verbose=TRUE), NA)
     ##
     ## else
-    expect_equal(length(foocb$grab_cb(query=GRanges("19:1440000-1440500"))), 35)
+    expect_equal(length(foocb$grab_cb(query=GRanges("19:1440000-1440500"), verbose=TRUE)), 35)
 
 })
 
@@ -191,7 +191,7 @@ test_that('bambi test method grab_ub()', {
     ## CB is not contained as an LMDB key in 'bamdb_path'. Please see documentation for details.
     expect_error(fooub$grab_cb())   
     ###
-    expect_equal(fooub$grab_ub('ATACAAGCGG')$flag[1], 0)
+    expect_equal(fooub$grab_ub('ATACAAGCGG', verbose=TRUE)$flag[1], 0)
     expect_equal(as.logical(fooub$grab_ub('ATACAAGCGG')$flag[2]), NA)
     expect_equal(fooub$grab_ub('ATACAAGCGG')$mapq[1], 255)
     expect_equal(as.logical(fooub$grab_ub('ATACAAGCGG')$mapq[2]), NA)
@@ -212,9 +212,9 @@ test_that('bambi test method grab_ub()', {
     expect_error(fooub$grab_ub(barcodes='ATACAAGCGG', query=GRanges("chr5:1053000-1253655")))
     ##
     ## multiple barcodes
-    expect_equal(length(fooub$grab_ub(barcodes=c('ATACAAGCGG', 'CGGAGGACGT', 'CATAGCGTTT'), mc.cores=2)), 3)
-    expect_equal(dim(fooub$grab_ub(barcodes=c('ATACAAGCGG', 'CGGAGGACGT', 'CATAGCGTTT'), data.table=TRUE, mc.cores=2))[1], 3)
-    expect_equal(dim(fooub$grab_ub(barcodes=c('ATACAAGCGG', 'CGGAGGACGT', 'CATAGCGTTT'), data.table=TRUE, mc.cores=2))[2], 29)
+    expect_equal(length(fooub$grab_ub(barcodes=c('ATACAAGCGG', 'CGGAGGACGT', 'CATAGCGTTT'), mc.cores=2, verbose=TRUE)), 3)
+    expect_equal(dim(fooub$grab_ub(barcodes=c('ATACAAGCGG', 'CGGAGGACGT', 'CATAGCGTTT'), data.table=TRUE, mc.cores=2, verbose=TRUE))[1], 3)
+    expect_equal(dim(fooub$grab_ub(barcodes=c('ATACAAGCGG', 'CGGAGGACGT', 'CATAGCGTTT'), data.table=TRUE, mc.cores=2, verbose=TRUE))[2], 29)
     ## 
     ## If there are "empty row" queries, I currently return nothing
     expect_equal(length(fooub$grab_ub(barcodes=c('ATACAAGCGG', 'CGGAGGACGT', 'CATAGCGTTT', 'foo', 'foobar', '2'), mc.cores=2)), 3)
@@ -231,10 +231,10 @@ test_that('bambi test method grab_ub()', {
     expect_error(fooub$grab_ub(query=c('foo')))
     ##
     ## if (length(query)==0){
-    expect_equal(fooub$grab_ub(query=GRanges('5:10-15')), NA)
+    expect_equal(fooub$grab_ub(query=GRanges('5:10-15'), verbose=TRUE), NA)
     expect_equal(fooub$grab_ub(query=GRanges("5:1053000-1253655")), NA)
     ##
-    expect_equal(length(fooub$grab_ub(query=GRanges("19:1440000-1440500"))), 11)
+    expect_equal(length(fooub$grab_ub(query=GRanges("19:1440000-1440500"), verbose=TRUE)), 11)
     ## else
 
 
@@ -258,8 +258,8 @@ test_that('bambi test method fetch_by_tag()', {
     expect_error(foo_fetch_bx$fetch_by_tag(tag = c('BX', 'CB')))
     ## 
     ## foo_fetch_bx$fetch_by_tag(tag = 'BX', tag_queries='CGGCTAGGTAGAATAC-1')
-    expect_equal(foo_fetch_bx$fetch_by_tag(tag = 'BX', tag_queries='CGGCTAGGTAGAATAC-1')$flag[1], 97)
-    expect_equal(foo_fetch_bx$fetch_by_tag(tag = 'BX', tag_queries='CGGCTAGGTAGAATAC-1')$flag[2], 145)
+    expect_equal(foo_fetch_bx$fetch_by_tag(tag = 'BX', tag_queries='CGGCTAGGTAGAATAC-1', verbose=TRUE)$flag[1], 97)
+    expect_equal(foo_fetch_bx$fetch_by_tag(tag = 'BX', tag_queries='CGGCTAGGTAGAATAC-1', verbose=TRUE)$flag[2], 145)
     expect_equal(foo_fetch_bx$fetch_by_tag(tag = 'BX', tag_queries='CGGCTAGGTAGAATAC-1')$mapq[1], 60)
     expect_equal(foo_fetch_bx$fetch_by_tag(tag = 'BX', tag_queries='CGGCTAGGTAGAATAC-1')$mapq[2], 60)
     expect_match(foo_fetch_bx$fetch_by_tag(tag = 'BX', tag_queries='CGGCTAGGTAGAATAC-1')$cigar[1], "80M47S")
@@ -272,8 +272,8 @@ test_that('bambi test method fetch_by_tag()', {
     ##
     ## if ((!is.null(tag_queries)) & (!is.null(query))){
     ## Both 'tag_queries' and 'query' parameters cannot be used. Use method 'fetch_by_tag()' by either a character vector of UB barcodes, or a GRanges/data.table of a genomic region. Please see documentation for details
-    expect_error(foo_fetch_bx$fetch_by_tag(tag = 'BX', tag_queries='CGGCTAGGTAGAATAC-1', query=data.table()))
-    expect_error(foo_fetch_bx$fetch_by_tag(tag = 'BX', tag_queries='CGGCTAGGTAGAATAC-1', query=GRanges("chr5:1053000-1253655")))
+    expect_error(foo_fetch_bx$fetch_by_tag(tag = 'BX', tag_queries='CGGCTAGGTAGAATAC-1', query=data.table(), verbose=TRUE))
+    expect_error(foo_fetch_bx$fetch_by_tag(tag = 'BX', tag_queries='CGGCTAGGTAGAATAC-1', query=GRanges("chr5:1053000-1253655"), verbose=TRUE))
     ## 
     ## if ((is.null(tag_queries)) & (is.null(query))){
     expect_equal(foo_fetch_bx$fetch_by_tag(tag = 'BX'), GRanges())
@@ -284,9 +284,9 @@ test_that('bambi test method fetch_by_tag()', {
     expect_equal(foo_fetch_bx$fetch_by_tag(tag = 'BX', tag_queries='foobar'), NA)
     ##
     ## multiple barcodes
-    expect_equal(length(foo_fetch_bx$fetch_by_tag(tag = 'BX', tag_queries=c('CGGCTAGGTAGAATAC-1', 'AGCTTCCCACTTCACC-1', 'GGCGTTGAGAGCTGGT-1'), mc.cores=2)), 8)
-    expect_equal(dim(foo_fetch_bx$fetch_by_tag(tag = 'BX', tag_queries=c('CGGCTAGGTAGAATAC-1', 'AGCTTCCCACTTCACC-1', 'GGCGTTGAGAGCTGGT-1'), data.table=TRUE, mc.cores=2))[1], 8)
-    expect_equal(dim(foo_fetch_bx$fetch_by_tag(tag = 'BX', tag_queries=c('CGGCTAGGTAGAATAC-1', 'AGCTTCCCACTTCACC-1', 'GGCGTTGAGAGCTGGT-1'), data.table=TRUE, mc.cores=2))[2], 23)
+    expect_equal(length(foo_fetch_bx$fetch_by_tag(tag = 'BX', tag_queries=c('CGGCTAGGTAGAATAC-1', 'AGCTTCCCACTTCACC-1', 'GGCGTTGAGAGCTGGT-1'), mc.cores=2, verbose=TRUE)), 8)
+    expect_equal(dim(foo_fetch_bx$fetch_by_tag(tag = 'BX', tag_queries=c('CGGCTAGGTAGAATAC-1', 'AGCTTCCCACTTCACC-1', 'GGCGTTGAGAGCTGGT-1'), data.table=TRUE, mc.cores=2, verbose=TRUE))[1], 8)
+    expect_equal(dim(foo_fetch_bx$fetch_by_tag(tag = 'BX', tag_queries=c('CGGCTAGGTAGAATAC-1', 'AGCTTCCCACTTCACC-1', 'GGCGTTGAGAGCTGGT-1'), data.table=TRUE, mc.cores=2, verbose=TRUE))[2], 23)
     ## 
     ##
     foo_fetch_ps = bambi$new(bam_file = example_PS_bam)
@@ -317,8 +317,8 @@ test_that('bambi test method fetch_by_tag()', {
     expect_error(foo_fetch_ps$fetch_by_tag(tag = 'PS', query=c('foo')))
     ##
     ## if (length(query)==0){
-    expect_equal(foo_fetch_ps$fetch_by_tag(tag = 'PS', query=GRanges('chr5:10-15')), NA)
-    expect_equal(foo_fetch_ps$fetch_by_tag(tag = 'PS', query=GRanges('chr5:1053000-1253655')), NA)
+    expect_equal(foo_fetch_ps$fetch_by_tag(tag = 'PS', query=GRanges('chr5:10-15'), verbose=TRUE), NA)
+    expect_equal(foo_fetch_ps$fetch_by_tag(tag = 'PS', query=GRanges('chr5:1053000-1253655'), verbose=TRUE), NA)
     ##
     ## else
     ## FIX
