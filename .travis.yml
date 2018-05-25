@@ -21,7 +21,7 @@ before_install:
   - cd ck
   - ./configure; make; sudo make install
   - pwd
-  - cd
+  - cd /home/travis/build/mskilab/bambi
   - pwd
 
 install:
