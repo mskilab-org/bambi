@@ -12,10 +12,9 @@ before_install:
   - curl -OL http://raw.github.com/craigcitro/r-travis/master/scripts/travis-tool.sh
   - chmod 755 ./travis-tool.sh
   - ./travis-tool.sh bootstrap
-  - sudo apt-get update
-  - sudo apt-get install zlib1g-dev 
-  - sudo apt-get install liblmdb-dev
-  - sudo apt-get install libhts-dev
+  - ./travis-tool.sh aptget_install zlib1g-dev 
+  - ./travis-tool.sh aptget_install liblmdb-dev
+  - ./travis-tool.sh aptget_install libhts-dev
   - git clone https://github.com/concurrencykit/ck
   - cd ck
   - ./configure; make; sudo make install
