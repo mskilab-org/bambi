@@ -5,21 +5,21 @@ library(bamUtils)
 library(gUtils)
 
 
-example_bam = '/Users/ebiederstedt/bambi24May/bambi/tests/testthat/subset_HCC1143_phased_possorted000005.bam'   ### all tests below are specific to this BAM, and will fail otherwise 
-example_bai = '/Users/ebiederstedt/bambi24May/bambi/tests/testthat/subset_HCC1143_phased_possorted000005.bam.bai' 
-example_lmdb = '/Users/ebiederstedt/bambi24May/bambi/tests/testthat/subset_HCC1143_phased_possorted000005_lmdb'
+example_bam = 'subset_HCC1143_phased_possorted000005.bam'   ### all tests below are specific to this BAM, and will fail otherwise 
+example_bai = 'subset_HCC1143_phased_possorted000005.bam.bai' 
+example_lmdb = 'subset_HCC1143_phased_possorted000005_lmdb'
 
-example_CB_bam = '/Users/ebiederstedt/bambi24May/bambi/tests/testthat/subset_pbmc8k_possorted_genome_bam000025.CB.bam'   ### all tests below are specific to this BAM, and will fail otherwise 
-example_CB_bai = '/Users/ebiederstedt/bambi24May/bambi/tests/testthat/subset_pbmc8k_possorted_genome_bam000025.CB.bam.bai' 
-example_CB_lmdb = '/Users/ebiederstedt/bambi24May/bambi/tests/testthat/subset_pbmc8k_possorted_genome_bam000025.CB_lmdb'
+example_CB_bam = 'subset_pbmc8k_possorted_genome_bam000025.CB.bam'   ### all tests below are specific to this BAM, and will fail otherwise 
+example_CB_bai = 'subset_pbmc8k_possorted_genome_bam000025.CB.bam.bai' 
+example_CB_lmdb = 'subset_pbmc8k_possorted_genome_bam000025.CB_lmdb'
 
-example_UB_bam = '/Users/ebiederstedt/bambi24May/bambi/tests/testthat/subset_pbmc8k_possorted_genome_bam000025.UB.bam'   ### all tests below are specific to this BAM, and will fail otherwise 
-example_UB_bai = '/Users/ebiederstedt/bambi24May/bambi/tests/testthat/subset_pbmc8k_possorted_genome_bam000025.UB.bam.bai' 
-example_UB_lmdb = '/Users/ebiederstedt/bambi24May/bambi/tests/testthat/subset_pbmc8k_possorted_genome_bam000025.UB_lmdb'
+example_UB_bam = 'subset_pbmc8k_possorted_genome_bam000025.UB.bam'   ### all tests below are specific to this BAM, and will fail otherwise 
+example_UB_bai = 'subset_pbmc8k_possorted_genome_bam000025.UB.bam.bai' 
+example_UB_lmdb = 'subset_pbmc8k_possorted_genome_bam000025.UB_lmdb'
 
-example_PS_bam = '/Users/ebiederstedt/bambi24May/bambi/tests/testthat/subset_HCC1143_phased_possorted000005.PS.bam'   ### all tests below are specific to this BAM, and will fail otherwise 
-example_PS_bai = '/Users/ebiederstedt/bambi24May/bambi/tests/testthat/subset_HCC1143_phased_possorted000005.PS.bam.bai' 
-example_PS_lmdb = '/Users/ebiederstedt/bambi24May/bambi/tests/testthat/subset_HCC1143_phased_possorted000005.PS_lmdb'
+example_PS_bam = 'subset_HCC1143_phased_possorted000005.PS.bam'   ### all tests below are specific to this BAM, and will fail otherwise 
+example_PS_bai = 'subset_HCC1143_phased_possorted000005.PS.bam.bai' 
+example_PS_lmdb = 'subset_HCC1143_phased_possorted000005.PS_lmdb'
 
 
 
