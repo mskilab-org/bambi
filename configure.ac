@@ -8,7 +8,7 @@ AC_LANG(C++)
 AC_REQUIRE_CPP
 AC_PROG_CXX
 AC_GNU_SOURCE
-AX_CXX_COMPILE_STDCXX_11(noext,mandatory)
+
 AC_SUBST([PKG_CXXFLAGS],["-std=c++11"])
 
 base_dir=$(pwd)

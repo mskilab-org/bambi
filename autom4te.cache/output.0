@@ -3195,7 +3195,7 @@ $as_echo "$ac_cv_safe_to_define___extensions__" >&6; }
 
 
 
-AX_CXX_COMPILE_STDCXX_11(noext,mandatory)
+
 PKG_CXXFLAGS="-std=c++11"
 
 
