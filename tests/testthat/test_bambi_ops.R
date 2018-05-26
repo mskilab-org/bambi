@@ -146,13 +146,13 @@ test_that('bambi test method grab_cb()', {
     expect_equal(foocb$grab_cb(barcodes='foobar'), NA)
     ##
     ## multiple barcodes
-    expect_equal(length(foocb$grab_cb(barcodes=c('GTAGTCATCTGGGCCA-1', 'TCCCGATCACCAGTTA-1', 'AGGTCCGAGGTACTCT-1'), mc.cores=2, verbose=TRUE)), 11)
-    expect_equal(dim(foocb$grab_cb(barcodes=c('GTAGTCATCTGGGCCA-1', 'TCCCGATCACCAGTTA-1', 'AGGTCCGAGGTACTCT-1'), data.table=TRUE, mc.cores=2, verbose=TRUE))[1], 11)
+    expect_equal(length(foocb$grab_cb(barcodes=c('GTAGTCATCTGGGCCA-1', 'TCCCGATCACCAGTTA-1', 'AGGTCCGAGGTACTCT-1'), mc.cores=2, verbose=TRUE)), 10)
+    expect_equal(dim(foocb$grab_cb(barcodes=c('GTAGTCATCTGGGCCA-1', 'TCCCGATCACCAGTTA-1', 'AGGTCCGAGGTACTCT-1'), data.table=TRUE, mc.cores=2, verbose=TRUE))[1], 10)
     expect_equal(dim(foocb$grab_cb(barcodes=c('GTAGTCATCTGGGCCA-1', 'TCCCGATCACCAGTTA-1', 'AGGTCCGAGGTACTCT-1'), data.table=TRUE, mc.cores=2))[2], 26)
     ## 
     ## If there are "empty row" queries, I currently return nothing
-    expect_equal(length(foocb$grab_cb(barcodes=c('GTAGTCATCTGGGCCA-1', 'TCCCGATCACCAGTTA-1', 'AGGTCCGAGGTACTCT-1', 'foo', 'foobar', '2'), mc.cores=2)), 11)
-    expect_equal(dim(foocb$grab_cb(barcodes=c('GTAGTCATCTGGGCCA-1', 'TCCCGATCACCAGTTA-1', 'AGGTCCGAGGTACTCT-1', 'foo', 'foobar', '2'), data.table=TRUE, mc.cores=2))[1], 11)
+    expect_equal(length(foocb$grab_cb(barcodes=c('GTAGTCATCTGGGCCA-1', 'TCCCGATCACCAGTTA-1', 'AGGTCCGAGGTACTCT-1', 'foo', 'foobar', '2'), mc.cores=2)), 10)
+    expect_equal(dim(foocb$grab_cb(barcodes=c('GTAGTCATCTGGGCCA-1', 'TCCCGATCACCAGTTA-1', 'AGGTCCGAGGTACTCT-1', 'foo', 'foobar', '2'), data.table=TRUE, mc.cores=2))[1], 10)
     expect_equal(dim(foocb$grab_cb(barcodes=c('GTAGTCATCTGGGCCA-1', 'TCCCGATCACCAGTTA-1', 'AGGTCCGAGGTACTCT-1', 'foo', 'foobar', '2'), data.table=TRUE, mc.cores=2))[2], 26)
     ##     
     ## if (!inherits(barcodes, "character"))
@@ -168,7 +168,7 @@ test_that('bambi test method grab_cb()', {
     expect_equal(foocb$grab_cb(query=GRanges("5:1053000-1253655"), verbose=TRUE), NA)
     ##
     ## else
-    expect_equal(length(foocb$grab_cb(query=GRanges("19:1440000-1440500"), verbose=TRUE)), 35)
+    expect_equal(length(foocb$grab_cb(query=GRanges("19:1440000-1440500"), verbose=TRUE)), 33)
 
 })
 
@@ -213,7 +213,7 @@ test_that('bambi test method grab_ub()', {
     expect_error(fooub$grab_ub(barcodes='ATACAAGCGG', query=GRanges("chr5:1053000-1253655")))
     ##
     ## multiple barcodes
-    expect_equal(length(fooub$grab_ub(barcodes=c('ATACAAGCGG', 'CGGAGGACGT', 'CATAGCGTTT'), mc.cores=2, verbose=TRUE)), 3)
+    expect_equal(length(fooub$grab_ub(barcodes=c('ATACAAGCGG', 'CGGAGGACGT', 'CATAGCGTTT'), mc.cores=2)), 3)
     expect_equal(dim(fooub$grab_ub(barcodes=c('ATACAAGCGG', 'CGGAGGACGT', 'CATAGCGTTT'), data.table=TRUE, mc.cores=2, verbose=TRUE))[1], 3)
     expect_equal(dim(fooub$grab_ub(barcodes=c('ATACAAGCGG', 'CGGAGGACGT', 'CATAGCGTTT'), data.table=TRUE, mc.cores=2, verbose=TRUE))[2], 29)
     ## 
