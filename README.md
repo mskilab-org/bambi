@@ -1,3 +1,7 @@
+[![Build Status](https://travis-ci.org/mskilab/bambi.svg?branch=master)](https://travis-ci.org/mskilab/bambi)
+[![codecov.io](https://img.shields.io/codecov/c/github/mskilab/bambi.svg)](https://codecov.io/github/mskilab/bambi?branch=master)
+
+
 # bambi
 R package for querying 10x WGS and single-cell BAMs
 
