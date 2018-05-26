@@ -14,7 +14,7 @@ AC_SUBST([PKG_CXXFLAGS],["-std=c++11"])
 base_dir=$(pwd)
 
 AC_MSG_NOTICE([Building zlib library])
-$(
+(
     cd "src/zlib"; \
     mkdir -p "build"; \
     cd "build"; \
@@ -27,7 +27,7 @@ AC_MSG_NOTICE([zlib build complete])
 
 
 AC_MSG_NOTICE([Building ck library])
-$(
+(
     cd "src/ck"; \
     ./configure; \
     make;

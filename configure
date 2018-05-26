@@ -3203,7 +3203,7 @@ base_dir=$(pwd)
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: Building zlib library" >&5
 $as_echo "$as_me: Building zlib library" >&6;}
-$(
+(
     cd "src/zlib"; \
     mkdir -p "build"; \
     cd "build"; \
@@ -3218,7 +3218,7 @@ $as_echo "$as_me: zlib build complete" >&6;}
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: Building ck library" >&5
 $as_echo "$as_me: Building ck library" >&6;}
-$(
+(
     cd "src/ck"; \
     ./configure; \
     make;
