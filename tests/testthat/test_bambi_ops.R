@@ -235,7 +235,7 @@ test_that('bambi test method grab_ub()', {
     expect_equal(fooub$grab_ub(query=GRanges('5:10-15'), verbose=TRUE), NA)
     expect_equal(fooub$grab_ub(query=GRanges("5:1053000-1253655")), NA)
     ##
-    expect_equal(length(fooub$grab_ub(query=GRanges("19:1440000-1440500"), verbose=TRUE)), 11)
+    expect_equal(length(fooub$grab_ub(query=GRanges("19:1440000-1440500"), verbose=TRUE)), 2)
     ## else
 
 
