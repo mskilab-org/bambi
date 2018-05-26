@@ -13,6 +13,17 @@ AC_SUBST([PKG_CXXFLAGS],["-std=c++11"])
 
 base_dir=$(pwd)
 
+AC_MSG_NOTICE([Building zlib library])
+$(
+    cd "src/zlib"; \
+    mkdir -p "build"; \
+    cd "build"; \
+    cmake .. ; \
+    make;
+)
+
+AC_MSG_NOTICE([zlib build complete])
+
 AC_MSG_NOTICE([Building bamdb library])
 $(
     cd "src/bamdb"; \
@@ -24,12 +35,13 @@ $(
 
 AC_MSG_NOTICE([bamdb build complete])
 
-# TODO: Dynamically find htslib
-BAMDB_INCL_FLAGS="-I$base_dir/src/bamdb/include -I/usr/include/htslib/ -I/usr/local/include/htslib/"
+## TODO: Dynamically find htslib
+BAMDB_INCL_FLAGS="-I$base_dir/src/zlib/include -I$base_dir/src/bamdb/include -I/usr/include/htslib/ -I/usr/local/include/ htslib/"
 BAMDB_LIB="$base_dir/src/bamdb/build/libbamdb.a"
 
 bamdb_include="${BAMDB_INCL_FLAGS}"
-bamdb_libs="${BAMDB_LIB} -llmdb -lhts"
+bamdb_libs="-lz -L$base_dir/src/zlib/build ${BAMDB_LIB} -llmdb -lhts"
+
 
 AC_SUBST([PKG_CFLAGS],["${PKG_CFLAGS} $bamdb_include"])
 AC_SUBST([PKG_CXXFLAGS],["${PKG_CXXFLAGS} $bamdb_include"])
