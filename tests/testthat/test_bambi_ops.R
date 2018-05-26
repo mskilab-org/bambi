@@ -213,7 +213,7 @@ test_that('bambi test method grab_ub()', {
     expect_error(fooub$grab_ub(barcodes='ATACAAGCGG', query=GRanges("chr5:1053000-1253655")))
     ##
     ## multiple barcodes
-    expect_equal(length(fooub$grab_ub(barcodes=c('ATACAAGCGG', 'CGGAGGACGT', 'CATAGCGTTT'), mc.cores=2)), 3)
+    ## expect_equal(length(fooub$grab_ub(barcodes=c('ATACAAGCGG', 'CGGAGGACGT', 'CATAGCGTTT'), mc.cores=2)), 3)
     expect_equal(dim(fooub$grab_ub(barcodes=c('ATACAAGCGG', 'CGGAGGACGT', 'CATAGCGTTT'), data.table=TRUE, mc.cores=2, verbose=TRUE))[1], 3)
     expect_equal(dim(fooub$grab_ub(barcodes=c('ATACAAGCGG', 'CGGAGGACGT', 'CATAGCGTTT'), data.table=TRUE, mc.cores=2, verbose=TRUE))[2], 29)
     ## 
