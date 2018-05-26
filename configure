@@ -3243,7 +3243,7 @@ $as_echo "$as_me: htslib build complete" >&6;}
 { $as_echo "$as_me:${as_lineno-$LINENO}: Building lmdb library" >&5
 $as_echo "$as_me: Building lmdb library" >&6;}
 $(
-    cd "src/lmdb/libraries/liblmdb/"; \
+    cd "src/lmdb/libraries/liblmdb"; \
     make;
 )
 

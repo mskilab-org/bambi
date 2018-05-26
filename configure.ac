@@ -48,7 +48,7 @@ AC_MSG_NOTICE([htslib build complete])
 
 AC_MSG_NOTICE([Building lmdb library])
 $(
-    cd "src/lmdb/libraries/liblmdb/"; \
+    cd "src/lmdb/libraries/liblmdb"; \
     make;
 )
 
