@@ -46,6 +46,14 @@ $(
 AC_MSG_NOTICE([htslib build complete])
 
 
+AC_MSG_NOTICE([Building lmdb library])
+$(
+    cd "src/lmdb/libraries/liblmdb/"; \
+    make;
+)
+
+AC_MSG_NOTICE([lmdb build complete])
+
 
 AC_MSG_NOTICE([Building bamdb library])
 $(
@@ -61,11 +69,11 @@ AC_MSG_NOTICE([bamdb build complete])
 
 
 ## TODO: Dynamically find htslib
-BAMDB_INCL_FLAGS="-I$base_dir/src/zlib/include -I$base_dir/src/ck/include/ -I$base_dir/src/htslib/ -I$base_dir/src/bamdb/include"
+BAMDB_INCL_FLAGS="-I$base_dir/src/zlib/include -I$base_dir/src/ck/include/ -I$base_dir/src/htslib/ -I$base_dir/src/bamdb/include -I$base_dir/src/lmdb/libraries/liblmdb/"
 BAMDB_LIB="$base_dir/src/bamdb/build/libbamdb.a"
 
 bamdb_include="${BAMDB_INCL_FLAGS}"
-bamdb_libs="-lz -L$base_dir/src/zlib/build -lck -L$base_dir/src/ck/ -llmdb -lhts -L$base_dir/src/htslib/ ${BAMDB_LIB}"
+bamdb_libs="-lz -L$base_dir/src/zlib/build -lck -L$base_dir/src/ck/ -llmdb -L$base_dir/src/lmdb/libraries/liblmdb/ -lhts -L$base_dir/src/htslib/ ${BAMDB_LIB}"
 
 AC_SUBST([PKG_CFLAGS],["${PKG_CFLAGS} $bamdb_include"])
 AC_SUBST([PKG_CXXFLAGS],["${PKG_CXXFLAGS} $bamdb_include"])
