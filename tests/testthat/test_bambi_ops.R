@@ -123,8 +123,8 @@ test_that('bambi test method grab_cb()', {
     expect_error(foocb$grab_bx())
     ## UB is not contained as an LMDB key in 'bamdb_path'. Please see documentation for details.
     expect_error(foocb$grab_ub())   
-    ###
-    expect_equal(foocb$grab_cb('GTAGTCATCTGGGCCA-1', verbose=TRUE)$flag[1], 16)
+    ### 
+    expect_equal(as.data.frame(foocb$grab_cb('GTAGTCATCTGGGCCA-1', verbose=TRUE))$flag[1], 16)  ## this is a vector? Really?
     expect_equal(as.logical(foocb$grab_cb('GTAGTCATCTGGGCCA-1')$flag[2]), NA)
     expect_equal(foocb$grab_cb('GTAGTCATCTGGGCCA-1')$mapq[1], 255)
     expect_equal(as.logical(foocb$grab_cb('GTAGTCATCTGGGCCA-1')$mapq[2]), NA)
@@ -191,7 +191,7 @@ test_that('bambi test method grab_ub()', {
     ## CB is not contained as an LMDB key in 'bamdb_path'. Please see documentation for details.
     expect_error(fooub$grab_cb())   
     ###
-    expect_equal(fooub$grab_ub('ATACAAGCGG', verbose=TRUE)$flag[1], 0)
+    expect_equal(as.data.frame(fooub$grab_ub('ATACAAGCGG', verbose=TRUE))$flag[1], 0)
     expect_equal(as.logical(fooub$grab_ub('ATACAAGCGG')$flag[2]), NA)
     expect_equal(fooub$grab_ub('ATACAAGCGG')$mapq[1], 255)
     expect_equal(as.logical(fooub$grab_ub('ATACAAGCGG')$mapq[2]), NA)
