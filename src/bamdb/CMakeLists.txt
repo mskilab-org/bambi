@@ -10,6 +10,15 @@ option(STATIC_BAMDB_BUILD "STATIC_BAMDB_BUILD" OFF)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
 
+## The find_package() command will look in the module path for Find.cmake, which is the
+## typical way for finding libraries. First CMake checks all directories in
+## ${CMAKE_MODULE_PATH}
+
+list(APPEND CMAKE_MODULE_PATH  "${CMAKE_CURRENT_LIST_DIR}/../ck")
+list(APPEND CMAKE_MODULE_PATH  "${CMAKE_CURRENT_LIST_DIR}/../lmdb/libraries/liblmdb")
+list(APPEND CMAKE_MODULE_PATH  "${CMAKE_CURRENT_LIST_DIR}/../htslib")
+
+
 list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}/../ck")
 list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}/../lmdb/libraries/liblmdb")
 list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}/../htslib")
