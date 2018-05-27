@@ -1,5 +1,10 @@
-#ifndef BAMLMDB_H
-#define BAMLMDB_H
+/**
+ * @file bamdb_lmdb.h
+ * @brief Functions for creating a bamdb index
+ *
+ */
+#ifndef BAMDB_LMDB_H
+#define BAMDB_LMDB_H
 
 #include <stdbool.h>
 
@@ -33,25 +38,8 @@ int get_offsets_lmdb(offset_list_t *offset_list, const char *db_path,
 /**
  * Get a list of the available indices in an existing lmdb database
  */
-indices_t *get_available_indices(const char *db_path);
+bamdb_indices_t *get_available_indices(const char *db_path);
 
 bool is_index_present(const char *db_path, const char *index_name);
-
-/** @brief Find all rows matching a key in an indexed bam file
- *
- * This function will allocate space for the resulting rows; it is up to the
- * caller to free the results. In the event of an error we will return an
- * empty row set object. Callers should NOT pass a preallocated or
- * existing row set to this function.
- *
- * @param[out] output Location to store the resulting records
- * @param[in] input_file_name Path of the bam file to query
- * @param[in] db_path Top-level directory of the index database
- * @param[in] index_name Name of the field to search in
- * @param[in] key Specific index value to search for
- * @return 0 on success or a non-zero error value on failure
- */
-int get_bam_rows(bam_row_set_t **output, const char *input_file_name,
-                 const char *db_path, const char *index_name, const char *key);
 
 #endif

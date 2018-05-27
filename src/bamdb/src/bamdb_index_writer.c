@@ -1,3 +1,5 @@
+#ifdef BUILD_BAMDB_WRITER
+
 #include <inttypes.h>
 #include <pthread.h>
 #include <stdio.h>
@@ -17,6 +19,7 @@
 
 #include "bam_api.h"
 #include "bamdb_index_writer.h"
+#include "bamdb_lmdb.h"
 #include "bamdb_status.h"
 
 /* How many rows to write before forcing a database commit */
@@ -222,7 +225,7 @@ static writer_q_t *init_writer_q(char *key) {
 }
 
 int generate_lmdb_index(samFile *input_file, char *db_path,
-                        indices_t *target_indices) {
+                        bamdb_indices_t *target_indices) {
   int rc;
   int r = 0;
   int ret = BAMDB_SUCCESS;
@@ -355,3 +358,5 @@ exit:
 
   return ret;
 }
+
+#endif
