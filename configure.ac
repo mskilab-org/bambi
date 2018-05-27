@@ -18,7 +18,7 @@ $(
     cd "src/bamdb"; \
     mkdir -p "build"; \
     cd "build"; \
-    cmake .. -DSTATIC_BAMDB_BUILD=ON; \
+    cmake .. -DSTATIC_BAMDB_BUILD=ON -DBUILD_BAMDB_WRITER=OFF; \
     make;
 )
 

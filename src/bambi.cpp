@@ -4,7 +4,7 @@
 #include <Rcpp.h>
 
 extern "C" {
-#include "bam_lmdb.h"
+#include "bamdb_lmdb.h"
 #include "bamdb_status.h"
 }
 
