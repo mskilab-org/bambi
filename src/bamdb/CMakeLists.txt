@@ -15,6 +15,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 ## ${CMAKE_MODULE_PATH}
 
 list(APPEND CMAKE_MODULE_PATH  "${CMAKE_CURRENT_LIST_DIR}/../ck")
+list(APPEND CMAKE_MODULE_PATH  "${CMAKE_CURRENT_LIST_DIR}/../ck/src")
 list(APPEND CMAKE_MODULE_PATH  "${CMAKE_CURRENT_LIST_DIR}/../lmdb/libraries/liblmdb")
 list(APPEND CMAKE_MODULE_PATH  "${CMAKE_CURRENT_LIST_DIR}/../htslib")
 
@@ -33,7 +34,7 @@ list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}/../htslib/htslib")
 ## try explicitly setting variables used in FindXXX.cmake
 
 set(CK_PKGCONF_INCLUDE_DIRS "${CMAKE_CURRENT_LIST_DIR}/../ck/include")
-set(CK_PKGCONF_LIBRARY_DIRS "${CMAKE_CURRENT_LIST_DIR}/../ck/")
+set(CK_PKGCONF_LIBRARY_DIRS "${CMAKE_CURRENT_LIST_DIR}/../ck/src")   ## libck.so, libck.a
 set(LMDB_PKGCONF_INCLUDE_DIRS "${CMAKE_CURRENT_LIST_DIR}/../lmdb/libraries/liblmdb")
 set(LMDB_PKGCONF_LIBRARY_DIRS "${CMAKE_CURRENT_LIST_DIR}/../lmdb/libraries/liblmdb")
 set(HTSlib_PKGCONF_INCLUDE_DIRS "${CMAKE_CURRENT_LIST_DIR}/../htslib/htslib")
