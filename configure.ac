@@ -9,31 +9,44 @@ AC_REQUIRE_CPP
 AC_PROG_CXX
 AC_GNU_SOURCE
 AX_CXX_COMPILE_STDCXX_11(noext,mandatory)
-AC_SUBST([PKG_CXXFLAGS],["-std=c++11"])
+AC_SUBST([PKG_CFLAGS],["-fPIC"])
+AC_SUBST([PKG_CXXFLAGS],["-fPIC -std=c++11"])
 
 base_dir=$(pwd)
 
+# Create directory to build libraries
+$(mkdir -p "$base_dir/src/build";)
+
+AC_MSG_NOTICE([Building lmdb])
+$(
+    cd "$base_dir/src/lmdb/libraries/liblmdb"; \
+    make clean; \
+    make XCFLAGS=-fPIC;
+)
+
+AC_MSG_NOTICE([lmdb build complete])
+
+LMDB_INCL_FLAGS="-I$base_dir/src/lmdb/libraries/liblmdb"
+LMDB_LIB="$base_dir/src/lmdb/libraries/liblmdb/liblmdb.a"
+
 AC_MSG_NOTICE([Building bamdb library])
 $(
-    cd "src/bamdb"; \
-    mkdir -p "build"; \
-    cd "build"; \
-    cmake .. -DSTATIC_BAMDB_BUILD=ON -DBUILD_BAMDB_WRITER=OFF; \
+    cd "$base_dir/src/build"; \
+    cmake "$base_dir/src/bamdb/" -DSTATIC_BAMDB_BUILD=ON -DBUILD_BAMDB_WRITER=OFF; \
     make;
 )
 
 AC_MSG_NOTICE([bamdb build complete])
 
-# TODO: Dynamically find htslib
 BAMDB_INCL_FLAGS="-I$base_dir/src/bamdb/include -I/usr/include/htslib/ -I/usr/local/include/htslib/"
-BAMDB_LIB="$base_dir/src/bamdb/build/libbamdb.a"
+BAMDB_LIB="$base_dir/src/build/libbamdb.a"
 
-bamdb_include="${BAMDB_INCL_FLAGS}"
-bamdb_libs="${BAMDB_LIB} -llmdb -lhts"
+bambi_include="${LMDB_INCL_FLAGS} ${BAMDB_INCL_FLAGS}"
+bambi_libs="${BAMDB_LIB} ${LMDB_LIB} -lhts"
 
-AC_SUBST([PKG_CFLAGS],["${PKG_CFLAGS} $bamdb_include"])
-AC_SUBST([PKG_CXXFLAGS],["${PKG_CXXFLAGS} $bamdb_include"])
-AC_SUBST([PKG_LIBS],["${PKG_LIBS} $bamdb_libs"])
+AC_SUBST([PKG_CFLAGS],["${PKG_CFLAGS} $bambi_include"])
+AC_SUBST([PKG_CXXFLAGS],["${PKG_CXXFLAGS} $bambi_include"])
+AC_SUBST([PKG_LIBS],["${PKG_LIBS} $bambi_libs"])
 
 AC_CONFIG_FILES([src/Makevars])
 AC_OUTPUT

@@ -621,8 +621,8 @@ ac_includes_default="\
 ac_subst_vars='LTLIBOBJS
 LIBOBJS
 PKG_LIBS
-PKG_CFLAGS
 PKG_CXXFLAGS
+PKG_CFLAGS
 HAVE_CXX11
 EGREP
 GREP
@@ -3867,36 +3867,52 @@ $as_echo "#define HAVE_CXX11 1" >>confdefs.h
   fi
 
 
-PKG_CXXFLAGS="-std=c++11"
+PKG_CFLAGS="-fPIC"
+
+PKG_CXXFLAGS="-fPIC -std=c++11"
 
 
 base_dir=$(pwd)
 
+# Create directory to build libraries
+$(mkdir -p "$base_dir/src/build";)
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: Building lmdb" >&5
+$as_echo "$as_me: Building lmdb" >&6;}
+$(
+    cd "$base_dir/src/lmdb/libraries/liblmdb"; \
+    make clean; \
+    make XCFLAGS=-fPIC;
+)
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: lmdb build complete" >&5
+$as_echo "$as_me: lmdb build complete" >&6;}
+
+LMDB_INCL_FLAGS="-I$base_dir/src/lmdb/libraries/liblmdb"
+LMDB_LIB="$base_dir/src/lmdb/libraries/liblmdb/liblmdb.a"
+
 { $as_echo "$as_me:${as_lineno-$LINENO}: Building bamdb library" >&5
 $as_echo "$as_me: Building bamdb library" >&6;}
 $(
-    cd "src/bamdb"; \
-    mkdir -p "build"; \
-    cd "build"; \
-    cmake .. -DSTATIC_BAMDB_BUILD=ON -DBUILD_BAMDB_WRITER=OFF; \
+    cd "$base_dir/src/build"; \
+    cmake "$base_dir/src/bamdb/" -DSTATIC_BAMDB_BUILD=ON -DBUILD_BAMDB_WRITER=OFF; \
     make;
 )
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: bamdb build complete" >&5
 $as_echo "$as_me: bamdb build complete" >&6;}
 
-# TODO: Dynamically find htslib
 BAMDB_INCL_FLAGS="-I$base_dir/src/bamdb/include -I/usr/include/htslib/ -I/usr/local/include/htslib/"
-BAMDB_LIB="$base_dir/src/bamdb/build/libbamdb.a"
+BAMDB_LIB="$base_dir/src/build/libbamdb.a"
 
-bamdb_include="${BAMDB_INCL_FLAGS}"
-bamdb_libs="${BAMDB_LIB} -llmdb -lhts"
+bambi_include="${LMDB_INCL_FLAGS} ${BAMDB_INCL_FLAGS}"
+bambi_libs="${BAMDB_LIB} ${LMDB_LIB} -lhts"
 
-PKG_CFLAGS="${PKG_CFLAGS} $bamdb_include"
+PKG_CFLAGS="${PKG_CFLAGS} $bambi_include"
 
-PKG_CXXFLAGS="${PKG_CXXFLAGS} $bamdb_include"
+PKG_CXXFLAGS="${PKG_CXXFLAGS} $bambi_include"
 
-PKG_LIBS="${PKG_LIBS} $bamdb_libs"
+PKG_LIBS="${PKG_LIBS} $bambi_libs"
 
 
 ac_config_files="$ac_config_files src/Makevars"
