@@ -8,6 +8,22 @@ option(STATIC_BAMDB_BUILD "STATIC_BAMDB_BUILD" OFF)
 
 # External dependencies
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../ck")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../lmdb/libraries/liblmdb")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../htslib")
+
+
+
+##set(CK_INCLUDE_DIR "${CMAKE_CURRENT_LIST_DIR}/../ck")
+##set(CK_LIBRARY "${CMAKE_CURRENT_LIST_DIR}/../ck/include")
+##set(LMDB_INCLUDE_DIR "${CMAKE_CURRENT_LIST_DIR}/../lmdb/libraries/liblmdb")
+##set(LMDB_LIBRARY "${CMAKE_CURRENT_LIST_DIR}/../lmdb/libraries/liblmdb")
+##set(HTSlib_INCLUDE_DIR "${CMAKE_CURRENT_LIST_DIR}/../htslib/htslib")
+##set(HTSlib_LIBRARY "${CMAKE_CURRENT_LIST_DIR}/../htslib")
+
+
+
+## try adding dependency paths here
 
 ## set variables for include/libraries
 ## CK_INCLUDE_DIR=<not found>
@@ -29,12 +45,12 @@ message("${CMAKE_CURRENT_LIST_DIR}")
 message("upper subdirectory")
 message("${CMAKE_CURRENT_LIST_DIR}/../")
 
-set(CK_INCLUDE_DIR "${CMAKE_CURRENT_LIST_DIR}/../ck")
-set(CK_LIBRARY "${CMAKE_CURRENT_LIST_DIR}/../ck/include")
-set(LMDB_INCLUDE_DIR "${CMAKE_CURRENT_LIST_DIR}/../lmdb/libraries/liblmdb")
-set(LMDB_LIBRARY "${CMAKE_CURRENT_LIST_DIR}/../lmdb/libraries/liblmdb")
-set(HTSlib_INCLUDE_DIR "${CMAKE_CURRENT_LIST_DIR}/../htslib/htslib")
-set(HTSlib_LIBRARY "${CMAKE_CURRENT_LIST_DIR}/../htslib")
+##set(CK_INCLUDE_DIR "${CMAKE_CURRENT_LIST_DIR}/../ck")
+##set(CK_LIBRARY "${CMAKE_CURRENT_LIST_DIR}/../ck/include")
+##set(LMDB_INCLUDE_DIR "${CMAKE_CURRENT_LIST_DIR}/../lmdb/libraries/liblmdb")
+##set(LMDB_LIBRARY "${CMAKE_CURRENT_LIST_DIR}/../lmdb/libraries/liblmdb")
+##set(HTSlib_INCLUDE_DIR "${CMAKE_CURRENT_LIST_DIR}/../htslib/htslib")
+##set(HTSlib_LIBRARY "${CMAKE_CURRENT_LIST_DIR}/../htslib")
 
 
 message("printing all libraries")
