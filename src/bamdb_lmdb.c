@@ -7,7 +7,7 @@
 #include <lmdb.h>
 
 #include "bam_api.h"
-#include "bam_lmdb.h"
+#include "bamdb_lmdb.h"
 #include "bamdb_status.h"
 
 #define LMDB_POSTFIX "_lmdb"

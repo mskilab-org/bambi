@@ -389,7 +389,7 @@ void print_sequence_row(bam_sequence_row_t *row) {
         printf("f:%g", *(float *)aux->val);
         break;
       case 'd':
-        printf("d:%g", *(float *)aux->val);
+        printf("d:%g", *(double *)aux->val);
         break;
       case 'Z':
       case 'H':

@@ -5,27 +5,33 @@ project(bamdb)
 set(CMAKE_C_FLAGS "-Wall -g -std=gnu99 -fPIC")
 
 option(STATIC_BAMDB_BUILD "STATIC_BAMDB_BUILD" OFF)
+option(BUILD_BAMDB_WRITER "BUILD_BAMDB_WRITER" ON)
+
 
 # External dependencies
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
-find_package(CK REQUIRED)
 find_package(HTSlib REQUIRED)
 find_package(LMDB REQUIRED)
 
 set(LIBS
-  ${CK_LIBRARIES}
   ${HTSlib_LIBRARIES}
   ${LMDB_LIBRARIES}
   m
   pthread
 )
 
+if(BUILD_BAMDB_WRITER)
+  add_definitions(-DBUILD_BAMDB_WRITER)
+  find_package(CK REQUIRED)
+  list(APPEND LIBS ${CK_LIBRARIES})
+  include_directories(${CK_INCLUDE_DIRS})
+endif()
+
 include_directories("${PROJECT_SOURCE_DIR}/include")
 file(GLOB SOURCES "src/*.c")
 
 # Include dependency headers
 include_directories(
-  ${CK_INCLUDE_DIRS}
   ${HTSlib_INCLUDE_DIRS}
   ${LMDB_INCLUDE_DIRS}
 )
@@ -41,11 +47,15 @@ target_link_libraries(libbamdb ${LIBS})
 set_target_properties(libbamdb PROPERTIES OUTPUT_NAME "bamdb")
 
 # Create bamdb executable
-add_executable(bamdb ${SOURCES})
-target_link_libraries(bamdb ${LIBS} libbamdb)
+if(BUILD_BAMDB_WRITER)
+  add_executable(bamdb "src/bamdb_main.c")
+  target_link_libraries(bamdb ${LIBS} libbamdb)
+endif()
 
 # Default install path. Can be overridden with DESTDIR
-install(TARGETS bamdb RUNTIME DESTINATION bin)
+if(BUILD_BAMDB_WRITER)
+  install(TARGETS bamdb RUNTIME DESTINATION bin)
+endif()
 install(DIRECTORY include/
   DESTINATION include/bamdb)
 install(TARGETS libbamdb
