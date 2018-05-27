@@ -23,6 +23,10 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
 message('here is the package base directory, PROJECT_SOURCE_DIR')
 message('$PROJECT_SOURCE_DIR')
+message('${PROJECT_SOURCE_DIR}')
+message('looking for CMAKE_CURRENT_LIST_DIR')
+message("${CMAKE_CURRENT_LIST_DIR}")
+
 
 find_package(CK REQUIRED)
 find_package(LMDB REQUIRED)
