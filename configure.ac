@@ -69,7 +69,7 @@ AC_MSG_NOTICE([bamdb build complete])
 
 
 ## TODO: Dynamically find htslib
-BAMDB_INCL_FLAGS="-I$base_dir/src/zlib/include -I$base_dir/src/ck/include/ -I$base_dir/src/htslib/ -I$base_dir/src/bamdb/include -I$base_dir/src/lmdb/libraries/liblmdb/"
+BAMDB_INCL_FLAGS="-I$base_dir/src/zlib/include -I$base_dir/src/ck/include/ -I$base_dir/src/htslib/ -I$base_dir/src/htslib/htslib -I$base_dir/src/bamdb/include -I$base_dir/src/lmdb/libraries/liblmdb/"
 BAMDB_LIB="$base_dir/src/bamdb/build/libbamdb.a"
 
 bamdb_include="${BAMDB_INCL_FLAGS}"
