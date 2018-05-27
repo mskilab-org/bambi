@@ -26,6 +26,11 @@ message('$PROJECT_SOURCE_DIR')
 message('${PROJECT_SOURCE_DIR}')
 message('looking for CMAKE_CURRENT_LIST_DIR')
 message("${CMAKE_CURRENT_LIST_DIR}")
+message("upper subdirectory")
+message("${CMAKE_CURRENT_LIST_DIR}/../")
+
+set(CK_INCLUDE_DIR "${CMAKE_CURRENT_LIST_DIR}/../ck")
+set(CK_LIBRARY "${CMAKE_CURRENT_LIST_DIR}/../ck/include")
 
 
 find_package(CK REQUIRED)
