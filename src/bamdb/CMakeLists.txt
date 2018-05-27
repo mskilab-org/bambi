@@ -10,13 +10,19 @@ option(STATIC_BAMDB_BUILD "STATIC_BAMDB_BUILD" OFF)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
 ## set variables for include/libraries
+## CK_INCLUDE_DIR=<not found>
+## CK_LIBRARY=<not found>
+## LMDB_INCLUDE_DIR=<not found>
+## LMDB_LIBRARY=<not found>
 ## HTSlib_INCLUDE_DIR=<not found>
 ## HTSlib_LIBRARY=<not found>
+## 
+## 
 
 ## set(HTSlib_INCLUDE_DIR )
 
 message('here is the package base directory, PROJECT_SOURCE_DIR')
-message(PROJECT_SOURCE_DIR)
+message($PROJECT_SOURCE_DIR)
 
 find_package(CK REQUIRED)
 find_package(LMDB REQUIRED)
