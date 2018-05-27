@@ -37,6 +37,15 @@ set(HTSlib_INCLUDE_DIR "${CMAKE_CURRENT_LIST_DIR}/../htslib/htslib")
 set(HTSlib_LIBRARY "${CMAKE_CURRENT_LIST_DIR}/../htslib")
 
 
+message("printing all libraries")
+messages("${CK_INCLUDE_DIR}")
+messages("${CK_LIBRARY}")
+messages("${LMDB_INCLUDE_DIR}")
+messages("${LMDB_LIBRARY}")
+messages("${HTSlib_INCLUDE_DIR}")
+messages("${HTSlib_LIBRARY}")
+
+
 find_package(CK REQUIRED)
 find_package(LMDB REQUIRED)
 find_package(HTSlib REQUIRED)
