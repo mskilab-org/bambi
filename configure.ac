@@ -38,7 +38,7 @@ AC_MSG_NOTICE([ck build complete])
 
 
 AC_MSG_NOTICE([Building htslib library])
-$(
+(
     cd "src/htslib"; \
     make;
 )
@@ -47,7 +47,7 @@ AC_MSG_NOTICE([htslib build complete])
 
 
 AC_MSG_NOTICE([Building lmdb library])
-$(
+(
     cd "src/lmdb/libraries/liblmdb"; \
     make;
 )
@@ -56,7 +56,7 @@ AC_MSG_NOTICE([lmdb build complete])
 
 
 AC_MSG_NOTICE([Building bamdb library])
-$(
+(
     cd "src/bamdb"; \
     mkdir -p "build"; \
     cd "build"; \

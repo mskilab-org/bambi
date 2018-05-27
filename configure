@@ -3231,7 +3231,7 @@ $as_echo "$as_me: ck build complete" >&6;}
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: Building htslib library" >&5
 $as_echo "$as_me: Building htslib library" >&6;}
-$(
+(
     cd "src/htslib"; \
     make;
 )
@@ -3242,7 +3242,7 @@ $as_echo "$as_me: htslib build complete" >&6;}
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: Building lmdb library" >&5
 $as_echo "$as_me: Building lmdb library" >&6;}
-$(
+(
     cd "src/lmdb/libraries/liblmdb"; \
     make;
 )
@@ -3253,7 +3253,7 @@ $as_echo "$as_me: lmdb build complete" >&6;}
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: Building bamdb library" >&5
 $as_echo "$as_me: Building bamdb library" >&6;}
-$(
+(
     cd "src/bamdb"; \
     mkdir -p "build"; \
     cd "build"; \
