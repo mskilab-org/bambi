@@ -40,6 +40,16 @@ set(HTSlib_PKGCONF_INCLUDE_DIRS "${CMAKE_CURRENT_LIST_DIR}/../htslib/htslib")
 set(HTSlib_PKGCONF_LIBRARY_DIRS "${CMAKE_CURRENT_LIST_DIR}/../htslib")
 
 
+message("CHECK THESE LIBRARIES AND INCLUDE FILES")
+message("${CK_PKGCONF_INCLUDE_DIRS}")
+message("${CK_PKGCONF_LIBRARY_DIRS}")
+message("${LMDB_PKGCONF_INCLUDE_DIRS}")
+message("${LMDB_PKGCONF_LIBRARY_DIRS}")
+message("${HTSlib_PKGCONF_INCLUDE_DIRS}")
+message("${HTSlib_PKGCONF_LIBRARY_DIRS}")
+
+
+
 ##set(CK_INCLUDE_DIR "${CMAKE_CURRENT_LIST_DIR}/../ck/include")
 ##set(CK_LIBRARY "${CMAKE_CURRENT_LIST_DIR}/../ck/")
 ##set(LMDB_INCLUDE_DIR "${CMAKE_CURRENT_LIST_DIR}/../lmdb/libraries/liblmdb")
@@ -74,12 +84,6 @@ message("${CMAKE_CURRENT_LIST_DIR}")
 message("upper subdirectory")
 message("${CMAKE_CURRENT_LIST_DIR}/../")
 
-##set(CK_INCLUDE_DIR "${CMAKE_CURRENT_LIST_DIR}/../ck")
-##set(CK_LIBRARY "${CMAKE_CURRENT_LIST_DIR}/../ck/include")
-##set(LMDB_INCLUDE_DIR "${CMAKE_CURRENT_LIST_DIR}/../lmdb/libraries/liblmdb")
-##set(LMDB_LIBRARY "${CMAKE_CURRENT_LIST_DIR}/../lmdb/libraries/liblmdb")
-##set(HTSlib_INCLUDE_DIR "${CMAKE_CURRENT_LIST_DIR}/../htslib/htslib")
-##set(HTSlib_LIBRARY "${CMAKE_CURRENT_LIST_DIR}/../htslib")
 
 
 message("printing all libraries")
