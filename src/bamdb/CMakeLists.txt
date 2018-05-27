@@ -29,14 +29,6 @@ list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}/../ck/include")
 list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}/../htslib/htslib")
 
 
-set(CK_INCLUDE_DIR "${CMAKE_CURRENT_LIST_DIR}/../ck")
-set(CK_LIBRARY "${CMAKE_CURRENT_LIST_DIR}/../ck/include")
-set(LMDB_INCLUDE_DIR "${CMAKE_CURRENT_LIST_DIR}/../lmdb/libraries/liblmdb")
-set(LMDB_LIBRARY "${CMAKE_CURRENT_LIST_DIR}/../lmdb/libraries/liblmdb")
-set(HTSlib_INCLUDE_DIR "${CMAKE_CURRENT_LIST_DIR}/../htslib/htslib")
-set(HTSlib_LIBRARY "${CMAKE_CURRENT_LIST_DIR}/../htslib")
-
-
 
 ## try adding dependency paths here
 
