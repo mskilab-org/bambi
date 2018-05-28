@@ -9,6 +9,7 @@ option(STATIC_BAMDB_BUILD "STATIC_BAMDB_BUILD" OFF)
 # External dependencies
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
+list(APPEND CMAKE_MODULE_PATH cmake)
 
 ## The find_package() command will look in the module path for Find.cmake, which is the
 ## typical way for finding libraries. First CMake checks all directories in
