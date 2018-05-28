@@ -17,9 +17,6 @@ devtools::install_github('mskilab/bamUtils')
 ```
 
 
-cbambi
-https://github.com/mskilab/cbambi
-
 ## bambi commands
 
 
@@ -39,9 +36,6 @@ Methods:
 * fetch_by_tag()
     * `fetch_by_tag(tag, tag_queries, query=NULL, data.table = FALSE, verbose = FALSE, mc.cores = 1)`
 
-* fetch_by_multiple_tag()? 
-    * remove
-    * the only downside is that `fetch_by_tag()` might take a performance hit....
 
 ## Demo
 
