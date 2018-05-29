@@ -175,6 +175,13 @@ test_that('bambi test method grab_cb()', {
     ##
     ## else
     expect_equal(length(foocb$grab_cb(query=GRanges("19:1440000-1440500"), verbose=TRUE)), 33)
+    ##
+    ## check UCSC/Ensembl conversion
+    expect_equal(foocb$grab_cb(query=GRanges('chr5:10-15'), verbose=TRUE), NA)
+    expect_equal(foocb$grab_cb(query=GRanges("chr5:1053000-1253655"), verbose=TRUE), NA)
+    ##
+    ## else
+    expect_equal(length(foocb$grab_cb(query=GRanges("chr19:1440000-1440500"), verbose=TRUE)), 33)
 
 })
 
