@@ -103,6 +103,12 @@ test_that('bambi test method grab_bx()', {
     ## else
     expect_equal(length(foo$grab_bx(query=GRanges('chr19:27842400-27842700'), verbose=TRUE)), 4)
     ##
+    ## check UCSC/Ensembl
+    expect_equal(foo$grab_bx(query=GRanges('5:10-15'), verbose=TRUE), NA)
+    expect_equal(foo$grab_bx(query=GRanges("5:1053000-1253655")), NA)
+    ##
+    ## else
+    expect_equal(length(foo$grab_bx(query=GRanges('19:27842400-27842700'), verbose=TRUE)), 4)
 })
 
 

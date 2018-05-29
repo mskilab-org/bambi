@@ -166,14 +166,16 @@ bambi = R6::R6Class('bambi',
                             now = Sys.time()
                         }
 
-                        query_try = try(unlist(read.bam(self$bam_file,  gr = query, tag = c('BX','MD'), pairs.grl = FALSE)))   ### if no MD tag, bamUtils::read.bam() outputs an NA for this column
-                        if (inherits(try_query, "try-error")){
+                        query_try = try(unlist(read.bam(self$bam_file,  gr = query, tag = c('BX','MD'), pairs.grl = FALSE)), silent=TRUE)   ### if no MD tag, bamUtils::read.bam() outputs an NA for this column
+                        if (inherits(query_try, "try-error")){
                             if ('UCSC' %in% seqlevelsStyle(query)){
                                 ## change to Ensemble, e.g chr5 -> 5
+                                message('Converting seqlevels of "query" GRanges from UCSC style to Ensembl style, e.g. from format chr# to #')
                                 seqlevelsStyle(query) = 'Ensembl'
                                 query_try = try(unlist(read.bam(self$bam_file,  gr = query, tag = c('BX','MD'), pairs.grl = FALSE))) 
                             } else if ('Ensembl' %in% seqlevelsStyle(query)){
                                 ## change to UCSC, e.g 5 -> chr5
+                                message('Converting seqlevels of "query" GRanges from Ensembl style to UCSC style, e.g. from format # to chr#')
                                 seqlevelsStyle(query) = 'UCSC'
                                 query_try = try(unlist(read.bam(self$bam_file,  gr = query, tag = c('BX','MD'), pairs.grl = FALSE))) 
                             } else{
@@ -187,6 +189,7 @@ bambi = R6::R6Class('bambi',
                             print(Sys.time() - now)
                         }
                     } 
+
 
                     query = query_try
     
