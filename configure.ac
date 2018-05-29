@@ -26,13 +26,15 @@ $(
 
 AC_MSG_NOTICE([lmdb build complete])
 
-LMDB_INCL_FLAGS="-I$base_dir/src/lmdb/libraries/liblmdb"
+LMDB_INCL_PATH="$base_dir/src/lmdb/libraries/liblmdb"
+LMDB_INCL_FLAGS="-I${LMDB_INCL_PATH}"
 LMDB_LIB="$base_dir/src/lmdb/libraries/liblmdb/liblmdb.a"
+LMDB_CMAKE_FLAGS="-DLMDB_INCLUDE_DIR=${LMDB_INCL_PATH} -DLMDB_LIBRARY=${LMDB_LIB}"
 
 AC_MSG_NOTICE([Building bamdb library])
 $(
     cd "$base_dir/src/build"; \
-    cmake "$base_dir/src/bamdb/" -DSTATIC_BAMDB_BUILD=ON -DBUILD_BAMDB_WRITER=OFF; \
+	cmake "$base_dir/src/bamdb/" -DSTATIC_BAMDB_BUILD=ON -DBUILD_BAMDB_WRITER=OFF ${LMDB_CMAKE_FLAGS}; \
     make;
 )
 

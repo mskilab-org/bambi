@@ -3888,14 +3888,16 @@ $(
 { $as_echo "$as_me:${as_lineno-$LINENO}: lmdb build complete" >&5
 $as_echo "$as_me: lmdb build complete" >&6;}
 
-LMDB_INCL_FLAGS="-I$base_dir/src/lmdb/libraries/liblmdb"
+LMDB_INCL_PATH="$base_dir/src/lmdb/libraries/liblmdb"
+LMDB_INCL_FLAGS="-I${LMDB_INCL_PATH}"
 LMDB_LIB="$base_dir/src/lmdb/libraries/liblmdb/liblmdb.a"
+LMDB_CMAKE_FLAGS="-DLMDB_INCLUDE_DIR=${LMDB_INCL_PATH} -DLMDB_LIBRARY=${LMDB_LIB}"
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: Building bamdb library" >&5
 $as_echo "$as_me: Building bamdb library" >&6;}
 $(
     cd "$base_dir/src/build"; \
-    cmake "$base_dir/src/bamdb/" -DSTATIC_BAMDB_BUILD=ON -DBUILD_BAMDB_WRITER=OFF; \
+	cmake "$base_dir/src/bamdb/" -DSTATIC_BAMDB_BUILD=ON -DBUILD_BAMDB_WRITER=OFF ${LMDB_CMAKE_FLAGS}; \
     make;
 )
 
