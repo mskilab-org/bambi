@@ -1,4 +1,3 @@
-
 #' @import data.table
 #' @import GenomicRanges
 #' @import IRanges
