@@ -249,8 +249,11 @@ test_that('bambi test method grab_ub()', {
     expect_equal(fooub$grab_ub(query=GRanges("5:1053000-1253655")), NA)
     ##
     expect_equal(length(fooub$grab_ub(query=GRanges("19:1440000-1440500"), verbose=TRUE)), 2)
-    ## else
-
+    ## check UCSC/Ensembl conversion
+    expect_equal(fooub$grab_ub(query=GRanges('chr5:10-15'), verbose=TRUE), NA)
+    expect_equal(fooub$grab_ub(query=GRanges("chr5:1053000-1253655")), NA)
+    ##
+    expect_equal(length(fooub$grab_ub(query=GRanges("chr19:1440000-1440500"), verbose=TRUE)), 2)
 
 })
 
@@ -333,6 +336,10 @@ test_that('bambi test method fetch_by_tag()', {
     ## if (length(query)==0){
     expect_equal(foo_fetch_ps$fetch_by_tag(tag = 'PS', query=GRanges('chr5:10-15'), verbose=TRUE), NA)
     expect_equal(foo_fetch_ps$fetch_by_tag(tag = 'PS', query=GRanges('chr5:1053000-1253655'), verbose=TRUE), NA)
+    ## 
+    ## Check UCSC/Ensembl conversion
+    expect_equal(foo_fetch_ps$fetch_by_tag(tag = 'PS', query=GRanges('5:10-15'), verbose=TRUE), NA)
+    expect_equal(foo_fetch_ps$fetch_by_tag(tag = 'PS', query=GRanges('5:1053000-1253655'), verbose=TRUE), NA)
     ##
     ## else
     ## FIX
