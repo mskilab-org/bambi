@@ -169,12 +169,12 @@ bambi = R6::R6Class('bambi',
                         query_try = try(unlist(read.bam(self$bam_file,  gr = query, tag = c('BX','MD'), pairs.grl = FALSE)), silent=TRUE)   ### if no MD tag, bamUtils::read.bam() outputs an NA for this column
                         if (inherits(query_try, "try-error")){
                             if ('UCSC' %in% seqlevelsStyle(query)){
-                                ## change to Ensemble, e.g chr5 -> 5
+                                ## change from UCSC to Ensemble, e.g chr5 -> 5
                                 message('Converting seqlevels of "query" GRanges from UCSC style to Ensembl style, e.g. from format chr# to #')
                                 seqlevelsStyle(query) = 'Ensembl'
                                 query_try = try(unlist(read.bam(self$bam_file,  gr = query, tag = c('BX','MD'), pairs.grl = FALSE))) 
                             } else if ('Ensembl' %in% seqlevelsStyle(query)){
-                                ## change to UCSC, e.g 5 -> chr5
+                                ## change Ensembl to UCSC, e.g 5 -> chr5
                                 message('Converting seqlevels of "query" GRanges from Ensembl style to UCSC style, e.g. from format # to chr#')
                                 seqlevelsStyle(query) = 'UCSC'
                                 query_try = try(unlist(read.bam(self$bam_file,  gr = query, tag = c('BX','MD'), pairs.grl = FALSE))) 
@@ -330,13 +330,32 @@ bambi = R6::R6Class('bambi',
                             now = Sys.time()
                         }
 
-                        query = unlist(read.bam(self$bam_file,  gr = query, tag = c('CB','MD'), pairs.grl = FALSE))  ### if no MD tag, bamUtils::read.bam() outputs an NA for this column
+                        query_try = try(unlist(read.bam(self$bam_file,  gr = query, tag = c('CB','MD'), pairs.grl = FALSE)), silent=TRUE)   ### if no MD tag, bamUtils::read.bam() outputs an NA for this column
+                        if (inherits(query_try, "try-error")){
+                            if ('UCSC' %in% seqlevelsStyle(query)){
+                                ## change from UCSC to Ensemble, e.g chr5 -> 5
+                                message('Converting seqlevels of "query" GRanges from UCSC style to Ensembl style, e.g. from format chr# to #')
+                                seqlevelsStyle(query) = 'Ensembl'
+                                query_try = try(unlist(read.bam(self$bam_file,  gr = query, tag = c('CB','MD'), pairs.grl = FALSE))) 
+                            } else if ('Ensembl' %in% seqlevelsStyle(query)){
+                                ## change Ensembl to UCSC, e.g 5 -> chr5
+                                message('Converting seqlevels of "query" GRanges from Ensembl style to UCSC style, e.g. from format # to chr#')
+                                seqlevelsStyle(query) = 'UCSC'
+                                query_try = try(unlist(read.bam(self$bam_file,  gr = query, tag = c('CB','MD'), pairs.grl = FALSE))) 
+                            } else{
+                                stop("Check GRanges input for 'query'. Appears to be formatted incorrectly.")
+                            }
+                            query_try = unlist(read.bam(self$bam_file,  gr = query, tag = c('CB','MD'), pairs.grl = FALSE))
+                        }
 
                         if (verbose){
                             message(sprintf('Retrieved %s reads with %s unique barcodes:', length(query), length(unique(query$CB))))
                             print(Sys.time() - now)
                         }
                     } 
+
+
+                    query = query_try
     
                     barcodes = query$CB  ## vector of CB's 
     
