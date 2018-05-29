@@ -21,7 +21,7 @@ example_PS_bam = 'subset_HCC1143_phased_possorted000005.PS.bam'   ### all tests 
 example_PS_bai = 'subset_HCC1143_phased_possorted000005.PS.bam.bai' 
 example_PS_lmdb = 'subset_HCC1143_phased_possorted000005.PS_lmdb'
 
-
+bam_no_lmdb = 'bam_with_no_lmdb.bam'
 
 ######## R6_class.R
 
