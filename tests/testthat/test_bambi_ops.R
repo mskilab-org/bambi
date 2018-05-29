@@ -63,6 +63,8 @@ test_that('bambi test method grab_bx()', {
     expect_equal(foo$grab_bx('CGGCTAGGTAGAATAC-1', verbose=TRUE)$mapq[2], 60)
     expect_match(foo$grab_bx('CGGCTAGGTAGAATAC-1')$cigar[1], "80M47S")
     expect_match(foo$grab_bx('CGGCTAGGTAGAATAC-1')$cigar[2], "37S113M")
+    expect_equal(length(foo$grab_bx('CGGCTAGGTAGAATAC-1')), 2)
+    expect_equal(length(foo$grab_bx('CGGCTAGGTAGAATAC-1', data.table=TRUE)), 22)
     ##
     ## if ((is.null(barcodes)) & (is.null(query))){
     expect_equal(foo$grab_bx(), GRanges())
@@ -79,6 +81,7 @@ test_that('bambi test method grab_bx()', {
     expect_equal(foo$grab_bx(barcodes='foobar'), NA)
     ## multiple barcodes
     expect_equal(length(foo$grab_bx(barcodes=c('CGGCTAGGTAGAATAC-1', 'AGCTTCCCACTTCACC-1', 'GGCGTTGAGAGCTGGT-1'), mc.cores=2, verbose=TRUE)), 8)
+    expect_equal(length(foo$grab_bx(barcodes=c('CGGCTAGGTAGAATAC-1', 'AGCTTCCCACTTCACC-1', 'GGCGTTGAGAGCTGGT-1'), mc.cores=2, verbose=TRUE, data.table=TRUE)), 22) 
     expect_equal(dim(foo$grab_bx(barcodes=c('CGGCTAGGTAGAATAC-1', 'AGCTTCCCACTTCACC-1', 'GGCGTTGAGAGCTGGT-1'), data.table=TRUE, mc.cores=2, verbose=TRUE))[1], 8)
     expect_equal(dim(foo$grab_bx(barcodes=c('CGGCTAGGTAGAATAC-1', 'AGCTTCCCACTTCACC-1', 'GGCGTTGAGAGCTGGT-1'), data.table=TRUE, mc.cores=2, verbose=TRUE))[2], 22)
     ## 
@@ -130,6 +133,7 @@ test_that('bambi test method grab_cb()', {
     ## expect_match(foocb$grab_cb('GTAGTCATCTGGGCCA-1'))$cigar, "98M")
     expect_equal(length(foocb$grab_cb('GTAGTCATCTGGGCCA-1')), 1)
     expect_equal(length(foocb$grab_cb('GTAGTCATCTGGGCCA-1', verbose=TRUE)), 1)
+    expect_equal(length(foocb$grab_cb('GTAGTCATCTGGGCCA-1', data.table=TRUE)), 25)
     ##
     ## if ((is.null(barcodes)) & (is.null(query))){
     expect_equal(foocb$grab_cb(), GRanges())
@@ -197,6 +201,7 @@ test_that('bambi test method grab_ub()', {
     ## expect_match(as.data.frame(fooub$grab_ub('ATACAAGCGG'))$cigar, "98M")
     expect_equal(length(fooub$grab_ub('ATACAAGCGG')), 1)
     expect_equal(length(fooub$grab_ub('ATACAAGCGG', verbose=TRUE)), 1)
+    expect_equal(length(fooub$grab_ub('ATACAAGCGG', verbose=TRUE, data.table=TRUE)), 25)
     ##
     ## if ((is.null(barcodes)) & (is.null(query))){
     expect_equal(fooub$grab_ub(), GRanges())
@@ -257,6 +262,12 @@ test_that('bambi test method fetch_by_tag()', {
     ## Error in foo_fetch_bx$fetch_by_tag(tag = c("BX", "CB")) : 
     ## Invalid tag input. Multiple tags at once is not currently supported with 'fetch_by_tag()'. Please see documentation for details.
     expect_error(foo_fetch_bx$fetch_by_tag(tag = c('BX', 'CB')))
+    ##
+    ## if (!inherits(tag, "character")){
+    ##     stop("Invalid tag. Input 'tag' must be a single character string. Must provide valid BAM field.")
+    ## }
+    ## Invalid tag. Input 'tag' must be a single character string. Must provide valid BAM field.
+    expect_error(foo_fetch_bx$fetch_by_tag(tag = 42))
     ## 
     ## foo_fetch_bx$fetch_by_tag(tag = 'BX', tag_queries='CGGCTAGGTAGAATAC-1')
     expect_equal(foo_fetch_bx$fetch_by_tag(tag = 'BX', tag_queries='CGGCTAGGTAGAATAC-1', verbose=TRUE)$flag[1], 97)
@@ -265,6 +276,8 @@ test_that('bambi test method fetch_by_tag()', {
     expect_equal(foo_fetch_bx$fetch_by_tag(tag = 'BX', tag_queries='CGGCTAGGTAGAATAC-1')$mapq[2], 60)
     expect_match(foo_fetch_bx$fetch_by_tag(tag = 'BX', tag_queries='CGGCTAGGTAGAATAC-1')$cigar[1], "80M47S")
     expect_match(foo_fetch_bx$fetch_by_tag(tag = 'BX', tag_queries='CGGCTAGGTAGAATAC-1')$cigar[2], "37S113M")
+    expect_equal(length(foo_fetch_bx$fetch_by_tag(tag = 'BX', tag_queries='CGGCTAGGTAGAATAC-1')), 2)
+    expect_equal(length(foo_fetch_bx$fetch_by_tag(tag = 'BX', tag_queries='CGGCTAGGTAGAATAC-1', data.table=TRUE)), 23)
     ##
     ## if (check_index(self$bamdb_path, tag) != TRUE){
     ## Error in foo_fetch_bx$fetch_by_tag(tag = c("CB")) : 
@@ -446,7 +459,6 @@ test_that('check_index', {
     expect_false(check_index(example_lmdb, "BZ"))  ## only BX and QNAME should be indexed
 
 })
-
 
 
 
