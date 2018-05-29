@@ -189,29 +189,51 @@ bambi = R6::R6Class('bambi',
                             print(Sys.time() - now)
                         }
 
-                    query = query_try
+                        query = query_try
 
                     } 
     
                     barcodes = query$BX  ## vector of BX's 
     
                 } else if(inherits(query, 'data.frame') | inherits(query, 'data.table')){
+
+                    query = dt2gr(query)
              
+
                     if (is.null(query$BX)){
 
                         if (verbose){
-                            message('Using read.bam to pull reads under data.table/data.frame query from BAM file and find their BX tags.')
+                            message('Using read.bam to pull reads under GRanges query from BAM file and find their BX tags.')
                             now = Sys.time()
                         }
 
-                        query = unlist(read.bam(self$bam_file,  gr = query, tag = c('BX','MD'), pairs.grl = FALSE))   ### if no MD tag, bamUtils::read.bam() outputs an NA for this column
+                        query_try = try(unlist(read.bam(self$bam_file,  gr = query, tag = c('BX','MD'), pairs.grl = FALSE)), silent=TRUE)   ### if no MD tag, bamUtils::read.bam() outputs an NA for this column
+                        if (inherits(query_try, "try-error")){
+                            if ('UCSC' %in% seqlevelsStyle(query)){
+                                ## change from UCSC to Ensemble, e.g chr5 -> 5
+                                message('Converting seqlevels of "query" GRanges from UCSC style to Ensembl style, e.g. from format chr# to #')
+                                seqlevelsStyle(query) = 'Ensembl'
+                                query_try = try(unlist(read.bam(self$bam_file,  gr = query, tag = c('BX','MD'), pairs.grl = FALSE))) 
+                            } else if ('Ensembl' %in% seqlevelsStyle(query)){
+                                ## change Ensembl to UCSC, e.g 5 -> chr5
+                                message('Converting seqlevels of "query" GRanges from Ensembl style to UCSC style, e.g. from format # to chr#')
+                                seqlevelsStyle(query) = 'UCSC'
+                                query_try = try(unlist(read.bam(self$bam_file,  gr = query, tag = c('BX','MD'), pairs.grl = FALSE))) 
+                            } else{
+                                stop("Check data.frame/data.table input for 'query'. Appears to be formatted incorrectly.")
+                            }
+                            query_try = unlist(read.bam(self$bam_file,  gr = query, tag = c('BX','MD'), pairs.grl = FALSE))
+                        }
 
                         if (verbose){
-                            message(sprintf('Retrieved %s reads with %s unique barcodes:', length(query), length(unique(query$CB))))
+                            message(sprintf('Retrieved %s reads with %s unique barcodes:', length(query), length(unique(query$BX))))
                             print(Sys.time() - now)
                         }
-                    } 
 
+                        query = query_try
+
+                    } 
+    
                     barcodes = query$BX  ## vector of BX's 
 
                 } else{
@@ -353,27 +375,48 @@ bambi = R6::R6Class('bambi',
                             print(Sys.time() - now)
                         }
 
-                    query = query_try    
+                        query = query_try    
 
                     } 
 
                     barcodes = query$CB  ## vector of CB's 
     
                 } else if(inherits(query, 'data.frame') | inherits(query, 'data.table')){
+
+                    query = dt2gr(query)
              
                     if (is.null(query$CB)){
 
                         if (verbose){
-                            message('Using read.bam to pull reads under data.table/data.frame query from BAM file and find their CB tags.')
+                            message('Using read.bam to pull reads under GRanges query from BAM file and find their CB tags.')
                             now = Sys.time()
                         }
 
-                        query = unlist(read.bam(self$bam_file,  gr = query, tag = c('CB','MD'), pairs.grl = FALSE))  ### if no MD tag, bamUtils::read.bam() outputs an NA for this column
+                        query_try = try(unlist(read.bam(self$bam_file,  gr = query, tag = c('CB','MD'), pairs.grl = FALSE)), silent=TRUE)   ### if no MD tag, bamUtils::read.bam() outputs an NA for this column
+                        if (inherits(query_try, "try-error")){
+                            if ('UCSC' %in% seqlevelsStyle(query)){
+                                ## change from UCSC to Ensemble, e.g chr5 -> 5
+                                message('Converting seqlevels of "query" GRanges from UCSC style to Ensembl style, e.g. from format chr# to #')
+                                seqlevelsStyle(query) = 'Ensembl'
+                                query_try = try(unlist(read.bam(self$bam_file,  gr = query, tag = c('CB','MD'), pairs.grl = FALSE))) 
+                            } else if ('Ensembl' %in% seqlevelsStyle(query)){
+                                ## change Ensembl to UCSC, e.g 5 -> chr5
+                                message('Converting seqlevels of "query" GRanges from Ensembl style to UCSC style, e.g. from format # to chr#')
+                                seqlevelsStyle(query) = 'UCSC'
+                                query_try = try(unlist(read.bam(self$bam_file,  gr = query, tag = c('CB','MD'), pairs.grl = FALSE))) 
+                            } else{
+                                stop("Check data.frame/data.table input for 'query'. Appears to be formatted incorrectly.")
+                            }
+                            query_try = unlist(read.bam(self$bam_file,  gr = query, tag = c('CB','MD'), pairs.grl = FALSE))
+                        }
 
                         if (verbose){
                             message(sprintf('Retrieved %s reads with %s unique barcodes:', length(query), length(unique(query$CB))))
                             print(Sys.time() - now)
                         }
+
+                        query = query_try    
+
                     } 
 
                     barcodes = query$CB  ## vector of CB's 
@@ -515,30 +558,51 @@ bambi = R6::R6Class('bambi',
                             print(Sys.time() - now)
                         }
 
-                    query = query_try
+                        query = query_try
 
                     } 
     
-                    barcodes = query$UB  ## vector of CB's 
+                    barcodes = query$UB  ## vector of UB's 
     
     
                 } else if(inherits(query, 'data.frame') | inherits(query, 'data.table')){
+
+                    query = dt2gr(query)
              
                     if (is.null(query$UB)){
 
                         if (verbose){
-                            message('Using read.bam to pull reads under data.table/data.frame query from BAM file and find their BX tags.')
+                            message('Using read.bam to pull reads under GRanges query from BAM file and find their UB tags.')
                             now = Sys.time()
                         }
 
-                        query = unlist(read.bam(self$bam_file,  gr = query, tag = c('UB','MD'), pairs.grl = FALSE))   ### if no MD tag, bamUtils::read.bam() outputs an NA for this column
+                        query_try = try(unlist(read.bam(self$bam_file,  gr = query, tag = c('UB','MD'), pairs.grl = FALSE)), silent=TRUE)   ### if no MD tag, bamUtils::read.bam() outputs an NA for this column
+                        if (inherits(query_try, "try-error")){
+                            if ('UCSC' %in% seqlevelsStyle(query)){
+                                ## change from UCSC to Ensemble, e.g chr5 -> 5
+                                message('Converting seqlevels of "query" GRanges from UCSC style to Ensembl style, e.g. from format chr# to #')
+                                seqlevelsStyle(query) = 'Ensembl'
+                                query_try = try(unlist(read.bam(self$bam_file,  gr = query, tag = c('UB','MD'), pairs.grl = FALSE))) 
+                            } else if ('Ensembl' %in% seqlevelsStyle(query)){
+                                ## change Ensembl to UCSC, e.g 5 -> chr5
+                                message('Converting seqlevels of "query" GRanges from Ensembl style to UCSC style, e.g. from format # to chr#')
+                                seqlevelsStyle(query) = 'UCSC'
+                                query_try = try(unlist(read.bam(self$bam_file,  gr = query, tag = c('UB','MD'), pairs.grl = FALSE))) 
+                            } else{
+                                stop("Check data.frame/data.table input for 'query'. Appears to be formatted incorrectly.")
+                            }
+                            query_try = unlist(read.bam(self$bam_file,  gr = query, tag = c('UB','MD'), pairs.grl = FALSE))
+                        }
 
                         if (verbose){
                             message(sprintf('Retrieved %s reads with %s unique barcodes:', length(query), length(unique(query$UB))))
                             print(Sys.time() - now)
                         }
-                    } 
 
+                        query = query_try
+
+                    } 
+    
                     barcodes = query$UB  ## vector of UB's 
 
                 } else{
@@ -694,7 +758,7 @@ bambi = R6::R6Class('bambi',
                             print(Sys.time() - now)
                         }
 
-                    query = query_try
+                        query = query_try
 
                     } 
     
