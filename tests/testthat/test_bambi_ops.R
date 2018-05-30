@@ -114,17 +114,25 @@ test_that('bambi test method grab_bx()', {
     ## try data.frame
     expect_equal(length(foo$grab_bx(query=as.data.frame(gr2dt(GRanges('chr19:27842400-27842700'))), verbose=TRUE)), 4)
     expect_equal(length(foo$grab_bx(query=as.data.frame(gr2dt(GRanges('19:27842400-27842700'))), verbose=TRUE)), 4)
+    expect_equal(dim(foo$grab_bx(query=as.data.frame(gr2dt(GRanges('chr19:27842400-27842700'))), verbose=TRUE, data.table=TRUE))[1], 4)
+    expect_equal(dim(foo$grab_bx(query=as.data.frame(gr2dt(GRanges('19:27842400-27842700'))), verbose=TRUE, data.table=TRUE))[1], 4)
     ##
     ## try data.table
     expect_equal(length(foo$grab_bx(query=as.data.table(gr2dt(GRanges('chr19:27842400-27842700'))), verbose=TRUE)), 4)
     expect_equal(length(foo$grab_bx(query=as.data.table(gr2dt(GRanges('19:27842400-27842700'))), verbose=TRUE)), 4)
+    expect_equal(dim(foo$grab_bx(query=as.data.frame(gr2dt(GRanges('chr19:27842400-27842700'))), verbose=TRUE, data.table=TRUE))[1], 4)
+    expect_equal(dim(foo$grab_bx(query=as.data.frame(gr2dt(GRanges('19:27842400-27842700'))), verbose=TRUE, data.table=TRUE))[1], 4)
     ##
     ## check UCSC/Ensembl conversion
     expect_equal(foo$grab_bx(query=GRanges('5:10-15'), verbose=TRUE), NA)
     expect_equal(foo$grab_bx(query=GRanges("5:1053000-1253655")), NA)
+    expect_equal(foo$grab_bx(query=GRanges('5:10-15'), verbose=TRUE, data.table=TRUE), NA)
+    expect_equal(foo$grab_bx(query=GRanges("5:1053000-1253655"), data.table=TRUE), NA)
     ##
     ## else
     expect_equal(length(foo$grab_bx(query=GRanges('19:27842400-27842700'), verbose=TRUE)), 4)
+    expect_equal(length(foo$grab_bx(query=GRanges('chr19:27842400-27842700'), verbose=TRUE)), 4)
+    expect_equal(dim(foo$grab_bx(query=GRanges('19:27842400-27842700'), verbose=TRUE, data.table=TRUE))[1], 4)
 })
 
 
@@ -203,14 +211,20 @@ test_that('bambi test method grab_cb()', {
     ## try data.frame
     expect_equal(length(foocb$grab_cb(query=as.data.frame(gr2dt(GRanges("19:1440000-1440500"))), verbose=TRUE)), 33)
     expect_equal(length(foocb$grab_cb(query=as.data.frame(gr2dt(GRanges("chr19:1440000-1440500"))), verbose=TRUE)), 33)
+    expect_equal(dim(foocb$grab_cb(query=as.data.frame(gr2dt(GRanges("19:1440000-1440500")))[1], verbose=TRUE, data.table=TRUE)), 33)
+    expect_equal(dim(foocb$grab_cb(query=as.data.frame(gr2dt(GRanges("chr19:1440000-1440500")))[1], verbose=TRUE, data.table=TRUE)), 33)
     ## 
     ## try data.table
     expect_equal(length(foocb$grab_cb(query=as.data.table(gr2dt(GRanges("19:1440000-1440500"))), verbose=TRUE)), 33)
     expect_equal(length(foocb$grab_cb(query=as.data.table(gr2dt(GRanges("chr19:1440000-1440500"))), verbose=TRUE)), 33)
+    expect_equal(dim(foocb$grab_cb(query=as.data.table(gr2dt(GRanges("19:1440000-1440500")))[1], verbose=TRUE, data.table=TRUE)), 33)
+    expect_equal(dim(foocb$grab_cb(query=as.data.table(gr2dt(GRanges("chr19:1440000-1440500")))[1], verbose=TRUE, data.table=TRUE)), 33)   
     ##
     ## check UCSC/Ensembl conversion
     expect_equal(foocb$grab_cb(query=GRanges('chr5:10-15'), verbose=TRUE), NA)
     expect_equal(foocb$grab_cb(query=GRanges("chr5:1053000-1253655"), verbose=TRUE), NA)
+    expect_equal(foocb$grab_cb(query=GRanges('chr5:10-15'), verbose=TRUE, data.table=TRUE), NA)
+    expect_equal(foocb$grab_cb(query=GRanges("chr5:1053000-1253655"), verbose=TRUE, data.table=TRUE), NA)
     ##
     ## else
     expect_equal(length(foocb$grab_cb(query=GRanges("chr19:1440000-1440500"), verbose=TRUE)), 33)
@@ -291,6 +305,29 @@ test_that('bambi test method grab_ub()', {
     ##
     ## data.table = TRUE
     expect_equal(dim(fooub$grab_ub(query=GRanges("19:1440000-1440500"), verbose=TRUE, data.table = TRUE))[1], 2)
+    ## 
+    ## try data.frame input
+    ## df1 = as.data.frame(gr2dt(GRanges("19:1440000-1440500")))
+    expect_equal(length(fooub$grab_ub(query=as.data.frame(gr2dt(GRanges("19:1440000-1440500"))), verbose=TRUE)), 2)
+    expect_equal(length(fooub$grab_ub(query=as.data.frame(gr2dt(GRanges("chr19:1440000-1440500"))), verbose=TRUE)), 2)
+    expect_equal(dim(fooub$grab_ub(query=as.data.frame(gr2dt(GRanges("19:1440000-1440500")))[1], verbose=TRUE, data.table=TRUE)), 2)
+    expect_equal(dim(fooub$grab_ub(query=as.data.frame(gr2dt(GRanges("chr19:1440000-1440500")))[1], verbose=TRUE, data.table=TRUE)), 2)
+    ## 
+    ## try data.table
+    ##dt1 = as.data.table(gr2dt(GRanges("19:1440000-1440500")))
+    expect_equal(length(fooub$grab_ub(query=as.data.table(gr2dt(GRanges("19:1440000-1440500"))), verbose=TRUE)), 2)
+    expect_equal(length(fooub$grab_ub(query=as.data.table(gr2dt(GRanges("chr19:1440000-1440500"))), verbose=TRUE)), 2)
+    expect_equal(dim(fooub$grab_ub(query=as.data.table(gr2dt(GRanges("19:1440000-1440500")))[1], verbose=TRUE, data.table=TRUE)), 2)
+    expect_equal(dim(fooub$grab_ub(query=as.data.table(gr2dt(GRanges("chr19:1440000-1440500")))[1], verbose=TRUE, data.table=TRUE)), 2)
+    ##
+    ## check UCSC/Ensembl conversion
+    expect_equal(fooub$grab_ub(query=GRanges('chr5:10-15'), verbose=TRUE), NA)
+    expect_equal(fooub$grab_ub(query=GRanges("chr5:1053000-1253655")), NA)
+    expect_equal(fooub$grab_ub(query=GRanges('chr5:10-15'), verbose=TRUE, data.table=TRUE), NA)
+    expect_equal(fooub$grab_ub(query=GRanges("chr5:1053000-1253655", data.table=TRUE)), NA)
+    ##
+    expect_equal(length(fooub$grab_ub(query=GRanges("chr19:1440000-1440500"), verbose=TRUE)), 2)
+    expect_equal(length(fooub$grab_ub(query=GRanges("chr19:1440000-1440500"), verbose=TRUE, data.table=TRUE)), 2)
 
 
 })
