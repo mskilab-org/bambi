@@ -72,7 +72,7 @@ test_that('bambi test method grab_bx()', {
     ## Error in foo$grab_bx(barcodes = "CGACGTGTCCTCTAGC-1", query = data.table()) : 
     ##   Both 'barcodes' and 'query' parameters cannot be used. Use method 'grab_bx()' by a character vector of BX barcodes, or a GRanges/data.table of a genomic region. Please see documentation for details.
     expect_error(foo$grab_bx(barcodes='CGACGTGTCCTCTAGC-1', query=data.table(), verbose=TRUE))
-    expect_error(foo$grab_bx(barcodes='CGACGTGTCCTCTAGC-1', query=GRanges("chr5:1053000-1253655", verbose=TRUE)))
+    expect_error(foo$grab_bx(barcodes='CGACGTGTCCTCTAGC-1', query=GRanges("chr5:1053000-1253655"), verbose=TRUE))
     ##
     ## empty query: R standard is NULL for error, NA for no rows returned
     expect_equal(foo$grab_bx(barcodes='2'), NA)
