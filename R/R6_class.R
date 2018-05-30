@@ -439,7 +439,7 @@ bambi = R6::R6Class('bambi',
                     }, mc.cores=mc.cores)
 
                     out = rbindlist(multiple_barcodes, fill=TRUE)
-                    suppressWarnings(out[, BX := barcodes])  ## for one
+                    suppressWarnings(out[, CB := barcodes])  ## for one
         
                     if (any(nnix <<- out$cigar=='*')){
                         out$cigar[nnix] = NA
@@ -511,7 +511,7 @@ bambi = R6::R6Class('bambi',
                     }, mc.cores=mc.cores)
 
                     out = rbindlist(multiple_barcodes, fill=TRUE)
-                    suppressWarnings(out[, BX := barcodes])  ## for one
+                    suppressWarnings(out[, UB := barcodes])  ## for one
         
                     if (any(nnix <<- out$cigar=='*')){
                         out$cigar[nnix] = NA
@@ -624,7 +624,7 @@ bambi = R6::R6Class('bambi',
                     }, mc.cores=mc.cores)
 
                     out = rbindlist(multiple_barcodes, fill=TRUE)
-                    suppressWarnings(out[, BX := barcodes])  ## for one
+                    suppressWarnings(out[, UB := barcodes])  ## for one
         
                     if (any(nnix <<- out$cigar=='*')){
                         out$cigar[nnix] = NA
