@@ -9,31 +9,39 @@ example_bam = 'subset_HCC1143_phased_possorted000005.bam'   ### all tests below 
 example_bai = 'subset_HCC1143_phased_possorted000005.bam.bai' 
 example_lmdb = 'subset_HCC1143_phased_possorted000005_lmdb'
 
-## in UCSC format, e.g. chr5
-example_bam_UCSC = 'subset_HCC1143_phased_possorted000005.UCSCstyle.bam'
-example_bai_UCSC = 'subset_HCC1143_phased_possorted000005.UCSCstyle.bam.bai'
-example_lmdb_UCSC = 'subset_HCC1143_phased_possorted000005.UCSCstyle_lmdb'
+## in Ensembl format, e.g. 5
+example_bam_Ensembl = 'subset_HCC1143_phased_possorted000005.EnsemblStyle.bam'
+example_bai_Ensembl = 'subset_HCC1143_phased_possorted000005.EnsemblStyle.bam.bai'
+example_lmdb_Ensembl = 'subset_HCC1143_phased_possorted000005.EnsemblStyle_lmdb'
 
 example_CB_bam = 'subset_pbmc8k_possorted_genome_bam000025.CB.bam'   ### all tests below are specific to this BAM, and will fail otherwise 
 example_CB_bai = 'subset_pbmc8k_possorted_genome_bam000025.CB.bam.bai' 
 example_CB_lmdb = 'subset_pbmc8k_possorted_genome_bam000025.CB_lmdb'
 
-## in Ensembl format, e.g. 5
-example_CB_bam_Ensembl = 'subset_pbmc8k_possorted_genome_bam000025.EnsemblStyle.CB.bam'   ### all tests below are specific to this BAM, and will fail otherwise 
-example_CB_bai_Ensembl = 'subset_pbmc8k_possorted_genome_bam000025.EnsemblStyle.CB.bam.bai' 
-example_CB_lmdb_Ensembl = 'subset_pbmc8k_possorted_genome_bam000025.EnsemblStyle.CB_lmdb'
+## in UCSC format, e.g. 5
+example_CB_bam_UCSC = 'subset_pbmc8k_possorted_genome_bam000025.UCSCstyle.CB.bam'   ### all tests below are specific to this BAM, and will fail otherwise 
+example_CB_bai_UCSC = 'subset_pbmc8k_possorted_genome_bam000025.UCSCstyle.CB.bam.bai' 
+example_CB_lmdb_UCSC = 'subset_pbmc8k_possorted_genome_bam000025.UCSCstyle.CB_lmdb'
+
 
 example_UB_bam = 'subset_pbmc8k_possorted_genome_bam000025.UB.bam'   ### all tests below are specific to this BAM, and will fail otherwise 
 example_UB_bai = 'subset_pbmc8k_possorted_genome_bam000025.UB.bam.bai' 
 example_UB_lmdb = 'subset_pbmc8k_possorted_genome_bam000025.UB_lmdb'
 
-## in Ensembl format, e.g. 5
+## in UCSC format, e.g. 5
+example_UB_bam_UCSC = 'subset_pbmc8k_possorted_genome_bam000025.UCSCstyle.UB.bam'   ### all tests below are specific to this BAM, and will fail otherwise 
+example_UB_bai_UCSC = 'subset_pbmc8k_possorted_genome_bam000025.UCSCstyle.UB.bam.bai' 
+example_UB_lmdb_UCSC = 'subset_pbmc8k_possorted_genome_bam000025.UCSCstyle.UB_lmd'
+
 
 example_PS_bam = 'subset_HCC1143_phased_possorted000005.PS.bam'   ### all tests below are specific to this BAM, and will fail otherwise 
 example_PS_bai = 'subset_HCC1143_phased_possorted000005.PS.bam.bai' 
 example_PS_lmdb = 'subset_HCC1143_phased_possorted000005.PS_lmdb'
 
 ## in Ensembl format, e.g. chr5
+example_PS_bam_Ensembl = 'subset_HCC1143_phased_possorted000005.EnsemblStyle.PS.bam'   ### all tests below are specific to this BAM, and will fail otherwise 
+example_PS_bai_Ensembl = 'subset_HCC1143_phased_possorted000005.EnsemblStyle.PS.bam.bai' 
+example_PS_lmdb_Ensembl = 'subset_HCC1143_phased_possorted000005.EnsemblStyle.PS_lmdb'
 
 bam_no_lmdb = 'bam_with_no_lmdb.bam'
 
@@ -142,6 +150,11 @@ test_that('bambi test method grab_bx()', {
     expect_equal(foo$grab_bx(query=GRanges("5:1053000-1253655")), NA)
     expect_equal(foo$grab_bx(query=GRanges('5:10-15'), verbose=TRUE, data.table=TRUE), NA)
     expect_equal(foo$grab_bx(query=GRanges("5:1053000-1253655"), data.table=TRUE), NA)
+    foo_ucsc = bambi$new(bam_file = example_bam_Ensembl)
+    expect_equal(foo_ucsc$grab_bx(query=GRanges('chr5:10-15'), verbose=TRUE), NA)
+    expect_equal(foo_ucsc$grab_bx(query=GRanges("chr5:1053000-1253655")), NA)
+    expect_equal(foo_ucsc$grab_bx(query=GRanges('chr5:10-15'), verbose=TRUE, data.table=TRUE), NA)
+    expect_equal(foo_ucsc$grab_bx(query=GRanges("chr5:1053000-1253655"), data.table=TRUE), NA)    
     ##
     ## else
     expect_equal(length(foo$grab_bx(query=GRanges('19:27842400-27842700'), verbose=TRUE)), 4)
