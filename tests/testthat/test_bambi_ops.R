@@ -102,6 +102,8 @@ test_that('bambi test method grab_bx()', {
     ## if (length(query)==0){
     expect_equal(foo$grab_bx(query=GRanges('chr5:10-15'), verbose=TRUE), NA)
     expect_equal(foo$grab_bx(query=GRanges("chr5:1053000-1253655")), NA)
+    expect_equal(foo$grab_bx(query=GRanges('chr5:10-15'), verbose=TRUE, data.table=TRUE), NA)
+    expect_equal(foo$grab_bx(query=GRanges("chr5:1053000-1253655"), data.table=TRUE), NA)
     ##
     ## else
     expect_equal(length(foo$grab_bx(query=GRanges('chr19:27842400-27842700'), verbose=TRUE)), 4)
@@ -173,13 +175,15 @@ test_that('bambi test method grab_cb()', {
     ## 
     ## if (length(query)==0){
     expect_equal(foocb$grab_cb(query=GRanges('5:10-15'), verbose=TRUE), NA)
-    expect_equal(foocb$grab_cb(query=GRanges("5:1053000-1253655"), verbose=TRUE), NA)
+    expect_equal(foocb$grab_cb(query=GRanges("5:1053000-1253655"), verbose=TRUE, data.table=TRUE), NA)
+    expect_equal(foocb$grab_cb(query=GRanges('5:10-15'), verbose=TRUE), NA)
+    expect_equal(foocb$grab_cb(query=GRanges("5:1053000-1253655"), verbose=TRUE, data.table=TRUE), NA)
     ##
     ## else
     expect_equal(length(foocb$grab_cb(query=GRanges("19:1440000-1440500"), verbose=TRUE)), 33)
     ##
     ## data.table = TRUE
-    ## expect_equal(dim(foocb$grab_cb(query=GRanges("19:1440000-1440500"), verbose=TRUE, data.table = TRUE))[1], 33)
+    expect_equal(dim(foocb$grab_cb(query=GRanges("19:1440000-1440500"), verbose=TRUE, data.table = TRUE))[1], 33)
 
 })
 
@@ -248,9 +252,14 @@ test_that('bambi test method grab_ub()', {
     ## if (length(query)==0){
     expect_equal(fooub$grab_ub(query=GRanges('5:10-15'), verbose=TRUE), NA)
     expect_equal(fooub$grab_ub(query=GRanges("5:1053000-1253655")), NA)
+    expect_equal(fooub$grab_ub(query=GRanges('5:10-15'), verbose=TRUE, data.table=TRUE), NA)
+    expect_equal(fooub$grab_ub(query=GRanges("5:1053000-1253655"), data.table=TRUE), NA)
     ##
     ## else
     expect_equal(length(fooub$grab_ub(query=GRanges("19:1440000-1440500"), verbose=TRUE)), 2)
+    ##
+    ## data.table = TRUE
+    expect_equal(dim(fooub$grab_ub(query=GRanges("19:1440000-1440500"), verbose=TRUE, data.table = TRUE))[1], 2)
 
 
 })
@@ -342,6 +351,9 @@ test_that('bambi test method fetch_by_tag()', {
     ## if (length(query)==0){
     expect_equal(foo_fetch_ps$fetch_by_tag(tag = 'PS', query=GRanges('chr5:10-15'), verbose=TRUE), NA)
     expect_equal(foo_fetch_ps$fetch_by_tag(tag = 'PS', query=GRanges('chr5:1053000-1253655'), verbose=TRUE), NA)
+    ## data.table = TRUE
+    expect_equal(foo_fetch_ps$fetch_by_tag(tag = 'PS', query=GRanges('chr5:10-15'), verbose=TRUE, data.table=TRUE), NA)
+    expect_equal(foo_fetch_ps$fetch_by_tag(tag = 'PS', query=GRanges('chr5:1053000-1253655'), verbose=TRUE, data.table=TRUE), NA)
     ##
     ## else
     ## FIX
