@@ -3,6 +3,5 @@ src/bamdb/.ycm_extra_conf.py
 
 src/htslib/.appveyor.yml
 src/htslib/.travis.yml
-src/htslib/Makefile
 
 LICENSE
