@@ -267,10 +267,14 @@ test_that('bambi test method grab_ub()', {
     expect_equal(length(fooub$grab_ub(query=GRanges("19:1440000-1440500"), verbose=TRUE)), 2)
     ## 
     ## try data.frame
-    ##df1 = as.data.frame(gr2dt(GRanges("19:1440000-1440500")))
+    ## df1 = as.data.frame(gr2dt(GRanges("19:1440000-1440500")))
+    expect_equal(length(fooub$grab_ub(query=as.data.frame(gr2dt(GRanges("19:1440000-1440500"))), verbose=TRUE)), 2)
+    expect_equal(length(fooub$grab_ub(query=as.data.frame(gr2dt(GRanges("chr19:1440000-1440500"))), verbose=TRUE)), 2)
     ## 
     ## try data.table
     ##dt1 = as.data.table(gr2dt(GRanges("19:1440000-1440500")))
+    expect_equal(length(fooub$grab_ub(query=as.data.table(gr2dt(GRanges("19:1440000-1440500"))), verbose=TRUE)), 2)
+    expect_equal(length(fooub$grab_ub(query=as.data.table(gr2dt(GRanges("chr19:1440000-1440500"))), verbose=TRUE)), 2)
     ##
     ## check UCSC/Ensembl conversion
     expect_equal(fooub$grab_ub(query=GRanges('chr5:10-15'), verbose=TRUE), NA)
