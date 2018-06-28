@@ -1,0 +1,47 @@
+# Sample .travis.yml for R projects.
+#
+# See README.md for instructions, or for more configuration options,
+# see the wiki:
+#   https://github.com/craigcitro/r-travis/wiki
+
+language: c
+sudo: required
+
+before_install:
+  - sudo apt-get -qq update
+  - curl -OL http://raw.github.com/craigcitro/r-travis/master/scripts/travis-tool.sh
+  - chmod 755 ./travis-tool.sh
+  - ./travis-tool.sh bootstrap
+  - ./travis-tool.sh aptget_install zlib1g-dev 
+  - ./travis-tool.sh aptget_install liblmdb-dev
+  ## - ./travis-tool.sh aptget_install libhts-dev
+  - git clone https://github.com/concurrencykit/ck
+  - cd ck
+  - ./configure; make; sudo make install
+  - cd /home/travis/build/mskilab/bambi
+  ## Need to install htslib manually since the package is old
+  - wget https://github.com/samtools/htslib/releases/download/1.8/htslib-1.8.tar.bz2
+  - tar -vxjf htslib-1.8.tar.bz2
+  - pushd htslib-1.8 && ./configure --prefix=/usr && make && sudo make install && popd
+  - cd /home/travis/build/mskilab/bambi
+
+install:
+  - ./travis-tool.sh install_bioc_deps
+  - ./travis-tool.sh install_deps
+  - ./travis-tool.sh install_github r-lib/covr
+  - ./travis-tool.sh install_github r-lib/testthat
+  - ./travis-tool.sh install_github mskilab/gUtils
+  - ./travis-tool.sh install_github mskilab/bamUtils
+
+script: ./travis-tool.sh run_tests
+
+after_failure:
+  - ./travis-tool.sh dump_logs
+
+after_success:
+  - Rscript -e 'covr::codecov()'
+  
+notifications:
+  email:
+    on_success: change
+    on_failure: change
