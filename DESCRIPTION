@@ -1,17 +1,40 @@
 Package: bambi
 Type: Package
 Title: R to query barcode indices on bam files
-Version: 0.1
+Version: 0.1.0
 Date: 2018-02-03
 Author: Aaron Dornbrand-Lo
-Maintainer: Aaron Dornbrand-Lo <dl.aaron@gmail.com>
+Maintainer: Aaron Dornbrand-Lo <aaron@d-lo.net>
 Description: A library for accessing indexed bam sequence data
   This package provides an interface that allows users to query sequence files
   that have indexed using the bamdb <https://github.com/D-Lo/bamdb> library and
   receive a data frame containing the matching records.
-License: GPL (>= 3)
-Imports: Rcpp (>= 0.12.3)
 LinkingTo: Rcpp
 NeedsCompilation: yes
 SystemRequirements: C++11
-Packaged: 2018-05-21 18:35:26 UTC; adornbrandlo
+biocViews:
+Depends:
+    R (>= 3.1.0),
+    GenomicRanges (>= 1.30),
+    data.table (>= 1.10),
+    R6,
+    IRanges (>= 2.12),
+    gUtils,
+    bamUtils
+Imports:
+    Rcpp,
+    S4Vectors (>= 0.4),
+    GenomeInfoDb (>= 1.13),
+    parallel,
+    BiocGenerics(>= 0.24),
+    methods,
+    Matrix,
+    stringr
+Suggests:
+    testthat
+LinkingTo: Rcpp
+Imports: Rcpp (>= 0.12.3)
+License: GPL (>= 3)
+BugReports: http://github.com/mskilab/bambi/issues
+LazyData: true
+RoxygenNote: 6.0.1.9000
