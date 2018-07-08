@@ -33,6 +33,20 @@ HTSLIB_INCL_FLAGS="-I${HTSLIB_INCL_PATH}"
 HTSLIB_LIB="$base_dir/src/htslib/libhts.a"
 HTSLIB_CMAKE_FLAGS="-DHTSlib_INCLUDE_DIR=${HTSLIB_INCL_PATH} -DHTSlib_LIBRARY=${HTSLIB_LIB}"
 
+AC_MSG_NOTICE([Building ck])
+$(
+    cd "$base_dir/src/ck"; \
+    ./configure; \
+    make;
+)
+
+CK_INCL_PATH="$base_dir/src/ck/include"
+CK_INCL_FLAGS="-I${CK_INCL_PATH}"
+CK_LIB="$base_dir/src/ck/src/libck.a"
+CK_CMAKE_FLAGS="-DCK_INCLUDE_DIR=${CK_INCL_PATH} -DCK_LIBRARY=${CK_LIB}"
+
+AC_MSG_NOTICE([ck build complete])
+
 AC_MSG_NOTICE([Building lmdb])
 $(
     cd "$base_dir/src/lmdb/libraries/liblmdb"; \
@@ -47,11 +61,11 @@ LMDB_INCL_FLAGS="-I${LMDB_INCL_PATH}"
 LMDB_LIB="$base_dir/src/lmdb/libraries/liblmdb/liblmdb.a"
 LMDB_CMAKE_FLAGS="-DLMDB_INCLUDE_DIR=${LMDB_INCL_PATH} -DLMDB_LIBRARY=${LMDB_LIB}"
 
-BAMDB_CMAKE_FLAGS="-DSTATIC_BAMDB_BUILD=ON -DBUILD_BAMDB_WRITER=OFF"
+BAMDB_CMAKE_FLAGS="-DSTATIC_BAMDB_BUILD=ON"
 AC_MSG_NOTICE([Building bamdb library])
 $(
     cd "$base_dir/src/build"; \
-    cmake "$base_dir/src/bamdb/" ${BAMDB_CMAKE_FLAGS} ${LMDB_CMAKE_FLAGS} ${HTSLIB_CMAKE_FLAGS}; \
+    cmake "$base_dir/src/bamdb/" ${BAMDB_CMAKE_FLAGS} ${LMDB_CMAKE_FLAGS} ${HTSLIB_CMAKE_FLAGS} ${CK_CMAKE_FLAGS}; \
     make;
 )
 
@@ -60,8 +74,8 @@ AC_MSG_NOTICE([bamdb build complete])
 BAMDB_INCL_FLAGS="-I$base_dir/src/bamdb/include -I/usr/include/htslib/ -I/usr/local/include/htslib/"
 BAMDB_LIB="$base_dir/src/build/libbamdb.a"
 
-bambi_include="${LMDB_INCL_FLAGS} ${BAMDB_INCL_FLAGS} ${HTSLIB_INCL_FLAGS}"
-bambi_libs="${BAMDB_LIB} ${LMDB_LIB} ${HTSLIB_LIB}"
+bambi_include="${LMDB_INCL_FLAGS} ${BAMDB_INCL_FLAGS} ${HTSLIB_INCL_FLAGS} ${CK_INCL_FLAGS}"
+bambi_libs="${BAMDB_LIB} ${LMDB_LIB} ${HTSLIB_LIB} ${CK_LIB}"
 
 AC_SUBST([PKG_CFLAGS],["${PKG_CFLAGS} $bambi_include"])
 AC_SUBST([PKG_CXXFLAGS],["${PKG_CXXFLAGS} $bambi_include"])

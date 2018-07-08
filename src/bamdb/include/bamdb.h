@@ -4,6 +4,9 @@
 #include <stdbool.h>
 #include <stddef.h>
 
+#include "bamdb_status.h"
+#include "bam_api.h"
+
 #define MAX_FILENAME 1024
 
 typedef struct bamdb_indices {

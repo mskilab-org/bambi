@@ -4,8 +4,9 @@
 #include <Rcpp.h>
 
 extern "C" {
-#include "bamdb_lmdb.h"
-#include "bamdb_status.h"
+#include "bamdb.h"
+int generate_index_file(char *input_file_name, char *output_file_name,
+                        bamdb_indices_t *target_indices);
 }
 
 using namespace Rcpp;
@@ -116,7 +117,8 @@ DataFrame query_bam_index(CharacterVector bam_file_name,
   int n_cols = 11;
   int rc = 0;
 
-  rc = get_bam_rows(&bam_rows, c_file_name, c_index_path, c_index_name, c_key_val);
+  rc = get_bam_rows(&bam_rows, c_file_name, c_index_path, c_index_name,
+                    c_key_val);
   if (rc != BAMDB_SUCCESS) {
     Rcpp::Rcout << "Error fetching rows from indexed file" << std::endl;
     free_bamdb_row_set(bam_rows);
@@ -312,4 +314,33 @@ DataFrame query_bam_index(CharacterVector bam_file_name,
 
   free_bamdb_row_set(bam_rows);
   return colList;
+}
+
+// [[Rcpp::export]]
+int generate_bam_index(CharacterVector bam_file_name,
+                       CharacterVector bam_index_path,
+                       CharacterVector index_name) {
+  int ret = 0;
+
+  /* Series of casts get from R strings to C strings */
+  std::string file_name_str = Rcpp::as<std::string>(bam_file_name);
+  std::string index_path_str = Rcpp::as<std::string>(bam_index_path);
+  std::string index_name_str = Rcpp::as<std::string>(index_name);
+  /* TODO: fix const constraints */
+  const char* c_file_name = file_name_str.c_str();
+  const char* c_index_path = index_path_str.c_str();
+  const char* c_index_name = index_name_str.c_str();
+
+  bamdb_indices_t target_indices = {
+      .includes_qname = true,
+      .num_key_indices = 1,
+      .key_indices = (char**)malloc(sizeof(char*))};
+
+  target_indices.key_indices[0] = strdup(c_index_name);
+  char* file_name = strdup(c_file_name);
+  char* index_path = strdup(c_index_path);
+
+  ret = generate_index_file(file_name, index_path, &target_indices);
+
+  return ret;
 }
