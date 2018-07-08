@@ -19,9 +19,23 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// generate_bam_index
+int generate_bam_index(CharacterVector bam_file_name, CharacterVector bam_index_path, CharacterVector index_name);
+RcppExport SEXP _bambi_generate_bam_index(SEXP bam_file_nameSEXP, SEXP bam_index_pathSEXP, SEXP index_nameSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< CharacterVector >::type bam_file_name(bam_file_nameSEXP);
+    Rcpp::traits::input_parameter< CharacterVector >::type bam_index_path(bam_index_pathSEXP);
+    Rcpp::traits::input_parameter< CharacterVector >::type index_name(index_nameSEXP);
+    rcpp_result_gen = Rcpp::wrap(generate_bam_index(bam_file_name, bam_index_path, index_name));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_bambi_query_bam_index", (DL_FUNC) &_bambi_query_bam_index, 4},
+    {"_bambi_generate_bam_index", (DL_FUNC) &_bambi_generate_bam_index, 3},
     {NULL, NULL, 0}
 };
 

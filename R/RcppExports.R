@@ -5,3 +5,7 @@ query_bam_index <- function(bam_file_name, bam_index_path, index_name, key) {
     .Call('_bambi_query_bam_index', PACKAGE = 'bambi', bam_file_name, bam_index_path, index_name, key)
 }
 
+generate_bam_index <- function(bam_file_name, bam_index_path, index_name) {
+    .Call('_bambi_generate_bam_index', PACKAGE = 'bambi', bam_file_name, bam_index_path, index_name)
+}
+
